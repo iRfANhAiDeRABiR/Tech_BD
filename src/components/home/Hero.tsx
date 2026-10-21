@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import type { StoreCategory } from "@/types/product";
 import { getFloatingCategoryCards } from "./floatingCategories";
-import styles from "./HeroShowcase.module.css";
 
 interface HeroProps {
   categories?: StoreCategory[];
@@ -11,9 +10,6 @@ interface HeroProps {
 
 export function Hero({ categories = [], totalProducts }: HeroProps) {
   const floatingCards = getFloatingCategoryCards(categories);
-  const leftCards = floatingCards.filter((card) => card.column === "left");
-  const rightCards = floatingCards.filter((card) => card.column === "right");
-
   const activeCategoriesCount =
     categories.filter((category) => category.count > 0).length ||
     categories.length ||
@@ -31,13 +27,7 @@ export function Hero({ categories = [], totalProducts }: HeroProps) {
       </div>
 
       <div className="container hero__container">
-        {/* Left Side Content - 100% UNCHANGED */}
         <div className="hero__content">
-          <div className="hero__badge">
-            <span className="badge-dot" aria-hidden="true" />
-            Fast digital delivery across Bangladesh
-          </div>
-
           <h1 className="hero__title">
             Premium<br />
             <span className="gradient-text">Digital Software</span><br />
@@ -76,63 +66,29 @@ export function Hero({ categories = [], totalProducts }: HeroProps) {
           </div>
         </div>
 
-        {/* Right Side Visual - Redesigned Premium Software Ecosystem Showcase */}
         <div className="hero__visual">
-          <div className={styles.showcaseWrap}>
-            <div className={styles.ambientBackdrop} aria-hidden="true" />
-            <div className={styles.showcaseGrid}>
-              <div className={styles.showcaseColumnLeft}>
-                {leftCards.map((card) => (
-                  <div
-                    key={card.id}
-                    className={styles.showcaseCard}
-                    data-card-id={card.id}
-                    role="group"
-                    aria-label={card.name}
-                  >
-                    <div className={styles.iconBox}>
-                      <Image
-                        src={card.image}
-                        alt=""
-                        width={28}
-                        height={28}
-                        className={styles.cardImage}
-                      />
-                    </div>
-                    <div className={styles.cardDetails}>
-                      <span className={styles.cardName}>{card.name}</span>
-                      <span className={styles.cardBadge}>{card.badge}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+          <div className="floating-cards">
+            {floatingCards.map((card, index) => (
+              <div
+                key={card.name}
+                className={`float-card float-card--${index + 1}`}
+              >
+                <div
+                  className="float-card__icon"
+                  style={{ background: "transparent" }}
+                >
+                  <Image
+                    src={card.image}
+                    alt=""
+                    width={40}
+                    height={40}
+                    style={{ objectFit: "contain" }}
+                  />
+                </div>
 
-              <div className={styles.showcaseColumnRight}>
-                {rightCards.map((card) => (
-                  <div
-                    key={card.id}
-                    className={styles.showcaseCard}
-                    data-card-id={card.id}
-                    role="group"
-                    aria-label={card.name}
-                  >
-                    <div className={styles.iconBox}>
-                      <Image
-                        src={card.image}
-                        alt=""
-                        width={28}
-                        height={28}
-                        className={styles.cardImage}
-                      />
-                    </div>
-                    <div className={styles.cardDetails}>
-                      <span className={styles.cardName}>{card.name}</span>
-                      <span className={styles.cardBadge}>{card.badge}</span>
-                    </div>
-                  </div>
-                ))}
+                <span>{card.name}</span>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>

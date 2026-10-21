@@ -49,7 +49,6 @@ interface SidebarCategoryItem {
 
 const mobileNavLinks = [
   { label: "Home", href: "/home", emoji: "🏠" },
-  { label: "Products", href: "/products#products-by-category", emoji: "🛒" },
   { label: "Software Download", href: "/downloads", emoji: "📥" },
   { label: "Tools", href: "/tools", emoji: "🛠️" },
   { label: "About Us", href: "/home#features", emoji: "✨" },

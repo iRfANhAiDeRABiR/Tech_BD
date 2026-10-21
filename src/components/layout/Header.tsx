@@ -368,13 +368,6 @@ export function Header() {
               </Link>
 
               <Link
-                href="/products"
-                className={getNavLinkClassName("/products")}
-              >
-                Products
-              </Link>
-
-              <Link
                 href="/downloads"
                 className={getNavLinkClassName("/downloads")}
               >
