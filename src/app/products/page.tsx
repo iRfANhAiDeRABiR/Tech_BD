@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
-import { getFloatingCategoryCards } from "@/components/home/floatingCategories";
 import { Marquee } from "@/components/home/Marquee";
 import { CategoryNav } from "@/components/products/CategoryNav";
 import { CategoryRow } from "@/components/products/CategoryRow";
@@ -38,15 +36,6 @@ type CategoryAccentStyle = CSSProperties & {
 const getCategoryAccentStyle = (accent: string): CategoryAccentStyle => ({
   "--category-accent": accent,
 });
-
-const floatingCardClasses = [
-  styles.floatCard1,
-  styles.floatCard2,
-  styles.floatCard3,
-  styles.floatCard4,
-  styles.floatCard5,
-  styles.floatCard6,
-];
 
 const toProductSummary = (product: Product): ProductSummary => ({
   id: product.id,
@@ -155,89 +144,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     categoryGroups,
     initialSearch,
   );
-  const floatingCards = getFloatingCategoryCards(storeCategories);
   const totalProducts = productSummaries.length;
 
   return (
     <main className={styles.page}>
-      <section className={styles.hero}>
-        <div className={styles.heroBg} aria-hidden="true">
-          <div className={`${styles.heroOrb} ${styles.heroOrb1}`} />
-          <div className={`${styles.heroOrb} ${styles.heroOrb2}`} />
-          <div className={`${styles.heroOrb} ${styles.heroOrb3}`} />
-        </div>
-
-        <div className={`container ${styles.heroContainer}`}>
-          <div className={styles.heroContent}>
-            <div className={styles.heroBadge}>
-              <span className={styles.badgeDot} />
-              Category-wise digital software store
-            </div>
-
-            <h1 className={styles.title}>
-              Premium <span className="gradient-text">Digital Software</span> by
-              category
-            </h1>
-
-            <p className={styles.description}>
-              Find genuine Windows, Microsoft Office, Microsoft 365, Adobe, and
-              other software licenses faster with row-wise category sections.
-            </p>
-
-            <div className={styles.heroActions}>
-              <Link href="#products-by-category" className="btn btn--primary btn--lg">
-                Browse Products →
-              </Link>
-
-              <Link href="/home#features" className="btn btn--glass btn--lg">
-                Why Choose Us
-              </Link>
-            </div>
-
-            <div className={styles.heroStats} aria-label="Product summary">
-              <div className={styles.stat}>
-                <span className={styles.statNumber}>{totalProducts}</span>
-                <span className={styles.statPlus}>+</span>
-                <span className={styles.statLabel}>Products</span>
-              </div>
-
-              <div className={styles.stat}>
-                <span className={styles.statNumber}>{categoryGroups.length}</span>
-                <span className={styles.statPlus}>+</span>
-                <span className={styles.statLabel}>Categories</span>
-              </div>
-
-              <div className={styles.stat}>
-                <span className={styles.statNumber}>24/7</span>
-                <span className={styles.statLabel}>Customer Support</span>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.heroVisual}>
-            <div className={styles.floatingCards}>
-              {floatingCards.map((card, index) => (
-                <div
-                  className={`${styles.floatCard} ${floatingCardClasses[index]}`}
-                  key={card.name}
-                >
-                  <div className={styles.floatCardIcon}>
-                    <Image
-                      src={card.image}
-                      alt=""
-                      width={40}
-                      height={40}
-                      style={{ objectFit: "contain" }}
-                    />
-                  </div>
-
-                  <span>{card.name}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+      <h1 className={styles.srOnly}>Products by Category - Tech Solutions BD</h1>
 
       <Marquee />
 

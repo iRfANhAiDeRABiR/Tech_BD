@@ -34,8 +34,9 @@ export function Hero({ categories = [], totalProducts }: HeroProps) {
           </div>
 
           <h1 className="hero__title">
-            Premium <span className="gradient-text">Digital Software</span> at
-            competitive prices
+            Premium<br />
+            <span className="gradient-text">Digital Software</span><br />
+            at competitive prices
           </h1>
 
           <p className="hero__description">
