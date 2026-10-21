@@ -64,11 +64,6 @@ export function CategorySidebar({
       href: "/products#products-by-category",
       emoji: "🛒",
     },
-    {
-      label: "Software Download",
-      href: "/downloads",
-      emoji: "📥",
-    },
     ...categories.map((category) => ({
       label: category.name,
       href: `/home?category=${category.slug}#products`,
