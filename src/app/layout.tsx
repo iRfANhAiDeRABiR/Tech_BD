@@ -49,6 +49,7 @@ export default async function RootLayout({
     <html
       lang="en"
       className={`${inter.variable} ${jetBrainsMono.variable}`}
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
       <body suppressHydrationWarning>

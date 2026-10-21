@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { deleteProductImage, uploadCategoryImage, uploadProductImage } from "@/lib/cloudinary";
 import { parseProductForm } from "@/lib/admin-products";
+import { invalidateStoreCatalogCache } from "@/data/products";
 import {
   deleteSoftwareDownloadById,
   getSoftwareDownloadById,
@@ -304,6 +305,7 @@ export async function saveCategoryAction(formData: FormData) {
 
   if (data.id) await prisma.category.update({ where: { id: data.id }, data: values });
   else await prisma.category.create({ data: values });
+  invalidateStoreCatalogCache();
   revalidatePath("/"); revalidatePath("/admin/categories"); redirect("/admin/categories?saved=1");
 }
 
@@ -334,6 +336,7 @@ export async function saveCategoryOrderAction(formData: FormData) {
     ),
   );
 
+  invalidateStoreCatalogCache();
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/categories");
@@ -449,6 +452,7 @@ export async function copyProductsToCategoryAction(formData: FormData) {
     });
   }
 
+  invalidateStoreCatalogCache();
   revalidatePath("/");
   revalidatePath("/cart");
   revalidatePath("/admin");
@@ -526,6 +530,7 @@ export async function deleteCategoryAction(formData: FormData) {
   if (!category) return;
   if (category._count.products > 0) await prisma.category.update({ where: { id }, data: { isActive: false } });
   else await prisma.category.delete({ where: { id } });
+  invalidateStoreCatalogCache();
   revalidatePath("/"); revalidatePath("/admin/categories"); redirect("/admin/categories?deleted=1");
 }
 

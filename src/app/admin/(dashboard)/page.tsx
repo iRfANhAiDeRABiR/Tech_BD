@@ -126,9 +126,8 @@ async function getDatabaseHealth(): Promise<DatabaseHealth> {
         version() AS version
     `;
 
-    await prisma.$queryRaw<{ ok: number }[]>`SELECT 1 AS ok`;
-    const responseTimeMs = Math.round(performance.now() - startedAt);
     const [row] = await detailsPromise;
+    const responseTimeMs = Math.round(performance.now() - startedAt);
 
     return {
       ok: true,
@@ -156,17 +155,38 @@ async function getDatabaseHealth(): Promise<DatabaseHealth> {
 }
 
 async function getDashboardStats(): Promise<DashboardStats> {
-  const [orders, paymentSubmittedOrders, products, activeProducts, categories, options] =
-    await Promise.all([
-      prisma.order.count(),
-      prisma.order.count({ where: { status: "PAYMENT_SUBMITTED" } }),
-      prisma.product.count(),
-      prisma.product.count({ where: { status: "ACTIVE" } }),
-      prisma.category.count(),
-      prisma.productOption.count(),
-    ]);
+  try {
+    const [stats] = await prisma.$queryRaw<
+      {
+        orders: number;
+        payment_submitted_orders: number;
+        products: number;
+        active_products: number;
+        categories: number;
+        options: number;
+      }[]
+    >`
+      SELECT
+        (SELECT COUNT(*)::int FROM "Order") AS orders,
+        (SELECT COUNT(*)::int FROM "Order" WHERE status = 'PAYMENT_SUBMITTED') AS payment_submitted_orders,
+        (SELECT COUNT(*)::int FROM "Product") AS products,
+        (SELECT COUNT(*)::int FROM "Product" WHERE status = 'ACTIVE') AS active_products,
+        (SELECT COUNT(*)::int FROM "Category") AS categories,
+        (SELECT COUNT(*)::int FROM "ProductOption") AS options
+    `;
 
-  return { orders, paymentSubmittedOrders, products, activeProducts, categories, options };
+    return {
+      orders: Number(stats?.orders ?? 0),
+      paymentSubmittedOrders: Number(stats?.payment_submitted_orders ?? 0),
+      products: Number(stats?.products ?? 0),
+      activeProducts: Number(stats?.active_products ?? 0),
+      categories: Number(stats?.categories ?? 0),
+      options: Number(stats?.options ?? 0),
+    };
+  } catch (error) {
+    console.warn("Could not load dashboard stats:", error);
+    return emptyStats;
+  }
 }
 
 async function getRecentOrders(): Promise<RecentOrder[]> {
@@ -188,12 +208,12 @@ async function getOrderChartData(): Promise<ChartDataPoint[]> {
   // Get order counts for the last 7 days
   const result = await prisma.$queryRaw<{ date: string; count: bigint }[]>`
     SELECT
-      TO_CHAR(DATE(created_at), 'Mon DD') AS date,
+      TO_CHAR(DATE("createdAt"), 'Mon DD') AS date,
       COUNT(*)::bigint AS count
     FROM "Order"
-    WHERE created_at >= NOW() - INTERVAL '7 days'
-    GROUP BY DATE(created_at)
-    ORDER BY DATE(created_at) ASC
+    WHERE "createdAt" >= NOW() - INTERVAL '7 days'
+    GROUP BY DATE("createdAt")
+    ORDER BY DATE("createdAt") ASC
   `;
 
   // Fill in missing days with 0 if necessary, though raw query might skip them

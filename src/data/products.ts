@@ -1,4 +1,4 @@
-import type { Product, ProductSummary, StoreCategory } from "@/types/product";
+import type { Product, ProductOption, ProductSummary, StoreCategory } from "@/types/product";
 
 interface StoreCatalog {
   products: Product[];
@@ -329,14 +329,15 @@ type CachedCatalog = {
   timestamp: number;
 };
 
-const DB_CATALOG_TIMEOUT_MS = 20000;
-const CATALOG_CACHE_TTL_MS = process.env.NODE_ENV === "production" ? 5 * 60 * 1000 : 2 * 60 * 1000;
+const DB_CATALOG_TIMEOUT_MS = 12000;
+const CATALOG_CACHE_TTL_MS = 10 * 60 * 1000;
 
 const globalForCatalog = globalThis as unknown as {
   catalogRetryAfter?: number;
   catalogWarningShownForRetry?: number;
   catalogPromise?: Promise<StoreCatalog>;
   cachedCatalog?: CachedCatalog;
+  revalidating?: boolean;
 };
 
 const staticCatalog: StoreCatalog = {
@@ -389,22 +390,88 @@ async function loadDatabaseCatalog(): Promise<StoreCatalog | null> {
   try {
     const fetchPromise = (async () => {
       const { default: prisma } = await import("../lib/prisma");
-      return await prisma.category.findMany({
-        where: { isActive: true },
-        include: {
+      return await prisma.$queryRaw<
+        {
+          id: string;
+          slug: string;
+          name: string;
+          description: string | null;
+          image: string | null;
+          accent: string | null;
+          sortOrder: number;
           products: {
-            where: { status: "ACTIVE" },
-            include: {
-              options: {
-                where: { isActive: true },
-                orderBy: { sortOrder: "asc" },
-              },
-            },
-            orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
-          },
-        },
-        orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }, { name: "asc" }],
-      });
+            id: string;
+            slug: string;
+            name: string;
+            badge: string | null;
+            price: number;
+            originalPrice: number | null;
+            shortDescription: string;
+            descriptionHtml: string;
+            image: string;
+            icon: string | null;
+            color: string | null;
+            gradient: string | null;
+            outOfStock: boolean;
+            sortOrder: number;
+            options: {
+              id: string;
+              name: string;
+              type: string;
+              price: number;
+              originalPrice: number | null;
+              description: string | null;
+              sortOrder: number;
+            }[];
+          }[];
+        }[]
+      >`
+        SELECT
+          c.id, c.slug, c.name, c.description, c.image, c.accent, c."sortOrder",
+          COALESCE(
+            json_agg(
+              json_build_object(
+                'id', p.id,
+                'slug', p.slug,
+                'name', p.name,
+                'badge', p.badge,
+                'price', p.price,
+                'originalPrice', p."originalPrice",
+                'shortDescription', p."shortDescription",
+                'descriptionHtml', p."descriptionHtml",
+                'image', p.image,
+                'icon', p.icon,
+                'color', p.color,
+                'gradient', p.gradient,
+                'outOfStock', p."outOfStock",
+                'sortOrder', p."sortOrder",
+                'options', (
+                  SELECT COALESCE(
+                    json_agg(
+                      json_build_object(
+                        'id', o.id,
+                        'name', o.name,
+                        'type', o.type,
+                        'price', o.price,
+                        'originalPrice', o."originalPrice",
+                        'description', o.description,
+                        'sortOrder', o."sortOrder"
+                      ) ORDER BY o."sortOrder" ASC
+                    ), '[]'::json
+                  )
+                  FROM "ProductOption" o
+                  WHERE o."productId" = p.id AND o."isActive" = true
+                )
+              ) ORDER BY p."sortOrder" ASC, p."createdAt" DESC
+            ) FILTER (WHERE p.id IS NOT NULL),
+            '[]'::json
+          ) AS products
+        FROM "Category" c
+        LEFT JOIN "Product" p ON p."categoryId" = c.id AND p.status = 'ACTIVE'
+        WHERE c."isActive" = true
+        GROUP BY c.id
+        ORDER BY c."sortOrder" ASC, c."createdAt" ASC, c.name ASC
+      `;
     })();
 
     const timeoutPromise = new Promise<never>((_, reject) => {
@@ -445,7 +512,7 @@ async function loadDatabaseCatalog(): Promise<StoreCatalog | null> {
         options: product.options.map((option) => ({
           id: option.id,
           name: option.name,
-          type: option.type,
+          type: (option.type as ProductOption["type"]) || "OTHER",
           price: option.price,
           originalPrice: option.originalPrice,
           description: option.description,
@@ -498,10 +565,32 @@ export function invalidateStoreCatalogCache() {
 
 export async function getStoreCatalog(): Promise<StoreCatalog> {
   const now = Date.now();
-  if (
-    globalForCatalog.cachedCatalog &&
-    now - globalForCatalog.cachedCatalog.timestamp < CATALOG_CACHE_TTL_MS
-  ) {
+  if (globalForCatalog.cachedCatalog) {
+    const isFresh =
+      now - globalForCatalog.cachedCatalog.timestamp < CATALOG_CACHE_TTL_MS;
+    if (isFresh) {
+      return globalForCatalog.cachedCatalog.data;
+    }
+
+    // Stale-while-revalidate: immediately return existing catalog data to eliminate latency,
+    // and revalidate from database asynchronously in the background.
+    if (!globalForCatalog.revalidating) {
+      globalForCatalog.revalidating = true;
+      loadDatabaseCatalog()
+        .then((fresh) => {
+          if (fresh) {
+            globalForCatalog.cachedCatalog = {
+              data: fresh,
+              timestamp: Date.now(),
+            };
+          }
+        })
+        .catch(() => {})
+        .finally(() => {
+          globalForCatalog.revalidating = false;
+        });
+    }
+
     return globalForCatalog.cachedCatalog.data;
   }
 
@@ -515,7 +604,7 @@ export async function getStoreCatalog(): Promise<StoreCatalog> {
         };
         return catalog;
       }
-      return globalForCatalog.cachedCatalog?.data ?? staticCatalog;
+      return staticCatalog;
     } finally {
       globalForCatalog.catalogPromise = undefined;
     }
@@ -530,4 +619,11 @@ export async function getStoreCategories(): Promise<StoreCategory[]> {
 
 export async function getStoreProducts(): Promise<Product[]> {
   return (await getStoreCatalog()).products;
+}
+
+// Background pre-warm on module load to ensure 0ms latency for users
+if (typeof window === "undefined" && process.env.DATABASE_URL) {
+  setTimeout(() => {
+    getStoreCatalog().catch(() => {});
+  }, 100);
 }
