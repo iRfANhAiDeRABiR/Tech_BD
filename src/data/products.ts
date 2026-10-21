@@ -324,10 +324,19 @@ export const productSummaries: ProductSummary[] = products.map((product) => ({
   gradient: product.gradient,
 }));
 
+type CachedCatalog = {
+  data: StoreCatalog;
+  timestamp: number;
+};
+
+const DB_CATALOG_TIMEOUT_MS = 20000;
+const CATALOG_CACHE_TTL_MS = process.env.NODE_ENV === "production" ? 5 * 60 * 1000 : 2 * 60 * 1000;
+
 const globalForCatalog = globalThis as unknown as {
   catalogRetryAfter?: number;
   catalogWarningShownForRetry?: number;
   catalogPromise?: Promise<StoreCatalog>;
+  cachedCatalog?: CachedCatalog;
 };
 
 const staticCatalog: StoreCatalog = {
@@ -378,23 +387,43 @@ async function loadDatabaseCatalog(): Promise<StoreCatalog | null> {
   }
 
   try {
-    const { default: prisma } = await import("../lib/prisma");
-    const databaseCategories = await prisma.category.findMany({
-      where: { isActive: true },
-      include: {
-        products: {
-          where: { status: "ACTIVE" },
-          include: {
-            options: {
-              where: { isActive: true },
-              orderBy: { sortOrder: "asc" },
+    const fetchPromise = (async () => {
+      const { default: prisma } = await import("../lib/prisma");
+      return await prisma.category.findMany({
+        where: { isActive: true },
+        include: {
+          products: {
+            where: { status: "ACTIVE" },
+            include: {
+              options: {
+                where: { isActive: true },
+                orderBy: { sortOrder: "asc" },
+              },
             },
+            orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
           },
-          orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
         },
-      },
-      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }, { name: "asc" }],
+        orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }, { name: "asc" }],
+      });
+    })();
+
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      const timer = setTimeout(() => {
+        reject(
+          new Error(
+            `Catalog query exceeded ${DB_CATALOG_TIMEOUT_MS}ms timeout`,
+          ),
+        );
+      }, DB_CATALOG_TIMEOUT_MS);
+      if (typeof timer.unref === "function") {
+        timer.unref();
+      }
     });
+
+    const databaseCategories = await Promise.race([
+      fetchPromise,
+      timeoutPromise,
+    ]);
 
     const databaseProducts = databaseCategories.flatMap((category) =>
       category.products.map((product) => ({
@@ -462,16 +491,37 @@ async function loadDatabaseCatalog(): Promise<StoreCatalog | null> {
   }
 }
 
-export async function getStoreCatalog(): Promise<StoreCatalog> {
-  globalForCatalog.catalogPromise ??= loadDatabaseCatalog().then(
-    (catalog) => catalog ?? staticCatalog,
-  );
+export function invalidateStoreCatalogCache() {
+  globalForCatalog.cachedCatalog = undefined;
+  globalForCatalog.catalogPromise = undefined;
+}
 
-  try {
-    return await globalForCatalog.catalogPromise;
-  } finally {
-    globalForCatalog.catalogPromise = undefined;
+export async function getStoreCatalog(): Promise<StoreCatalog> {
+  const now = Date.now();
+  if (
+    globalForCatalog.cachedCatalog &&
+    now - globalForCatalog.cachedCatalog.timestamp < CATALOG_CACHE_TTL_MS
+  ) {
+    return globalForCatalog.cachedCatalog.data;
   }
+
+  globalForCatalog.catalogPromise ??= (async () => {
+    try {
+      const catalog = await loadDatabaseCatalog();
+      if (catalog) {
+        globalForCatalog.cachedCatalog = {
+          data: catalog,
+          timestamp: Date.now(),
+        };
+        return catalog;
+      }
+      return globalForCatalog.cachedCatalog?.data ?? staticCatalog;
+    } finally {
+      globalForCatalog.catalogPromise = undefined;
+    }
+  })();
+
+  return await globalForCatalog.catalogPromise;
 }
 
 export async function getStoreCategories(): Promise<StoreCategory[]> {
