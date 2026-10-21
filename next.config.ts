@@ -32,6 +32,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  transpilePackages: ["lucide-react"],
   allowedDevOrigins: ["*.replit.dev", "*.pike.replit.dev", "127.0.0.1"],
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
