@@ -3615,14 +3615,11 @@ input, textarea, select {
         flex-wrap: wrap;
     }
     .stat__number { font-size: 1.5rem; }
-
-    .hero__visual { display: none; }
 }
 
 @media screen and (max-width: 480px) {
     .hero { padding: 36px 0 24px; }
     .hero__title { font-size: 1.7rem; }
-    .hero__visual { display: none; }
     .hero__stats { gap: 16px; }
 }
 
