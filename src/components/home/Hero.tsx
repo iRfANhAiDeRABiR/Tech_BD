@@ -29,7 +29,7 @@ export function Hero({ categories = [], totalProducts }: HeroProps) {
       <div className="container hero__container">
         <div className="hero__content">
           <div className="hero__badge">
-            <span className="badge-dot" />
+            <span className="badge-dot" aria-hidden="true" />
             Fast digital delivery across Bangladesh
           </div>
 
