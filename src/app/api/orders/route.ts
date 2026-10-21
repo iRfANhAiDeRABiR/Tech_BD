@@ -1,0 +1,252 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import prisma from "@/lib/prisma";
+import { PaymentMethod } from "@/generated/prisma/enums";
+import { sendOrderConfirmationEmail } from "@/lib/orderConfirmationEmail";
+import { rateLimit } from "@/lib/rateLimit";
+
+export const runtime = "nodejs";
+
+const checkoutOrderItemSchema = z.object({
+  productId: z.string().trim().min(1).max(120),
+  optionId: z.string().trim().min(1).max(120).optional(),
+  quantity: z.number().int().min(1).max(99),
+});
+
+const checkoutOrderSchema = z.object({
+  customer: z.object({
+    name: z.string().trim().min(1).max(100),
+    phone: z.string().trim().min(6).max(20),
+    email: z.string().trim().email().max(200),
+  }),
+  payment: z.object({
+    method: z.enum(["bkash", "nagad", "rocket", "upay"]),
+    label: z.string().trim().min(1).max(60),
+    paymentNumber: z.string().trim().min(1).max(30),
+    senderNumber: z.string().trim().min(1).max(30),
+    transactionId: z.string().trim().min(1).max(120),
+  }),
+  items: z.array(checkoutOrderItemSchema).min(1).max(50),
+});
+
+const paymentMethodMap = {
+  bkash: PaymentMethod.BKASH,
+  nagad: PaymentMethod.NAGAD,
+  rocket: PaymentMethod.ROCKET,
+  upay: PaymentMethod.UPAY,
+} as const;
+
+function makeOrderNumber() {
+  const datePart = new Date()
+    .toISOString()
+    .slice(0, 10)
+    .replace(/-/g, "");
+  const randomPart = Math.random().toString(36).slice(2, 8).toUpperCase();
+
+  return `TSBD-${datePart}-${randomPart}`;
+}
+
+async function getUniqueOrderNumber() {
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const orderNumber = makeOrderNumber();
+    const existingOrder = await prisma.order.findUnique({
+      where: { orderNumber },
+      select: { id: true },
+    });
+
+    if (!existingOrder) {
+      return orderNumber;
+    }
+  }
+
+  return `TSBD-${Date.now()}`;
+}
+
+export async function POST(request: Request) {
+  // Basic abuse protection on this public endpoint.
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    "unknown";
+  if (!rateLimit(`orders:${ip}`, 10, 60_000)) {
+    return NextResponse.json(
+      { message: "Too many requests. Please try again shortly." },
+      { status: 429 },
+    );
+  }
+
+  try {
+    const body: unknown = await request.json();
+    const parsed = checkoutOrderSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        { message: "Invalid checkout data.", issues: parsed.error.flatten() },
+        { status: 400 },
+      );
+    }
+
+    const data = parsed.data;
+
+    // SECURITY: Never trust browser-supplied prices or totals.
+    // Resolve every item against the database and use trusted pricing only.
+    const resolvedItems: Array<{
+      productId: string;
+      productOptionId: string | null;
+      productOptionName: string | null;
+      productOptionType: string | null;
+      productName: string;
+      productImage: string;
+      unitPrice: number;
+      originalUnitPrice: number | null;
+      quantity: number;
+      lineTotal: number;
+    }> = [];
+
+    for (const item of data.items) {
+      const product = await prisma.product.findUnique({
+        where: { id: item.productId },
+        select: {
+          id: true,
+          name: true,
+          image: true,
+          price: true,
+          originalPrice: true,
+          status: true,
+          outOfStock: true,
+          options: {
+            where: { isActive: true },
+            select: {
+              id: true,
+              name: true,
+              type: true,
+              price: true,
+              originalPrice: true,
+            },
+          },
+        },
+      });
+
+      if (
+        !product ||
+        product.status !== "ACTIVE" ||
+        product.outOfStock
+      ) {
+        return NextResponse.json(
+          { message: `Product "${item.productId}" is not available.` },
+          { status: 400 },
+        );
+      }
+
+      let unitPrice = product.price;
+      let originalUnitPrice: number | null = product.originalPrice ?? null;
+      let optionName: string | null = null;
+      let optionType: string | null = null;
+      let optionId: string | null = null;
+
+      if (item.optionId) {
+        const option = product.options.find((o) => o.id === item.optionId);
+        if (!option) {
+          return NextResponse.json(
+            { message: `Selected option for "${product.name}" is not available.` },
+            { status: 400 },
+          );
+        }
+        unitPrice = option.price;
+        originalUnitPrice = option.originalPrice ?? null;
+        optionName = option.name;
+        optionType = option.type;
+        optionId = option.id;
+      }
+
+      resolvedItems.push({
+        productId: product.id,
+        productOptionId: optionId,
+        productOptionName: optionName,
+        productOptionType: optionType,
+        productName: product.name,
+        productImage: product.image,
+        unitPrice,
+        originalUnitPrice,
+        quantity: item.quantity,
+        lineTotal: unitPrice * item.quantity,
+      });
+    }
+
+    // Totals are computed exclusively from database prices.
+    // No coupon system exists yet, so no discount is applied server-side.
+    const subtotal = resolvedItems.reduce(
+      (total, item) => total + item.lineTotal,
+      0,
+    );
+    const discount = 0;
+    const total = Math.max(0, subtotal - discount);
+
+    const orderNumber = await getUniqueOrderNumber();
+    const order = await prisma.order.create({
+      data: {
+        orderNumber,
+        customerName: data.customer.name,
+        customerEmail: data.customer.email,
+        customerPhone: data.customer.phone,
+        customerWhatsApp: data.customer.phone,
+        couponCode: null,
+        subtotal,
+        discount,
+        total,
+        status: "PAYMENT_SUBMITTED",
+        notes: `Payment method selected: ${data.payment.label}`,
+        items: {
+          create: resolvedItems.map((item) => ({
+            productId: item.productId,
+            productOptionId: item.productOptionId,
+            productOptionName: item.productOptionName,
+            productOptionType: item.productOptionType,
+            productName: item.productName,
+            unitPrice: item.unitPrice,
+            originalUnitPrice: item.originalUnitPrice,
+            quantity: item.quantity,
+            lineTotal: item.lineTotal,
+          })),
+        },
+        payment: {
+          create: {
+            method: paymentMethodMap[data.payment.method],
+            transactionId: data.payment.transactionId,
+            senderNumber: data.payment.senderNumber,
+            paymentNumber: data.payment.paymentNumber,
+            amount: total,
+            status: "SUBMITTED",
+          },
+        },
+      },
+      select: {
+        id: true,
+        orderNumber: true,
+        total: true,
+      },
+    });
+
+    try {
+      await sendOrderConfirmationEmail({
+        order,
+        customer: data.customer,
+        items: resolvedItems,
+        totals: { subtotal, discount, total },
+        paymentLabel: data.payment.label,
+        siteUrl: request.headers.get("origin") ?? undefined,
+      });
+    } catch (emailError) {
+      console.error("Failed to send order confirmation email", emailError);
+    }
+
+    return NextResponse.json({ order }, { status: 201 });
+  } catch (error) {
+    console.error("Failed to create checkout order", error);
+
+    return NextResponse.json(
+      { message: "Could not save the order. Please try again." },
+      { status: 500 },
+    );
+  }
+}

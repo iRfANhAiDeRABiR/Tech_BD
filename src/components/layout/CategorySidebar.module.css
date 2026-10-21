@@ -1,0 +1,200 @@
+.sidebar {
+  position: fixed;
+  --sidebar-bg: linear-gradient(180deg, rgb(19 18 44 / 96%), rgb(10 10 26 / 96%));
+  --sidebar-border: rgb(108 99 255 / 22%);
+  --sidebar-shadow: 16px 0 44px rgb(0 0 0 / 28%);
+  --sidebar-expanded-shadow: 22px 0 56px rgb(0 0 0 / 34%);
+  --sidebar-header: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  --sidebar-text: var(--text-primary);
+  --sidebar-muted: var(--text-muted);
+  --sidebar-item-hover: linear-gradient(135deg, rgb(108 99 255 / 18%), rgb(0 212 170 / 10%));
+  --sidebar-icon-bg: rgb(255 255 255 / 8%);
+  --sidebar-icon-border: rgb(255 255 255 / 10%);
+  top: 0;
+  left: 0;
+  z-index: 1200;
+  width: 72px;
+  max-width: calc(100vw - 24px);
+  min-height: 100vh;
+  overflow: hidden;
+  background: var(--sidebar-bg);
+  backdrop-filter: blur(18px);
+  border-right: 1px solid var(--sidebar-border);
+  box-shadow: var(--sidebar-shadow);
+  transition:
+    width 0.24s ease,
+    box-shadow 0.24s ease;
+}
+
+:global([data-theme="light"]) .sidebar {
+  --sidebar-bg: linear-gradient(180deg, rgb(248 248 255 / 96%), rgb(235 235 248 / 96%));
+  --sidebar-border: rgb(110 88 190 / 16%);
+  --sidebar-shadow: 12px 0 30px rgb(35 24 80 / 10%);
+  --sidebar-expanded-shadow: 18px 0 44px rgb(35 24 80 / 18%);
+  --sidebar-header: linear-gradient(135deg, #7c2cff 0%, #18d5cc 100%);
+  --sidebar-text: #20213a;
+  --sidebar-muted: #8b89a8;
+  --sidebar-item-hover: #fff;
+  --sidebar-icon-bg: #fff;
+  --sidebar-icon-border: rgb(110 88 190 / 8%);
+}
+
+.sidebar:hover,
+.sidebar:focus-within,
+.sidebar.open {
+  width: 340px;
+  box-shadow: var(--sidebar-expanded-shadow);
+}
+
+.header {
+  display: flex;
+  height: 68px;
+  align-items: center;
+  gap: 18px;
+  padding: 0 18px;
+  color: #fff;
+  background: var(--sidebar-header);
+  box-shadow: inset 0 -1px 0 rgb(255 255 255 / 16%);
+  text-decoration: none;
+}
+
+.menuIcon {
+  display: inline-grid;
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 12px;
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.title {
+  min-width: 190px;
+  font-size: 1rem;
+  font-weight: 800;
+  opacity: 0;
+  white-space: nowrap;
+  transform: translateX(-8px);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+
+.sidebar:hover .title,
+.sidebar:focus-within .title,
+.sidebar.open .title {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.07s;
+}
+
+.list {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 12px 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  min-height: 56px;
+  align-items: center;
+  gap: 18px;
+  padding: 0 19px;
+  color: var(--sidebar-text);
+  text-decoration: none;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
+}
+
+.item:hover,
+.item:focus-visible {
+  color: var(--accent-secondary);
+  background: var(--sidebar-item-hover);
+  outline: none;
+}
+
+.icon {
+  display: inline-grid;
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  place-items: center;
+  overflow: hidden;
+  background: var(--sidebar-icon-bg);
+  border: 1px solid var(--sidebar-icon-border);
+  border-radius: 10px;
+  box-shadow: 0 5px 16px rgb(57 43 120 / 10%);
+  font-size: 1.25rem;
+}
+
+.icon img {
+  width: 27px;
+  height: 27px;
+  object-fit: contain;
+}
+
+.antivirus img {
+  transform: scale(1.35);
+}
+
+.letterIcon {
+  color: #fff;
+  background: linear-gradient(135deg, #0b1220, #ef233c);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.label {
+  min-width: 190px;
+  flex: 1;
+  color: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  opacity: 0;
+  white-space: nowrap;
+  transform: translateX(-8px);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+
+.arrow {
+  color: var(--sidebar-muted);
+  font-size: 1.2rem;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+
+.sidebar:hover .label,
+.sidebar:hover .arrow,
+.sidebar:focus-within .label,
+.sidebar:focus-within .arrow,
+.sidebar.open .label,
+.sidebar.open .arrow {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.07s;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar,
+  .title,
+  .item,
+  .label,
+  .arrow {
+    transition: none;
+  }
+}

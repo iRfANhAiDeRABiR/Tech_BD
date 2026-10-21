@@ -1,0 +1,226 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAYMENT_SUBMITTED
+  PAID
+  PROCESSING
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  BKASH
+  NAGAD
+  ROCKET
+  UPAY
+  BANK_TRANSFER
+  OTHER
+}
+
+enum PaymentStatus {
+  PENDING
+  SUBMITTED
+  VERIFIED
+  REJECTED
+  REFUNDED
+}
+
+enum AdminRole {
+  OWNER
+  ADMIN
+  SUPPORT
+}
+
+enum ProductOptionType {
+  RETAIL_KEY
+  BIND_KEY
+  OEM_KEY
+  SUBSCRIPTION
+  OTHER
+}
+
+model Category {
+  id          Int       @id @default(autoincrement())
+  slug        String    @unique
+  name        String
+  description String?   @db.Text
+  image       String?
+  accent      String?
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([isActive, sortOrder])
+}
+
+model Product {
+  id               String          @id @db.Text
+  legacyId         BigInt?         @unique
+  slug             String          @unique
+  name             String
+  categoryId       Int
+  category         Category        @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  badge            String?
+  price            Int
+  originalPrice    Int?
+  shortDescription String          @db.Text
+  descriptionHtml  String          @db.Text
+  image            String
+  imagePublicId    String?
+  icon             String?
+  color            String?
+  gradient         String?
+  status           ProductStatus   @default(ACTIVE)
+  isFeatured       Boolean         @default(false)
+  outOfStock       Boolean         @default(false)
+  sortOrder        Int             @default(0)
+  options          ProductOption[]
+  orderItems       OrderItem[]
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@index([categoryId, status])
+  @@index([status, sortOrder])
+}
+
+model ProductOption {
+  id            String            @id @default(cuid())
+  productId     String            @db.Text
+  product       Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name          String
+  type          ProductOptionType @default(OTHER)
+  sku           String?           @unique
+  price         Int
+  originalPrice Int?
+  description   String?           @db.Text
+  isDefault     Boolean           @default(false)
+  isActive      Boolean           @default(true)
+  sortOrder     Int               @default(0)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@index([productId, isActive, sortOrder])
+}
+
+model Order {
+  id               String             @id @default(cuid())
+  orderNumber      String             @unique
+  customerName     String
+  customerEmail    String?
+  customerPhone    String
+  customerWhatsApp String?
+  notes            String?            @db.Text
+  couponCode       String?
+  subtotal         Int
+  discount         Int                @default(0)
+  total            Int
+  currency         String             @default("BDT")
+  status           OrderStatus        @default(PENDING_PAYMENT)
+  items            OrderItem[]
+  payment          PaymentSubmission?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  @@index([status, createdAt])
+  @@index([customerPhone])
+}
+
+model OrderItem {
+  id                String   @id @default(cuid())
+  orderId           String
+  order             Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId         String?  @db.Text
+  product           Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productOptionId   String?
+  productOptionName String?
+  productOptionType String?
+  productName       String
+  unitPrice         Int
+  originalUnitPrice Int?
+  quantity          Int
+  lineTotal         Int
+  createdAt         DateTime @default(now())
+
+  @@index([orderId])
+  @@index([productId])
+  @@index([productOptionId])
+}
+
+model PaymentSubmission {
+  id            String        @id @default(cuid())
+  orderId       String        @unique
+  order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  method        PaymentMethod
+  transactionId String
+  senderNumber  String?
+  paymentNumber String?
+  amount        Int
+  proofImageUrl String?
+  status        PaymentStatus @default(SUBMITTED)
+  notes         String?       @db.Text
+  verifiedById  String?
+  verifiedBy    AdminUser?    @relation("PaymentVerifier", fields: [verifiedById], references: [id], onDelete: SetNull)
+  submittedAt   DateTime      @default(now())
+  verifiedAt    DateTime?
+  updatedAt     DateTime      @updatedAt
+
+  @@unique([method, transactionId])
+  @@index([status, submittedAt])
+}
+
+model Address {
+  id           String   @id @default(cuid())
+  userId       String
+  label        String?
+  fullName     String
+  phone        String
+  addressLine1 String
+  addressLine2 String?
+  city         String
+  state        String?
+  postalCode   String?
+  country      String   @default("Bangladesh")
+  isDefault    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model NewsletterSubscriber {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  isActive    Boolean  @default(true)
+  source      String   @default("website")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AdminUser {
+  id               String              @id @default(cuid())
+  email            String              @unique
+  name             String?
+  passwordHash     String
+  role             AdminRole           @default(ADMIN)
+  isActive         Boolean             @default(true)
+  verifiedPayments PaymentSubmission[] @relation("PaymentVerifier")
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+}

@@ -1,0 +1,113 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 8px 0;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--account-muted, #71809c);
+  padding: 0 16px;
+  margin-bottom: 8px;
+}
+
+.navList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--account-text, #242a3a);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.navItem svg {
+  color: var(--account-muted, #71809c);
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+/* Hover state */
+.navItem:hover {
+  background-color: var(--account-hover-bg, #f3f0ff);
+  color: var(--account-primary, #5b3df5);
+}
+
+.navItem:hover svg {
+  color: var(--account-primary, #5b3df5);
+}
+
+/* Active state */
+.active {
+  background-color: var(--account-active-bg, #ffffff);
+  color: var(--account-primary, #5b3df5);
+  font-weight: 600;
+  border: 1px solid var(--account-border-active, #d9cffd);
+  box-shadow: 0 2px 8px rgba(91, 61, 245, 0.08);
+}
+
+.active svg {
+  color: var(--account-primary, #5b3df5);
+}
+
+/* Dark mode overrides */
+:global([data-theme="dark"]) .sectionTitle {
+  color: var(--account-muted-dark, #8b95b0);
+}
+
+:global([data-theme="dark"]) .navItem {
+  color: var(--account-text-dark, #e2e8f0);
+}
+
+:global([data-theme="dark"]) .navItem svg {
+  color: var(--account-muted-dark, #8b95b0);
+}
+
+:global([data-theme="dark"]) .navItem:hover {
+  background-color: var(--account-hover-bg-dark, rgba(91, 61, 245, 0.12));
+  color: var(--account-primary, #7c3aed);
+}
+
+:global([data-theme="dark"]) .navItem:hover svg {
+  color: var(--account-primary, #7c3aed);
+}
+
+:global([data-theme="dark"]) .active {
+  background-color: var(--account-active-bg-dark, rgba(91, 61, 245, 0.15));
+  color: var(--account-primary, #a78bfa);
+  border-color: var(--account-border-active-dark, rgba(124, 58, 237, 0.3));
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.15);
+}
+
+:global([data-theme="dark"]) .active svg {
+  color: var(--account-primary, #a78bfa);
+}
+
+/* Focus visible for accessibility */
+.navItem:focus-visible {
+  outline: 2px solid var(--account-primary, #5b3df5);
+  outline-offset: 2px;
+}

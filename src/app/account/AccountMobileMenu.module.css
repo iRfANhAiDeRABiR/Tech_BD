@@ -1,0 +1,272 @@
+.mobileMenuContainer {
+  display: none;
+  position: relative;
+  z-index: 100;
+}
+
+.toggleButton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: var(--account-panel-bg, #ffffff);
+  border: 1px solid var(--account-border, #e8e4f8);
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--account-text, #242a3a);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.toggleButton:hover {
+  border-color: var(--account-primary, #5b3df5);
+  background: var(--account-hover-bg, #f3f0ff);
+}
+
+.toggleButton svg:first-child {
+  color: var(--account-primary, #5b3df5);
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 998;
+  animation: fadeIn 0.2s ease;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(320px, 85vw);
+  background: var(--account-sidebar-bg, #faf9ff);
+  z-index: 999;
+  overflow-y: auto;
+  padding: 24px 16px;
+  animation: slideIn 0.25s ease;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+}
+
+.drawerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--account-border, #e8e4f8);
+}
+
+.drawerTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--account-title, #251ea9);
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: var(--account-muted, #71809c);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+  background: var(--account-hover-bg, #f3f0ff);
+  color: var(--account-primary, #5b3df5);
+}
+
+.userCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  background: var(--account-panel-bg, #ffffff);
+  border-radius: 16px;
+  border: 1px solid var(--account-border, #e8e4f8);
+}
+
+.userAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--account-primary, #5b3df5), var(--account-primary-2, #7c3aed));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.userName {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--account-text, #242a3a);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--account-muted, #71809c);
+  padding: 0 16px;
+  margin-bottom: 8px;
+}
+
+.navList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--account-text, #242a3a);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.navItem svg {
+  color: var(--account-muted, #71809c);
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.navItem:hover {
+  background-color: var(--account-hover-bg, #f3f0ff);
+  color: var(--account-primary, #5b3df5);
+}
+
+.navItem:hover svg {
+  color: var(--account-primary, #5b3df5);
+}
+
+.active {
+  background-color: var(--account-active-bg, #ffffff);
+  color: var(--account-primary, #5b3df5);
+  font-weight: 600;
+  border: 1px solid var(--account-border-active, #d9cffd);
+  box-shadow: 0 2px 8px rgba(91, 61, 245, 0.08);
+}
+
+.active svg {
+  color: var(--account-primary, #5b3df5);
+}
+
+/* Dark mode */
+:global([data-theme="dark"]) .toggleButton {
+  background: var(--account-panel-bg-dark, #1e1b3a);
+  border-color: var(--account-border-dark, #2d2a4a);
+  color: var(--account-text-dark, #e2e8f0);
+}
+
+:global([data-theme="dark"]) .toggleButton:hover {
+  border-color: var(--account-primary, #7c3aed);
+  background: var(--account-hover-bg-dark, rgba(91, 61, 245, 0.12));
+}
+
+:global([data-theme="dark"]) .drawer {
+  background: var(--account-sidebar-bg-dark, #16132e);
+}
+
+:global([data-theme="dark"]) .drawerTitle {
+  color: var(--account-text-dark, #e2e8f0);
+}
+
+:global([data-theme="dark"]) .closeButton {
+  color: var(--account-muted-dark, #8b95b0);
+}
+
+:global([data-theme="dark"]) .closeButton:hover {
+  background: var(--account-hover-bg-dark, rgba(91, 61, 245, 0.12));
+  color: var(--account-primary, #a78bfa);
+}
+
+:global([data-theme="dark"]) .userCard {
+  background: var(--account-panel-bg-dark, #1e1b3a);
+  border-color: var(--account-border-dark, #2d2a4a);
+}
+
+:global([data-theme="dark"]) .userName {
+  color: var(--account-text-dark, #e2e8f0);
+}
+
+:global([data-theme="dark"]) .sectionTitle {
+  color: var(--account-muted-dark, #8b95b0);
+}
+
+:global([data-theme="dark"]) .navItem {
+  color: var(--account-text-dark, #e2e8f0);
+}
+
+:global([data-theme="dark"]) .navItem svg {
+  color: var(--account-muted-dark, #8b95b0);
+}
+
+:global([data-theme="dark"]) .navItem:hover {
+  background-color: var(--account-hover-bg-dark, rgba(91, 61, 245, 0.12));
+  color: var(--account-primary, #a78bfa);
+}
+
+:global([data-theme="dark"]) .navItem:hover svg {
+  color: var(--account-primary, #a78bfa);
+}
+
+:global([data-theme="dark"]) .active {
+  background-color: var(--account-active-bg-dark, rgba(91, 61, 245, 0.15));
+  color: var(--account-primary, #a78bfa);
+  border-color: var(--account-border-active-dark, rgba(124, 58, 237, 0.3));
+}
+
+:global([data-theme="dark"]) .active svg {
+  color: var(--account-primary, #a78bfa);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+/* Show on mobile/tablet */
+@media (max-width: 900px) {
+  .mobileMenuContainer {
+    display: block;
+    margin-bottom: 16px;
+  }
+}

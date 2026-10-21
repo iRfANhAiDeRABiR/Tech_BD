@@ -1,0 +1,284 @@
+/* ImageUploader - Shared upload component for Image Tools */
+
+.container {
+  width: 100%;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+/* Dropzone */
+.dropzone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  padding: 40px 24px;
+  border: 2px dashed var(--border-color, rgba(0, 0, 0, 0.15));
+  border-radius: 16px;
+  background: var(--bg-card, #ffffff);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.dropzone:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+  background: var(--bg-glass-hover, rgba(99, 102, 241, 0.04));
+}
+
+.dropzone:focus-visible {
+  outline: 2px solid rgba(99, 102, 241, 0.5);
+  outline-offset: 2px;
+}
+
+.dropzoneActive {
+  border-color: rgba(99, 102, 241, 0.6);
+  background: rgba(99, 102, 241, 0.08);
+  transform: scale(1.01);
+}
+
+/* Dropzone Content */
+.dropzoneContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.uploadIcon {
+  color: var(--text-muted, #64748b);
+  margin-bottom: 8px;
+}
+
+.dropTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  margin: 0;
+}
+
+.dropSubtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #64748b);
+  margin: 0;
+}
+
+.dropFormats {
+  font-size: 0.8rem;
+  color: var(--text-muted, #94a3b8);
+  margin: 4px 0 0;
+}
+
+/* Error Message */
+.error {
+  margin-top: 12px;
+  padding: 10px 14px;
+  font-size: 0.875rem;
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: 8px;
+}
+
+/* Preview State */
+.previewWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+  border-radius: 16px;
+  background: var(--bg-card, #ffffff);
+}
+
+.previewImageContainer {
+  position: relative;
+  width: 100%;
+  max-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 12px;
+  background:
+    repeating-conic-gradient(
+      rgba(0, 0, 0, 0.06) 0% 25%,
+      transparent 0% 50%
+    )
+    0 0 / 20px 20px;
+}
+
+[data-theme="dark"] .previewImageContainer {
+  background:
+    repeating-conic-gradient(
+      rgba(255, 255, 255, 0.05) 0% 25%,
+      transparent 0% 50%
+    )
+    0 0 / 20px 20px;
+}
+
+.previewImage {
+  max-width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Preview Info */
+.previewInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fileName {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  word-break: break-all;
+}
+
+.fileMeta {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #64748b);
+}
+
+/* Preview Actions */
+.previewActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btnSecondary,
+.btnDanger {
+  padding: 8px 18px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 10px;
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.12));
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btnSecondary {
+  background: var(--bg-glass, rgba(99, 102, 241, 0.06));
+  color: var(--text-primary, #1e293b);
+}
+
+.btnSecondary:hover {
+  background: var(--bg-glass-hover, rgba(99, 102, 241, 0.12));
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.btnDanger {
+  background: rgba(220, 38, 38, 0.06);
+  color: #dc2626;
+  border-color: rgba(220, 38, 38, 0.2);
+}
+
+.btnDanger:hover {
+  background: rgba(220, 38, 38, 0.12);
+  border-color: rgba(220, 38, 38, 0.35);
+}
+
+/* Dark Mode Overrides */
+[data-theme="dark"] .dropzone {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(17, 21, 37, 0.6);
+}
+
+[data-theme="dark"] .dropzone:hover {
+  border-color: rgba(99, 102, 241, 0.35);
+  background: rgba(99, 102, 241, 0.06);
+}
+
+[data-theme="dark"] .dropzoneActive {
+  border-color: rgba(99, 102, 241, 0.5);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+[data-theme="dark"] .uploadIcon {
+  color: #7f8aa8;
+}
+
+[data-theme="dark"] .dropTitle {
+  color: #f5f7ff;
+}
+
+[data-theme="dark"] .dropSubtitle {
+  color: #8d98b6;
+}
+
+[data-theme="dark"] .dropFormats {
+  color: #6b7a99;
+}
+
+[data-theme="dark"] .error {
+  color: #fca5a5;
+  background: rgba(220, 38, 38, 0.12);
+  border-color: rgba(220, 38, 38, 0.25);
+}
+
+[data-theme="dark"] .previewWrapper {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(17, 21, 37, 0.8);
+}
+
+[data-theme="dark"] .fileName {
+  color: #f5f7ff;
+}
+
+[data-theme="dark"] .fileMeta {
+  color: #8d98b6;
+}
+
+[data-theme="dark"] .btnSecondary {
+  background: rgba(99, 102, 241, 0.1);
+  color: #f5f7ff;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .btnSecondary:hover {
+  background: rgba(99, 102, 241, 0.18);
+  border-color: rgba(99, 102, 241, 0.35);
+}
+
+[data-theme="dark"] .btnDanger {
+  background: rgba(220, 38, 38, 0.12);
+  color: #fca5a5;
+  border-color: rgba(220, 38, 38, 0.25);
+}
+
+[data-theme="dark"] .btnDanger:hover {
+  background: rgba(220, 38, 38, 0.2);
+  border-color: rgba(220, 38, 38, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .dropzone {
+    min-height: 180px;
+    padding: 30px 16px;
+  }
+
+  .previewImage {
+    max-height: 220px;
+  }
+
+  .previewImageContainer {
+    max-height: 220px;
+  }
+
+  .previewActions {
+    flex-direction: column;
+  }
+
+  .btnSecondary,
+  .btnDanger {
+    width: 100%;
+    text-align: center;
+  }
+}

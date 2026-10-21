@@ -1,0 +1,135 @@
+/* Utility Tool Card - Light/Pastel Modern SaaS Style */
+
+.card {
+  position: relative;
+  background: var(--bg-card, #ffffff);
+  border-radius: 28px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+  min-height: 240px;
+  min-width: 0;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.08),
+              0 4px 12px -4px rgba(0, 0, 0, 0.04);
+}
+
+/* Dark mode card styling */
+[data-theme="dark"] .card {
+  background: rgba(17, 21, 37, 0.92);
+  box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .card:hover {
+  background: rgba(21, 26, 45, 0.95);
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.4),
+              0 4px 12px -4px rgba(0, 0, 0, 0.2);
+}
+
+/* Header row: Icon + Badge */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.iconContainer {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease;
+}
+
+.card:hover .iconContainer {
+  transform: scale(1.05);
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Content */
+.title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary, #1e293b);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.description {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #64748b);
+  margin: 0;
+  line-height: 1.5;
+  flex-grow: 1;
+  overflow-wrap: anywhere;
+}
+
+/* Dark mode text colors */
+[data-theme="dark"] .title {
+  color: #f4f6ff;
+}
+
+[data-theme="dark"] .description {
+  color: #929db9;
+}
+
+/* CTA */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-top: auto;
+  padding-top: 8px;
+  transition: gap 0.2s ease;
+}
+
+.card:hover .cta {
+  gap: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .card {
+    padding: 24px;
+    min-height: 220px;
+    border-radius: 24px;
+  }
+
+  .iconContainer {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+  }
+
+  .title {
+    font-size: 1.15rem;
+  }
+}

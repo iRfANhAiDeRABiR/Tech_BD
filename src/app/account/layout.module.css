@@ -1,0 +1,136 @@
+.accountLayout {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+  gap: 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  min-height: calc(100vh - 80px);
+}
+
+.desktopSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  position: sticky;
+  top: 100px;
+  height: fit-content;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  padding: 24px 16px;
+  background: var(--account-sidebar-bg, #faf9ff);
+  border-radius: 24px;
+  border: 1px solid var(--account-border, #e8e4f8);
+}
+
+.userCard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  background: var(--account-panel-bg, #ffffff);
+  border-radius: 18px;
+  border: 1px solid var(--account-border, #e8e4f8);
+  margin-bottom: 8px;
+}
+
+.userAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--account-primary, #5b3df5), var(--account-primary-2, #7c3aed));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.userName {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--account-text, #242a3a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userEmail {
+  font-size: 12px;
+  color: var(--account-muted, #71809c);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobileMenuWrapper {
+  display: none;
+}
+
+.mainContent {
+  min-width: 0;
+}
+
+/* Dark mode */
+:global([data-theme="dark"]) .accountLayout {
+  background: transparent;
+}
+
+:global([data-theme="dark"]) .desktopSidebar {
+  background: var(--account-sidebar-bg-dark, #16132e);
+  border-color: var(--account-border-dark, #2d2a4a);
+}
+
+:global([data-theme="dark"]) .userCard {
+  background: var(--account-panel-bg-dark, #1e1b3a);
+  border-color: var(--account-border-dark, #2d2a4a);
+}
+
+:global([data-theme="dark"]) .userName {
+  color: var(--account-text-dark, #e2e8f0);
+}
+
+:global([data-theme="dark"]) .userEmail {
+  color: var(--account-muted-dark, #8b95b0);
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .accountLayout {
+    grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+    gap: 24px;
+    padding: 24px 16px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .accountLayout {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 16px;
+  }
+
+  .desktopSidebar {
+    display: none;
+  }
+
+  .mobileMenuWrapper {
+    display: block;
+    margin-bottom: 20px;
+  }
+
+  .mainContent {
+    width: 100%;
+  }
+}
