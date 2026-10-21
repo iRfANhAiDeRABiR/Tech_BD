@@ -36,7 +36,8 @@ export function Hero({ categories = [], totalProducts }: HeroProps) {
           <h1 className="hero__title">
             Premium<br />
             <span className="gradient-text">Digital Software</span><br />
-            at competitive prices
+            at<br />
+            competitive prices
           </h1>
 
           <p className="hero__description">
@@ -45,10 +46,6 @@ export function Hero({ categories = [], totalProducts }: HeroProps) {
           </p>
 
           <div className="hero__actions">
-            <Link href="/products#products-by-category" className="btn btn--primary btn--lg">
-              Browse Products →
-            </Link>
-
             <Link href="/home#features" className="btn btn--glass btn--lg">
               Why Choose Us
             </Link>
