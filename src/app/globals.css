@@ -60,7 +60,8 @@ body {
   isolation: isolate;
 }
 
-.app-shell {
+.app-shell,
+.admin-root-shell {
   position: relative;
   z-index: 1;
 }

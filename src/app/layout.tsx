@@ -1,13 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
-import { CartProvider } from "@/components/cart/CartProvider";
 import { BackgroundParticles } from "@/components/layout/BackgroundParticles";
-import { CategorySidebar } from "@/components/layout/CategorySidebar";
-import { Footer } from "@/components/layout/Footer";
-import { Header } from "@/components/layout/Header";
-import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
-import { AuthModal } from "@/components/layout/AuthModal";
-import { GlobalToaster } from "@/components/toast/GlobalToaster";
+import { StorefrontShell } from "@/components/layout/StorefrontShell";
 import { getStoreCategories } from "@/data/products";
 import "./globals.css";
 
@@ -54,24 +48,9 @@ export default async function RootLayout({
     >
       <body suppressHydrationWarning>
         <BackgroundParticles />
-
-        <div className="app-shell">
-          <CartProvider>
-            <CategorySidebar categories={categories} />
-
-            <Header />
-
-            <div className="main-content">
-              {children}
-
-              <Footer />
-            </div>
-
-            <WhatsAppButton />
-            <AuthModal />
-            <GlobalToaster />
-          </CartProvider>
-        </div>
+        <StorefrontShell categories={categories}>
+          {children}
+        </StorefrontShell>
       </body>
     </html>
   );

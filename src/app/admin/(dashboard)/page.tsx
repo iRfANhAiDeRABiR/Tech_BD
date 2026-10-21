@@ -8,18 +8,15 @@ import {
   ShoppingCart,
   CreditCard,
   Package,
-  BadgeCheck,
   Layers,
-  KeyRound,
   Plus,
   ListOrdered,
   Box,
-  Settings,
-  Database,
-  Activity,
-  ChevronDown,
-  ChevronUp,
   DownloadCloud,
+  ChevronRight,
+  ChevronDown,
+  ArrowUpRight,
+  Activity,
 } from "lucide-react";
 
 // --- Types ---
@@ -86,7 +83,7 @@ function formatDateShort(date: Date) {
 }
 
 function formatCurrency(amount: number) {
-  return new Intl.NumberFormat("bn-BD", {
+  return new Intl.NumberFormat("en-BD", {
     style: "currency",
     currency: "BDT",
     maximumFractionDigits: 0,
@@ -205,193 +202,265 @@ async function getRecentOrders(): Promise<RecentOrder[]> {
 }
 
 async function getOrderChartData(): Promise<ChartDataPoint[]> {
-  // Get order counts for the last 7 days
-  const result = await prisma.$queryRaw<{ date: string; count: bigint }[]>`
-    SELECT
-      TO_CHAR(DATE("createdAt"), 'Mon DD') AS date,
-      COUNT(*)::bigint AS count
-    FROM "Order"
-    WHERE "createdAt" >= NOW() - INTERVAL '7 days'
-    GROUP BY DATE("createdAt")
-    ORDER BY DATE("createdAt") ASC
-  `;
+  try {
+    const result = await prisma.$queryRaw<{ date: string; count: bigint }[]>`
+      SELECT
+        TO_CHAR(DATE("createdAt"), 'Mon DD') AS date,
+        COUNT(*)::bigint AS count
+      FROM "Order"
+      WHERE "createdAt" >= NOW() - INTERVAL '7 days'
+      GROUP BY DATE("createdAt")
+      ORDER BY DATE("createdAt") ASC
+    `;
 
-  // Fill in missing days with 0 if necessary, though raw query might skip them
-  // For simplicity in this redesign, we map what we get.
-  // Ideally we'd generate a full 7-day range in JS and merge.
-  const days = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    days.push(formatDateShort(d));
+    const days = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      days.push(formatDateShort(d));
+    }
+
+    const dataMap = new Map(result.map((r) => [r.date, Number(r.count)]));
+
+    return days.map((date) => ({
+      date,
+      orders: dataMap.get(date) || 0,
+    }));
+  } catch (err) {
+    console.warn("Could not load order chart data:", err);
+    return [];
   }
-
-  const dataMap = new Map(result.map((r) => [r.date, Number(r.count)]));
-  
-  return days.map((date) => ({
-    date,
-    orders: dataMap.get(date) || 0,
-  }));
 }
 
 // --- Component ---
 
 export default async function AdminDashboard() {
-  const [databaseHealth, statsResult, recentOrders, chartData] = await Promise.all([
-    getDatabaseHealth(),
-    getDashboardStats().catch(() => emptyStats),
-    getRecentOrders().catch(() => []),
-    getOrderChartData().catch(() => []),
-  ]);
+  const [databaseHealth, statsResult, recentOrders, chartData] =
+    await Promise.all([
+      getDatabaseHealth(),
+      getDashboardStats().catch(() => emptyStats),
+      getRecentOrders().catch(() => []),
+      getOrderChartData().catch(() => []),
+    ]);
 
   const stats = databaseHealth.ok ? statsResult : emptyStats;
+  const total7DayOrders = chartData.reduce((acc, curr) => acc + curr.orders, 0);
 
   return (
     <div className={styles.dashboardContainer}>
       {/* Header */}
       <header className={styles.dashHeader}>
         <div className={styles.dashHeaderContent}>
-          <h1>Dashboard</h1>
-          <p className={styles.dashHeaderSubtitle}>
-            Welcome back. Here's what's happening with your store today.
+          <div className={styles.dashHeaderBadge}>
+            <span className={styles.dashHeaderBadgeDot} />
+            Store Management
+          </div>
+          <h1 className={styles.dashTitle}>Store Overview</h1>
+          <p className={styles.dashSubtitle}>
+            Real-time performance, order stream, and catalog status.
           </p>
         </div>
         <div className={styles.dashHeaderActions}>
           <Link href="/admin/orders" className={styles.buttonSecondary}>
-            View Orders
+            <ListOrdered size={16} />
+            <span>Manage Orders</span>
           </Link>
           <Link href="/admin/products/new" className={styles.button}>
-            <Plus size={18} strokeWidth={2.5} style={{ marginRight: 6 }} />
-            Add Product
+            <Plus size={16} strokeWidth={2.5} />
+            <span>Add Product</span>
           </Link>
         </div>
       </header>
 
-      {/* Stats Grid */}
-      <section className={styles.statsGrid}>
+      {/* KPI Stats Grid - Balanced 4 Columns */}
+      <section className={styles.statsGrid} aria-label="Key Performance Indicators">
         <StatCard
           title="Total Orders"
           value={stats.orders}
           icon={ShoppingCart}
           accent="blue"
+          subtext="Lifetime customer purchases"
           href="/admin/orders"
         />
         <StatCard
-          title="Payments Submitted"
+          title="Pending Verification"
           value={stats.paymentSubmittedOrders}
           icon={CreditCard}
-          accent="green"
+          accent="orange"
+          subtext={
+            stats.paymentSubmittedOrders > 0
+              ? "Requires payment check"
+              : "All submitted payments handled"
+          }
+          badge={
+            stats.paymentSubmittedOrders > 0
+              ? { text: "Action required", variant: "warning" }
+              : undefined
+          }
           href="/admin/orders?status=PAYMENT_SUBMITTED"
-        />
-        <StatCard
-          title="All Products"
-          value={stats.products}
-          icon={Package}
-          accent="purple"
-          href="/admin/products"
         />
         <StatCard
           title="Active Products"
           value={stats.activeProducts}
-          icon={BadgeCheck}
-          accent="cyan"
-          href="/admin/products?status=ACTIVE"
+          icon={Package}
+          accent="green"
+          subtext={`Out of ${stats.products} total products`}
+          href="/admin/products"
         />
         <StatCard
-          title="Categories"
+          title="Categories & Options"
           value={stats.categories}
           icon={Layers}
-          accent="orange"
+          accent="purple"
+          subtext={`${stats.options} license pricing options`}
           href="/admin/categories"
-        />
-        <StatCard
-          title="License Options"
-          value={stats.options}
-          icon={KeyRound}
-          accent="pink"
-          href="/admin/options"
         />
       </section>
 
-      {/* Main Content Grid: Chart + Quick Actions */}
+      {/* Main Content Grid: Chart (68%) + Operations & Health (32%) */}
       <div className={styles.dashGrid}>
-        {/* Orders Overview Chart */}
+        {/* Orders Overview Chart Card */}
         <section className={styles.dashSection}>
           <div className={styles.dashSectionHeader}>
-            <h2 className={styles.dashSectionTitle}>Orders Overview</h2>
-            <span className={styles.muted} style={{ fontSize: 13 }}>Last 7 Days</span>
+            <div>
+              <h2 className={styles.dashSectionTitle}>Orders Volume</h2>
+              <p className={styles.dashSectionSubtitle}>
+                {total7DayOrders} {total7DayOrders === 1 ? "order" : "orders"} placed in the past 7 days
+              </p>
+            </div>
+            <span className={styles.dashPill}>Last 7 Days</span>
           </div>
-          <OrdersChart data={chartData} />
+
+          <div className={styles.chartWrapper}>
+            <OrdersChart data={chartData} />
+          </div>
         </section>
 
-        {/* Quick Actions & System Health Sidebar */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-          {/* Quick Actions */}
+        {/* Right Operations Column: Quick Actions + System Health */}
+        <div className={styles.dashSideColumn}>
+          {/* Quick Actions Card */}
           <section className={styles.dashSection}>
             <div className={styles.dashSectionHeader}>
-              <h2 className={styles.dashSectionTitle}>Quick Actions</h2>
+              <h2 className={styles.dashSectionTitle}>Quick Operations</h2>
             </div>
-            <nav className={styles.quickActionsList}>
+            <nav className={styles.quickActionsList} aria-label="Quick operations">
               <Link href="/admin/products/new" className={styles.quickActionItem}>
-                <div className={styles.quickActionIcon}><Plus size={16} /></div>
-                Add New Product
+                <div className={styles.quickActionIcon}>
+                  <Plus size={16} />
+                </div>
+                <div className={styles.quickActionInfo}>
+                  <span className={styles.quickActionTitle}>Add Product</span>
+                  <span className={styles.quickActionSub}>Create new license entry</span>
+                </div>
+                <ChevronRight size={14} className={styles.quickActionChevron} />
               </Link>
+
               <Link href="/admin/orders" className={styles.quickActionItem}>
-                <div className={styles.quickActionIcon}><ListOrdered size={16} /></div>
-                Manage Orders
+                <div className={styles.quickActionIcon}>
+                  <ListOrdered size={16} />
+                </div>
+                <div className={styles.quickActionInfo}>
+                  <span className={styles.quickActionTitle}>Review Orders</span>
+                  <span className={styles.quickActionSub}>Process & deliver keys</span>
+                </div>
+                <ChevronRight size={14} className={styles.quickActionChevron} />
               </Link>
+
               <Link href="/admin/products" className={styles.quickActionItem}>
-                <div className={styles.quickActionIcon}><Box size={16} /></div>
-                Manage Products
+                <div className={styles.quickActionIcon}>
+                  <Box size={16} />
+                </div>
+                <div className={styles.quickActionInfo}>
+                  <span className={styles.quickActionTitle}>Product Catalog</span>
+                  <span className={styles.quickActionSub}>Manage pricing & stock</span>
+                </div>
+                <ChevronRight size={14} className={styles.quickActionChevron} />
               </Link>
+
               <Link href="/admin/categories" className={styles.quickActionItem}>
-                <div className={styles.quickActionIcon}><Layers size={16} /></div>
-                Categories
+                <div className={styles.quickActionIcon}>
+                  <Layers size={16} />
+                </div>
+                <div className={styles.quickActionInfo}>
+                  <span className={styles.quickActionTitle}>Categories</span>
+                  <span className={styles.quickActionSub}>Organize store groups</span>
+                </div>
+                <ChevronRight size={14} className={styles.quickActionChevron} />
               </Link>
+
               <Link href="/admin/downloads" className={styles.quickActionItem}>
-                <div className={styles.quickActionIcon}><DownloadCloud size={16} /></div>
-                Software Downloads
+                <div className={styles.quickActionIcon}>
+                  <DownloadCloud size={16} />
+                </div>
+                <div className={styles.quickActionInfo}>
+                  <span className={styles.quickActionTitle}>Downloads</span>
+                  <span className={styles.quickActionSub}>Installer mirror links</span>
+                </div>
+                <ChevronRight size={14} className={styles.quickActionChevron} />
               </Link>
             </nav>
           </section>
 
-          {/* System Health Compact */}
+          {/* System Health Card */}
           <section className={styles.dashSection}>
             <div className={styles.dashSectionHeader}>
-              <h2 className={styles.dashSectionTitle}>System Health</h2>
-              <StatusBadge status={databaseHealth.ok ? "HEALTHY" : "ERROR"} />
+              <div className={styles.healthTitleRow}>
+                <Activity size={16} className={styles.healthIcon} />
+                <h2 className={styles.dashSectionTitle}>System Health</h2>
+              </div>
+              <StatusBadge status={databaseHealth.ok ? "ONLINE" : "ERROR"} />
             </div>
+
             <div className={styles.healthCompact}>
               <div className={styles.healthRow}>
-                <span className={styles.healthLabel}>Database</span>
-                <span className={styles.healthValue}>{databaseHealth.ok ? "Online" : "Offline"}</span>
-              </div>
-              <div className={styles.healthRow}>
-                <span className={styles.healthLabel}>Response Time</span>
+                <span className={styles.healthLabel}>Database Engine</span>
                 <span className={styles.healthValue}>
-                  {databaseHealth.responseTimeMs !== null ? `${databaseHealth.responseTimeMs} ms` : "Failed"}
+                  {databaseHealth.ok ? "PostgreSQL (Connected)" : "Offline"}
                 </span>
               </div>
               <div className={styles.healthRow}>
-                <span className={styles.healthLabel}>Engine</span>
-                <span className={styles.healthValue}>PostgreSQL</span>
+                <span className={styles.healthLabel}>Query Latency</span>
+                <span className={styles.healthValue}>
+                  {databaseHealth.responseTimeMs !== null ? (
+                    <span className={styles.latencyGood}>
+                      <span className={styles.latencyDot} />
+                      {databaseHealth.responseTimeMs} ms
+                    </span>
+                  ) : (
+                    "Failed"
+                  )}
+                </span>
               </div>
-              
-              {/* Technical Details Toggle (Client-side interaction would be ideal, but using <details> for SSR simplicity) */}
-              <details style={{ marginTop: 8 }}>
+              <div className={styles.healthRow}>
+                <span className={styles.healthLabel}>Timezone</span>
+                <span className={styles.healthValue}>Asia/Dhaka</span>
+              </div>
+
+              {/* Collapsible Technical Details */}
+              <details className={styles.techDetails}>
                 <summary className={styles.techDetailsToggle}>
-                  Technical Details <ChevronDown size={12} />
+                  <span>Diagnostic Details</span>
+                  <ChevronDown size={13} className={styles.techDetailsChevron} />
                 </summary>
                 <div className={styles.techDetailsContent}>
-                  <div><strong>Host:</strong> {databaseHealth.host}</div>
-                  <div><strong>Database:</strong> {databaseHealth.databaseName}</div>
-                  <div><strong>Schema:</strong> {databaseHealth.schemaName}</div>
-                  <div><strong>Server Time:</strong> {databaseHealth.serverTime}</div>
-                  <div style={{ marginTop: 8, wordBreak: "break-word", opacity: 0.7, fontSize: 11 }}>
-                    {databaseHealth.version}
+                  <div className={styles.techRow}>
+                    <span>Host:</span>
+                    <code>{databaseHealth.host}</code>
+                  </div>
+                  <div className={styles.techRow}>
+                    <span>Database:</span>
+                    <code>{databaseHealth.databaseName}</code>
+                  </div>
+                  <div className={styles.techRow}>
+                    <span>Schema:</span>
+                    <code>{databaseHealth.schemaName}</code>
+                  </div>
+                  <div className={styles.techRow}>
+                    <span>Server Time:</span>
+                    <code>{databaseHealth.serverTime}</code>
                   </div>
                   {databaseHealth.error && (
-                    <div style={{ color: "#f87171", marginTop: 8 }}>{databaseHealth.error}</div>
+                    <div className={styles.techError}>{databaseHealth.error}</div>
                   )}
                 </div>
               </details>
@@ -401,19 +470,29 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Recent Orders Section */}
-      <section className={styles.dashSection} style={{ marginBottom: 40 }}>
+      <section className={styles.dashSection}>
         <div className={styles.dashSectionHeader}>
-          <h2 className={styles.dashSectionTitle}>Recent Orders</h2>
+          <div>
+            <h2 className={styles.dashSectionTitle}>Recent Orders</h2>
+            <p className={styles.dashSectionSubtitle}>
+              Latest customer purchases and order fulfillment requests
+            </p>
+          </div>
           <Link href="/admin/orders" className={styles.dashSectionAction}>
-            View All &rarr;
+            <span>View All Orders</span>
+            <ArrowUpRight size={15} />
           </Link>
         </div>
 
         {recentOrders.length === 0 ? (
           <div className={styles.emptyState}>
-            <ShoppingCart className={styles.emptyStateIcon} />
-            <p className={styles.emptyStateText}>No orders yet</p>
-            <p className={styles.emptyStateSub}>Orders will appear here when customers place them.</p>
+            <div className={styles.emptyStateIconBox}>
+              <ShoppingCart size={28} />
+            </div>
+            <p className={styles.emptyStateText}>No orders received yet</p>
+            <p className={styles.emptyStateSub}>
+              When customers complete checkout, their orders will appear here automatically.
+            </p>
           </div>
         ) : (
           <div className={styles.ordersTableWrap}>
@@ -422,26 +501,50 @@ export default async function AdminDashboard() {
                 <tr>
                   <th>Order</th>
                   <th>Customer</th>
-                  <th>Amount</th>
+                  <th>Total Amount</th>
                   <th>Status</th>
-                  <th>Date</th>
+                  <th>Placed Date</th>
+                  <th style={{ textAlign: "right" }}>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {recentOrders.map((order) => (
                   <tr key={order.id}>
                     <td>
-                      <Link href={`/admin/orders/${order.id}`} className={styles.orderIdLink}>
+                      <Link
+                        href={`/admin/orders/${order.id}`}
+                        className={styles.orderIdLink}
+                      >
                         #{order.orderNumber}
                       </Link>
                     </td>
-                    <td>{order.customerName}</td>
-                    <td>{formatCurrency(order.total)}</td>
+                    <td>
+                      <span className={styles.customerNameCell}>
+                        {order.customerName}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={styles.amountCell}>
+                        {formatCurrency(order.total)}
+                      </span>
+                    </td>
                     <td>
                       <StatusBadge status={order.status} />
                     </td>
-                    <td style={{ color: "var(--text-secondary)" }}>
-                      {formatDateShort(order.createdAt)}
+                    <td>
+                      <span className={styles.dateCell}>
+                        {formatDateShort(order.createdAt)}
+                      </span>
+                    </td>
+                    <td style={{ textAlign: "right" }}>
+                      <Link
+                        href={`/admin/orders/${order.id}`}
+                        className={styles.rowActionBtn}
+                        title="View order details"
+                      >
+                        <span>Details</span>
+                        <ChevronRight size={13} />
+                      </Link>
                     </td>
                   </tr>
                 ))}
