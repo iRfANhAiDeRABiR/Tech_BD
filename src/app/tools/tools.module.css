@@ -148,3 +148,18 @@
   font-size: 14px;
   color: var(--text-secondary);
 }
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .searchInput {
+    font-size: 16px;
+  }
+
+  .hero {
+    margin-bottom: 28px;
+  }
+}

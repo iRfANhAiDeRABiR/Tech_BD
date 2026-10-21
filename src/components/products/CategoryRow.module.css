@@ -101,6 +101,10 @@
   .row {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+
+  .tileSpacer {
+    display: none;
+  }
 }
 
 @media (max-width: 640px) {
@@ -128,5 +132,26 @@
   .twoRowWrapper .navIcon {
     width: 18px;
     height: 18px;
+  }
+}
+
+@media (max-width: 380px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+
+  .wrapper {
+    gap: 4px;
+  }
+
+  .navBtn {
+    width: 28px;
+    height: 40px;
+    border-radius: 10px;
+  }
+
+  .navIcon {
+    width: 16px;
+    height: 16px;
   }
 }

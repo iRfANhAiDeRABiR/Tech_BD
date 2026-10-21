@@ -50,12 +50,57 @@
   display: flex;
   height: 68px;
   align-items: center;
-  gap: 18px;
+  justify-content: space-between;
+  gap: 14px;
   padding: 0 18px;
   color: #fff;
   background: var(--sidebar-header);
   box-shadow: inset 0 -1px 0 rgb(255 255 255 / 16%);
   text-decoration: none;
+}
+
+.headerTitleLink {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  color: #fff;
+  text-decoration: none;
+  flex: 1;
+  min-width: 0;
+}
+
+.closeBtn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.18s ease;
+}
+
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.mobileNavSection {
+  display: none;
+}
+
+.sectionHeading {
+  padding: 14px 20px 4px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sidebar-muted);
 }
 
 .menuIcon {
@@ -186,6 +231,55 @@
 @media (max-width: 900px) {
   .sidebar {
     display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(320px, 86vw);
+    max-width: 100vw;
+    height: 100%;
+    min-height: 100%;
+    z-index: 10001;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    transform: translateX(-100%);
+    transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.26s ease;
+  }
+
+  .sidebar.open {
+    display: block !important;
+    transform: translateX(0);
+    box-shadow: 10px 0 40px rgba(0, 0, 0, 0.55);
+  }
+
+  .closeBtn {
+    display: flex;
+  }
+
+  .mobileNavSection {
+    display: block;
+  }
+
+  .sidebar.open .title,
+  .sidebar.open .label,
+  .sidebar.open .arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 10000;
+    animation: fadeIn 0.2s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 }
 

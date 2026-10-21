@@ -134,3 +134,14 @@
     width: 100%;
   }
 }
+
+@media (max-width: 600px) {
+  .accountLayout {
+    padding: 12px 10px;
+  }
+
+  .mainContent > div {
+    padding: 18px 14px !important;
+    border-radius: 18px !important;
+  }
+}

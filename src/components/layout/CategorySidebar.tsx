@@ -47,6 +47,15 @@ interface SidebarCategoryItem {
   className?: string;
 }
 
+const mobileNavLinks = [
+  { label: "Home", href: "/home", emoji: "🏠" },
+  { label: "Products", href: "/products#products-by-category", emoji: "🛒" },
+  { label: "Software Download", href: "/downloads", emoji: "📥" },
+  { label: "Tools", href: "/tools", emoji: "🛠️" },
+  { label: "About Us", href: "/home#features", emoji: "✨" },
+  { label: "Contact", href: "/home#contact", emoji: "📞" },
+];
+
 export function CategorySidebar({
   categories = defaultCategories,
 }: CategorySidebarProps) {
@@ -97,57 +106,116 @@ export function CategorySidebar({
     };
   }, []);
 
+  useEffect(() => {
+    if (isOpen && typeof window !== "undefined" && window.innerWidth <= 900) {
+      document.body.style.overflow = "hidden";
+    } else if (typeof document !== "undefined") {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      if (typeof document !== "undefined") {
+        document.body.style.overflow = "";
+      }
+    };
+  }, [isOpen]);
+
   return (
-    <aside
-      ref={sidebarRef}
-      className={`${styles.sidebar} ${isOpen ? styles.open : ""}`}
-      aria-label="Product category navigation"
-    >
-      <Link
-        href="/home#categories"
-        className={styles.header}
-        onClick={() => setIsOpen(false)}
+    <>
+      {isOpen && (
+        <div
+          className={styles.backdrop}
+          onClick={() => setIsOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      <aside
+        ref={sidebarRef}
+        className={`${styles.sidebar} ${isOpen ? styles.open : ""}`}
+        aria-label="Product category navigation"
       >
-        <span className={styles.menuIcon} aria-hidden="true">
-          ☰
-        </span>
-        <span className={styles.title}>All Categories</span>
-      </Link>
+        <div className={styles.header}>
+          <Link
+            href="/home#categories"
+            className={styles.headerTitleLink}
+            onClick={() => setIsOpen(false)}
+          >
+            <span className={styles.menuIcon} aria-hidden="true">
+              ☰
+            </span>
+            <span className={styles.title}>All Categories</span>
+          </Link>
 
-      <ul className={styles.list}>
-        {sidebarCategories.map((category) => (
-          <li key={category.label}>
-            <Link
-              href={category.href}
-              className={styles.item}
-              onClick={() => setIsOpen(false)}
-            >
-              <span
-                className={`${styles.icon} ${category.className ?? ""} ${
-                  category.letter ? styles.letterIcon : ""
-                }`}
-                aria-hidden="true"
+          <button
+            type="button"
+            className={styles.closeBtn}
+            onClick={() => setIsOpen(false)}
+            aria-label="Close navigation"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Mobile Navigation Links (Only shown on mobile drawer) */}
+        <div className={styles.mobileNavSection}>
+          <div className={styles.sectionHeading}>Navigation</div>
+          <ul className={styles.list}>
+            {mobileNavLinks.map((item) => (
+              <li key={item.label}>
+                <Link
+                  href={item.href}
+                  className={styles.item}
+                  onClick={() => setIsOpen(false)}
+                >
+                  <span className={styles.icon} aria-hidden="true">
+                    {item.emoji}
+                  </span>
+                  <span className={styles.label}>{item.label}</span>
+                  <span className={styles.arrow} aria-hidden="true">
+                    ›
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className={styles.sectionHeading}>Categories</div>
+        </div>
+
+        <ul className={styles.list}>
+          {sidebarCategories.map((category) => (
+            <li key={category.label}>
+              <Link
+                href={category.href}
+                className={styles.item}
+                onClick={() => setIsOpen(false)}
               >
-                {category.image ? (
-                  <Image
-                    src={category.image}
-                    alt=""
-                    width={30}
-                    height={30}
-                  />
-                ) : (
-                  category.letter ?? category.emoji
-                )}
-              </span>
+                <span
+                  className={`${styles.icon} ${category.className ?? ""} ${
+                    category.letter ? styles.letterIcon : ""
+                  }`}
+                  aria-hidden="true"
+                >
+                  {category.image ? (
+                    <Image
+                      src={category.image}
+                      alt=""
+                      width={30}
+                      height={30}
+                    />
+                  ) : (
+                    category.letter ?? category.emoji
+                  )}
+                </span>
 
-              <span className={styles.label}>{category.label}</span>
-              <span className={styles.arrow} aria-hidden="true">
-                ›
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </aside>
+                <span className={styles.label}>{category.label}</span>
+                <span className={styles.arrow} aria-hidden="true">
+                  ›
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </aside>
+    </>
   );
 }
