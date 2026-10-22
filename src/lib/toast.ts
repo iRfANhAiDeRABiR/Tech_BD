@@ -49,7 +49,15 @@ class ToastStore {
   };
 
   private notifyListeners(): void {
-    this.listeners.forEach((listener) => listener([...this.toasts]));
+    if (typeof queueMicrotask === "function") {
+      queueMicrotask(() => {
+        this.listeners.forEach((listener) => listener([...this.toasts]));
+      });
+    } else {
+      setTimeout(() => {
+        this.listeners.forEach((listener) => listener([...this.toasts]));
+      }, 0);
+    }
   }
 
   show(

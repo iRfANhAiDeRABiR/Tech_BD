@@ -431,24 +431,26 @@ export function PdfEditorClient() {
   };
 
   const applyExistingTextEdit = (id: string, shouldDeselect: boolean = true) => {
-    setExistingTexts((prev) => {
-      const target = prev.find((t) => t.id === id);
-      if (!target) return prev;
-      const isActuallyModified =
-        target.currentText !== target.originalText ||
-        target.fontSize !== target.originalFontSize ||
-        target.bold ||
-        target.italic ||
-        target.underline ||
-        target.color !== "#1E293B" ||
-        target.align !== "left";
-      const updated = prev.map((t) => (t.id === id ? { ...t, isModified: isActuallyModified } : t));
-      if (isActuallyModified) {
-        pushHistory(annotations, pages, updated);
-        notify.success("Text changes saved");
-      }
-      return updated;
-    });
+    const target = existingTexts.find((t) => t.id === id);
+    if (!target) return;
+
+    const isActuallyModified =
+      target.currentText !== target.originalText ||
+      target.fontSize !== target.originalFontSize ||
+      target.bold ||
+      target.italic ||
+      target.underline ||
+      target.color !== "#1E293B" ||
+      target.align !== "left";
+
+    const updated = existingTexts.map((t) => (t.id === id ? { ...t, isModified: isActuallyModified } : t));
+    setExistingTexts(updated);
+
+    if (isActuallyModified) {
+      pushHistory(annotations, pages, updated);
+      notify.success("Text changes saved");
+    }
+
     if (shouldDeselect) {
       setSelectedExistingTextId(null);
     }
@@ -521,28 +523,31 @@ export function PdfEditorClient() {
   };
 
   const autoFitFontSize = (id: string) => {
-    setExistingTexts((prev) =>
-      prev.map((item) => {
-        if (item.id !== id) return item;
-        const available = getLineAvailableSpace(item);
-        if (item.width <= available) return item;
-        const ratio = available / item.width;
-        const newSize = Math.max(8, Math.floor(item.fontSize * ratio));
-        const newWidth = calculateTextWidth(
-          item.currentText,
-          newSize,
-          item.fontFamily,
-          item.bold,
-          item.italic
-        );
-        return {
-          ...item,
-          fontSize: newSize,
-          width: Math.max(item.originalWidth, newWidth),
-          isModified: true,
-        };
-      })
+    const target = existingTexts.find((t) => t.id === id);
+    if (!target) return;
+    const available = getLineAvailableSpace(target);
+    if (target.width <= available) return;
+    const ratio = available / target.width;
+    const newSize = Math.max(8, Math.floor(target.fontSize * ratio));
+    const newWidth = calculateTextWidth(
+      target.currentText,
+      newSize,
+      target.fontFamily,
+      target.bold,
+      target.italic
     );
+    const updated = existingTexts.map((item) =>
+      item.id === id
+        ? {
+            ...item,
+            fontSize: newSize,
+            width: Math.max(item.originalWidth, newWidth),
+            isModified: true,
+          }
+        : item
+    );
+    setExistingTexts(updated);
+    pushHistory(annotations, pages, updated);
     notify.info("Adjusted font size to fit column without overlap.");
   };
 
