@@ -103,23 +103,36 @@ export async function GET(request: Request) {
     const paymentStatus = order.payment?.status;
     const orderStatus = order.status;
 
+    const details = {
+      refId: order.orderNumber,
+      orderNumber: order.orderNumber,
+      total: order.total,
+      customerName: order.customerName,
+      customerEmail: order.customerEmail,
+      customerPhone: order.customerPhone,
+      paymentMethod: order.payment?.method || "Mobile Banking",
+      senderNumber: order.payment?.senderNumber || null,
+      transactionId: order.payment?.transactionId || null,
+    };
+
     if (paymentStatus === "VERIFIED" || orderStatus === "COMPLETED") {
       return NextResponse.json({
         status: "CONFIRMED",
-        refId: order.orderNumber,
-        total: order.total,
+        ...details,
       });
     }
 
     if (paymentStatus === "REJECTED" || orderStatus === "CANCELLED") {
       return NextResponse.json({
         status: "INVALID",
-        refId: order.orderNumber,
-        total: order.total,
+        ...details,
       });
     }
 
-    return NextResponse.json({ status: "PENDING", refId: cleanRef });
+    return NextResponse.json({
+      status: "PENDING",
+      ...details,
+    });
   } catch (err: any) {
     return NextResponse.json({ status: "PENDING", error: err.message }, { status: 500 });
   }

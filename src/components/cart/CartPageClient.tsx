@@ -219,19 +219,41 @@ export function CartPageClient({ products }: CartPageClientProps) {
   const [submittedOrder, setSubmittedOrder] = useState<SubmittedOrderData | null>(null);
   const [orderVerificationStatus, setOrderVerificationStatus] = useState<"PENDING" | "CONFIRMED" | "INVALID">("PENDING");
 
-  // Restore submitted order from session/local storage
+  // Restore submitted order ONLY when URL explicitly has ?order= parameter (e.g. from return button click)
   useEffect(() => {
     try {
+      const params = new URLSearchParams(window.location.search);
+      const orderParam = params.get("order");
+
+      if (!orderParam) {
+        // Normal visit to /cart or /checkout: show standard shopping cart
+        setSubmittedOrder(null);
+        localStorage.removeItem("techbd_submitted_order");
+        return;
+      }
+
       const stored = sessionStorage.getItem("techbd_submitted_order") || localStorage.getItem("techbd_submitted_order");
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (parsed && (parsed.orderNumber || parsed.id)) {
+        if (parsed && (parsed.orderNumber === orderParam || parsed.id === orderParam)) {
           setSubmittedOrder(parsed);
           if (parsed.status === "CONFIRMED" || parsed.status === "INVALID" || parsed.status === "PENDING") {
             setOrderVerificationStatus(parsed.status);
           }
+          return;
         }
       }
+
+      // If not stored in session or ID differs, initialize placeholder and let live polling fetch
+      setSubmittedOrder({
+        id: orderParam,
+        orderNumber: orderParam,
+        total: 0,
+        customerName: "",
+        customerEmail: "",
+        customerPhone: "",
+        paymentMethod: "Mobile Banking",
+      });
     } catch {
       // ignore
     }
@@ -252,24 +274,25 @@ export function CartPageClient({ products }: CartPageClientProps) {
         const data = await res.json();
         if (isCancelled) return;
 
-        if (data.status === "CONFIRMED") {
-          setOrderVerificationStatus("CONFIRMED");
+        if (data.status) {
+          setOrderVerificationStatus(data.status);
+          setSubmittedOrder((prev) => ({
+            id: data.refId || prev?.id || orderNumber,
+            orderNumber: data.orderNumber || prev?.orderNumber || orderNumber,
+            total: typeof data.total === "number" ? data.total : (prev?.total ?? 0),
+            customerName: data.customerName || prev?.customerName || "",
+            customerEmail: data.customerEmail || prev?.customerEmail || "",
+            customerPhone: data.customerPhone || prev?.customerPhone || "",
+            paymentMethod: data.paymentMethod || prev?.paymentMethod || "Mobile Banking",
+            senderNumber: data.senderNumber ?? prev?.senderNumber,
+            transactionId: data.transactionId ?? prev?.transactionId,
+          }));
+
           try {
             const current = sessionStorage.getItem("techbd_submitted_order");
             if (current) {
-              const updated = { ...JSON.parse(current), status: "CONFIRMED" };
+              const updated = { ...JSON.parse(current), status: data.status };
               sessionStorage.setItem("techbd_submitted_order", JSON.stringify(updated));
-              localStorage.setItem("techbd_submitted_order", JSON.stringify(updated));
-            }
-          } catch {}
-        } else if (data.status === "INVALID") {
-          setOrderVerificationStatus("INVALID");
-          try {
-            const current = sessionStorage.getItem("techbd_submitted_order");
-            if (current) {
-              const updated = { ...JSON.parse(current), status: "INVALID" };
-              sessionStorage.setItem("techbd_submitted_order", JSON.stringify(updated));
-              localStorage.setItem("techbd_submitted_order", JSON.stringify(updated));
             }
           } catch {}
         }
@@ -655,6 +678,27 @@ export function CartPageClient({ products }: CartPageClientProps) {
                     sessionStorage.removeItem("techbd_pending_payment");
                   } catch {}
                   setSubmittedOrder(null);
+                  if (typeof window !== "undefined") {
+                    window.history.replaceState({}, "", "/cart");
+                  }
+                }}
+                className={styles.continueButton}
+                style={{ cursor: "pointer", background: "#2563eb", color: "#ffffff", border: "none" }}
+              >
+                🛒 Go to Cart / কার্ট পেজে যান
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  try {
+                    sessionStorage.removeItem("techbd_submitted_order");
+                    localStorage.removeItem("techbd_submitted_order");
+                    sessionStorage.removeItem("techbd_pending_payment");
+                  } catch {}
+                  setSubmittedOrder(null);
+                  if (typeof window !== "undefined") {
+                    window.history.replaceState({}, "", window.location.pathname);
+                  }
                 }}
                 className={styles.continueButton}
                 style={{ cursor: "pointer", background: "none", border: "1px solid rgba(255, 255, 255, 0.15)" }}
