@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -108,8 +108,19 @@ export default function PaymentGatewayPage({
   const [error, setError] = useState("");
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitProgress, setSubmitProgress] = useState(0);
+  const progressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [submittedOrder, setSubmittedOrder] = useState<SubmittedOrderData | null>(null);
   const [verificationStatus, setVerificationStatus] = useState<"PENDING" | "CONFIRMED" | "INVALID">("PENDING");
+
+  // Cleanup progress timer on unmount
+  useEffect(() => {
+    return () => {
+      if (progressTimerRef.current) {
+        clearInterval(progressTimerRef.current);
+      }
+    };
+  }, []);
 
   // Step 3 Live Polling
   useEffect(() => {
@@ -214,6 +225,18 @@ export default function PaymentGatewayPage({
 
     setError("");
     setIsSubmitting(true);
+    setSubmitProgress(6);
+
+    if (progressTimerRef.current) clearInterval(progressTimerRef.current);
+    progressTimerRef.current = setInterval(() => {
+      setSubmitProgress((prev) => {
+        if (prev < 32) return prev + Math.floor(Math.random() * 6 + 4);
+        if (prev < 72) return prev + Math.floor(Math.random() * 4 + 2);
+        if (prev < 90) return prev + Math.floor(Math.random() * 2 + 1);
+        if (prev < 96) return Math.min(96, prev + 0.5);
+        return prev;
+      });
+    }, 110);
 
     try {
       const response = await fetch("/api/orders", {
@@ -245,12 +268,21 @@ export default function PaymentGatewayPage({
       const resData = await response.json();
 
       if (!response.ok) {
+        if (progressTimerRef.current) clearInterval(progressTimerRef.current);
+        setSubmitProgress(0);
         if (response.status === 409) {
           setError("এই ট্রানজেকশন আইডি (TrxID) ইতিপূর্বে ব্যবহার করা হয়েছে। অনুগ্রহ করে আপনার নতুন ও সঠিক TrxID লিখুন।");
           return;
         }
         throw new Error(resData.message || "Failed to submit order");
       }
+
+      // Smooth completion to 100%
+      if (progressTimerRef.current) clearInterval(progressTimerRef.current);
+      setSubmitProgress(100);
+
+      // Brief animation pause so user sees 100% completion
+      await new Promise((resolve) => setTimeout(resolve, 320));
 
       const confirmedData: SubmittedOrderData = {
         id: resData.order?.id || order.refId,
@@ -273,8 +305,11 @@ export default function PaymentGatewayPage({
       onSuccess(confirmedData);
       setStep(3);
     } catch (err: any) {
+      if (progressTimerRef.current) clearInterval(progressTimerRef.current);
+      setSubmitProgress(0);
       setError(err.message || "পেমেন্ট যাচাইয়ের অনুরোধ পাঠাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
     } finally {
+      if (progressTimerRef.current) clearInterval(progressTimerRef.current);
       setIsSubmitting(false);
     }
   };
@@ -580,24 +615,35 @@ export default function PaymentGatewayPage({
                   disabled={isSubmitting}
                   className={styles.btnSubmitOrder}
                 >
-                  {isSubmitting ? (
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                  {isSubmitting && (
+                    <>
                       <span
-                        style={{
-                          width: "14px",
-                          height: "14px",
-                          border: "2px solid rgba(255, 255, 255, 0.4)",
-                          borderTopColor: "#ffffff",
-                          borderRadius: "50%",
-                          animation: "spin 0.6s linear infinite",
-                          display: "inline-block",
-                        }}
+                        className={styles.progressBarFill}
+                        style={{ width: `${Math.min(100, Math.max(0, submitProgress))}%` }}
                       />
-                      <span>যাচাই হচ্ছে...</span>
-                    </span>
-                  ) : (
-                    <span>Verify & Submit →</span>
+                      <span
+                        className={styles.progressBarGlow}
+                        style={{ width: `${Math.min(100, Math.max(0, submitProgress))}%` }}
+                      />
+                    </>
                   )}
+                  <span style={{ position: "relative", zIndex: 1, display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                    {isSubmitting ? (
+                      submitProgress >= 100 ? (
+                        <>
+                          <CheckCircle2 size={15} />
+                          <span>যাচাই সম্পন্ন (100%)</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className={styles.submitSpinner} />
+                          <span>যাচাই হচ্ছে... {Math.round(submitProgress)}%</span>
+                        </>
+                      )
+                    ) : (
+                      <span>Verify &amp; Submit →</span>
+                    )}
+                  </span>
                 </button>
               </div>
             </form>
