@@ -253,6 +253,50 @@ export async function deleteProductAction(formData: FormData) {
   redirect("/admin/products?deleted=1");
 }
 
+export async function toggleProductStockAction(formData: FormData) {
+  await requireAdmin();
+  const id = parseOptionalProductId(formData.get("productId"));
+  if (!id) throw new Error("Invalid product.");
+
+  const product = await prisma.product.findUnique({
+    where: { id },
+    select: { outOfStock: true },
+  });
+  if (!product) return;
+
+  await prisma.product.update({
+    where: { id },
+    data: { outOfStock: !product.outOfStock },
+  });
+
+  revalidatePath("/");
+  revalidatePath("/products");
+  revalidatePath("/admin/products");
+}
+
+export async function toggleProductStatusAction(formData: FormData) {
+  await requireAdmin();
+  const id = parseOptionalProductId(formData.get("productId"));
+  if (!id) throw new Error("Invalid product.");
+
+  const product = await prisma.product.findUnique({
+    where: { id },
+    select: { status: true },
+  });
+  if (!product) return;
+
+  const nextStatus = product.status === "ACTIVE" ? "DRAFT" : "ACTIVE";
+
+  await prisma.product.update({
+    where: { id },
+    data: { status: nextStatus },
+  });
+
+  revalidatePath("/");
+  revalidatePath("/products");
+  revalidatePath("/admin/products");
+}
+
 const editableOrderStatuses = ["PENDING_PAYMENT", "COMPLETED", "CANCELLED", "REFUNDED"] as const;
 
 function parseEditableOrderStatus(value: FormDataEntryValue | null) {
