@@ -5,7 +5,7 @@ import { updateSession } from "@/lib/supabase/middleware";
 import { createServerClient } from "@supabase/ssr";
 
 // Paths that require admin authentication
-const ADMIN_PATHS = ["/admin"];
+const ADMIN_PATHS = ["/admin", "/api/admin"];
 // Paths that should not be accessible if already authenticated (e.g., login page)
 const AUTH_PATHS = ["/admin/login"];
 // Paths that require customer authentication (Supabase)
@@ -71,6 +71,9 @@ export async function proxy(request: NextRequest) {
   });
 
   if (isAdminPath && !adminToken) {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     // Redirect unauthenticated users to admin login
     const loginUrl = new URL("/admin/login", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);

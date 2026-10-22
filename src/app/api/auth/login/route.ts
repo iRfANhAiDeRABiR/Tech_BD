@@ -1,10 +1,22 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { rateLimit } from "@/lib/rateLimit";
 
 // Server-only route: Resolves username/phone -> email for secure login.
-// NEVER expose service role key or raw user lookups to the client.
+// Rate-limited and requires valid password verification to prevent user enumeration.
 
 export async function POST(request: Request) {
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    "unknown";
+  if (!rateLimit(`auth-login:${ip}`, 5, 60_000)) {
+    return NextResponse.json(
+      { error: "Too many login attempts. Please try again shortly." },
+      { status: 429 }
+    );
+  }
+
   try {
     const { identifier, password } = await request.json();
 
@@ -17,6 +29,7 @@ export async function POST(request: Request) {
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!supabaseUrl || !supabaseServiceKey) {
       console.error("Missing Supabase server environment variables.");
@@ -46,7 +59,6 @@ export async function POST(request: Request) {
         .maybeSingle();
 
       if (profileByUsername) {
-        // Fetch email from auth.users via admin
         const { data: userData } = await supabaseAdmin.auth.admin.getUserById(
           profileByUsername.id
         );
@@ -57,7 +69,6 @@ export async function POST(request: Request) {
 
       // 3. If not username, try resolving as phone
       if (!email) {
-        // Normalize phone for lookup (basic E.164 assumption)
         const normalizedPhone = normalizePhoneForLookup(trimmedId);
         
         const { data: profileByPhone } = await supabaseAdmin
@@ -78,7 +89,6 @@ export async function POST(request: Request) {
     }
 
     // SECURITY: Always return generic message if resolution fails
-    // Do NOT reveal whether username/phone/email exists
     if (!email) {
       return NextResponse.json(
         { error: "Invalid login credentials." },
@@ -86,16 +96,22 @@ export async function POST(request: Request) {
       );
     }
 
-    // 4. Attempt authentication with resolved email
-    // We use the anon/client key here for signInWithPassword because
-    // we want a standard user session, not an admin session.
-    // Alternatively, we could return the email and let client sign in,
-    // but doing it server-side hides the email from network tab/response.
-    // However, Supabase SSR usually expects client-side signIn or specific cookie handling.
-    // For simplicity in this architecture, we'll return the resolved email
-    // to the client so it can establish the session properly via the SDK.
-    // NOTE: In a stricter setup, you'd set cookies here directly.
-    
+    // 4. Verify password against Supabase Auth before returning
+    if (supabaseAnonKey) {
+      const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+      const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (signInError || !signInData.user) {
+        return NextResponse.json(
+          { error: "Invalid login credentials." },
+          { status: 401 }
+        );
+      }
+    }
+
     return NextResponse.json({ email });
 
   } catch (error) {

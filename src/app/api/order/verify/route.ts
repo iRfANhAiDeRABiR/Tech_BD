@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { answerTelegramCallbackQuery, updateTelegramMessageStatus } from "@/lib/telegram";
 import { processTelegramOrderAction } from "@/lib/orderVerificationService";
+import { rateLimit } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 
@@ -39,6 +40,16 @@ async function syncTelegramUpdates() {
         }
 
         if (orderRef) {
+          // Security Authorization: Only process updates from authorized Telegram Admin
+          const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
+          const senderId = String(cb.from?.id ?? "");
+          const chatId = String(cb.message?.chat?.id ?? "");
+
+          if (adminChatId && senderId !== adminChatId && chatId !== adminChatId) {
+            console.warn(`[Security Alert] Ignored unauthorized Telegram polling update from sender: ${senderId}`);
+            continue;
+          }
+
           const adminName = cb.from?.username ? `@${cb.from.username}` : cb.from?.first_name || "Admin";
 
           if (action === "DONE") {
@@ -77,6 +88,18 @@ async function syncTelegramUpdates() {
 }
 
 export async function GET(request: Request) {
+  // Security Abuse Protection: Rate limit verification queries
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    "unknown";
+  if (!rateLimit(`order-verify:${ip}`, 30, 60_000)) {
+    return NextResponse.json(
+      { status: "PENDING", error: "Too many status check requests. Please try again in a moment." },
+      { status: 429 }
+    );
+  }
+
   const { searchParams } = new URL(request.url);
   const ref = searchParams.get("ref");
 

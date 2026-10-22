@@ -13,6 +13,24 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: true, ignored: "No callback_query" });
     }
 
+    // Security Authorization: Verify that callback query is from authorized Telegram Admin
+    const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
+    const senderId = String(cb.from?.id ?? "");
+    const chatId = String(cb.message?.chat?.id ?? "");
+
+    if (adminChatId && senderId !== adminChatId && chatId !== adminChatId) {
+      console.warn(`[Security Alert] Unauthorized Telegram webhook callback attempt from sender: ${senderId}, chat: ${chatId}`);
+      return NextResponse.json({ error: "Forbidden: Unauthorized Telegram sender" }, { status: 403 });
+    }
+
+    const secretToken = process.env.TELEGRAM_WEBHOOK_SECRET;
+    if (secretToken) {
+      const headerToken = request.headers.get("x-telegram-bot-api-secret-token");
+      if (headerToken !== secretToken) {
+        return NextResponse.json({ error: "Forbidden: Invalid secret token" }, { status: 403 });
+      }
+    }
+
     const dataStr = String(cb.data).trim();
     let action: "CONFIRMED" | "INVALID" | "DONE" | null = null;
     let orderNumber: string | null = null;
