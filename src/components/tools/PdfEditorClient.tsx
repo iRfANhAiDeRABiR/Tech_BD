@@ -75,6 +75,8 @@ export interface ExistingTextItem {
   subStrings?: string[];
   rotation?: number; // text orientation in degrees
   bgColor?: string; // sampled local background color (e.g. #FFFFFF)
+  baselineX: number; // Exact screen baseline X at scale 1.0 (prevents vertical displacement)
+  baselineY: number; // Exact screen baseline Y at scale 1.0 (prevents vertical displacement)
 }
 
 export interface PageMeta {
@@ -652,10 +654,10 @@ export function PdfEditorClient() {
 
       // Inspect content streams from source PDF to verify native stream modification support
       let rawStreamTexts: { [pageIndex: number]: string } = {};
-      if (sourceBytes) {
+      if (sourceBytes && sourceBytes.byteLength > 0) {
         try {
           const { PDFDocument, PDFArray, PDFRef, decodePDFRawStream } = await import("pdf-lib");
-          const tempDoc = await PDFDocument.load(sourceBytes, { ignoreEncryption: true });
+          const tempDoc = await PDFDocument.load(sourceBytes.slice(0), { ignoreEncryption: true });
           for (let pIdx = 0; pIdx < pagesMetaList.length; pIdx++) {
             const meta = pagesMetaList[pIdx];
             if (meta.originalPageIndex < 0) continue;
@@ -852,6 +854,10 @@ export function PdfEditorClient() {
             const textAngle = Math.round(Math.atan2(first.transform[1], first.transform[0]) * (180 / Math.PI));
             const rotation = (textAngle + totalRotation) % 360;
 
+            const baselinePt = viewport.convertToViewportPoint(tx, ty);
+            const baselineX = Math.round(baselinePt[0] * 100) / 100;
+            const baselineY = Math.round(baselinePt[1] * 100) / 100;
+
             let detectedFamily: "Helvetica" | "TimesRoman" | "Courier" = "Helvetica";
             const fontLower = (first.fontName || "").toLowerCase();
             if (fontLower.includes("times") || fontLower.includes("serif") || fontLower.includes("roman")) {
@@ -879,6 +885,8 @@ export function PdfEditorClient() {
               y: screenY,
               tx,
               ty,
+              baselineX,
+              baselineY,
               originalWidth: screenW,
               width: screenW,
               height: screenH,
@@ -974,6 +982,8 @@ export function PdfEditorClient() {
           y,
           tx: x,
           ty: meta.height - y - h,
+          baselineX: x,
+          baselineY: Math.round((y + h * 0.82) * 100) / 100,
           originalWidth: Math.max(30, w),
           width: Math.max(30, w),
           height: Math.max(14, h),
@@ -1042,9 +1052,15 @@ export function PdfEditorClient() {
         throw new Error("This file does not appear to be a valid PDF document.");
       }
 
+      // Preserve an immutable, canonical buffer for the main thread and repeated exports:
+      const canonicalBuffer = buffer.slice(0);
+      setPdfBytes(canonicalBuffer);
+
+      // Pass an independent byte clone to PDF.js worker so transfer CANNOT detach canonicalBuffer:
       const pdfjs = await getPdfJs();
+      const pdfjsData = new Uint8Array(canonicalBuffer.slice(0));
       const loadingTask = pdfjs.getDocument({
-        data: new Uint8Array(buffer),
+        data: pdfjsData,
         cMapUrl: "https://unpkg.com/pdfjs-dist@" + pdfjs.version + "/cmaps/",
         cMapPacked: true,
       });
@@ -1061,7 +1077,6 @@ export function PdfEditorClient() {
       const docProxy = await loadingTask.promise;
       setPdfDocProxy(docProxy);
       setFile(selectedFile);
-      setPdfBytes(buffer);
 
       const initialPages: PageMeta[] = [];
       for (let i = 1; i <= docProxy.numPages; i++) {
@@ -1087,8 +1102,8 @@ export function PdfEditorClient() {
       setThumbnailStatus({});
       thumbnailQueueRef.current = initialPages.map((_, idx) => idx);
 
-      // Extract existing native text items across all pages
-      extractPageTextContent(docProxy, initialPages, buffer);
+      // Extract existing native text items across all pages using safe buffer clone
+      extractPageTextContent(docProxy, initialPages, canonicalBuffer.slice(0));
 
       // Initialize history
       setHistory([{ pages: initialPages, annotations: [], existingTexts: [] }]);
@@ -1347,7 +1362,7 @@ export function PdfEditorClient() {
 
     // Re-extract text content with updated viewport for the rotated page
     if (pdfDocProxy) {
-      extractPageTextContent(pdfDocProxy, newPages, pdfBytes);
+      extractPageTextContent(pdfDocProxy, newPages, pdfBytes ? pdfBytes.slice(0) : null);
     }
     pushHistory(annotations, newPages, existingTexts);
     notify.info(`Rotated page ${pageIdx + 1} 90°`);
@@ -1937,8 +1952,20 @@ export function PdfEditorClient() {
 
   // ── Export / Download Edited PDF with Genuine Native Text Mod ───────
   const exportEditedPdf = async () => {
-    if (!pdfBytes) {
-      notify.error("No PDF loaded to export.");
+    // 1. Resolve a valid, non-detached ArrayBuffer snapshot
+    let activeBuffer: ArrayBuffer | null = null;
+    if (pdfBytes && pdfBytes.byteLength > 0) {
+      activeBuffer = pdfBytes.slice(0);
+    } else if (file) {
+      // Safe fallback if buffer was ever detached or missing: re-read from File
+      const freshBuffer = await file.arrayBuffer();
+      const canonical = freshBuffer.slice(0);
+      setPdfBytes(canonical);
+      activeBuffer = freshBuffer.slice(0);
+    }
+
+    if (!activeBuffer || activeBuffer.byteLength === 0) {
+      notify.error("No valid PDF data available to export. Please re-upload.");
       return;
     }
 
@@ -1957,7 +1984,7 @@ export function PdfEditorClient() {
       } = await import("pdf-lib");
 
       setExportProgressText("Loading original PDF pages & content streams...");
-      const loadedDoc = await PDFDocument.load(pdfBytes, { ignoreEncryption: true });
+      const loadedDoc = await PDFDocument.load(activeBuffer, { ignoreEncryption: true });
 
       // ── Step 1: Genuine Native Content Stream Redaction ────────────
       for (let i = 0; i < pages.length; i++) {
@@ -2670,6 +2697,46 @@ export function PdfEditorClient() {
                   {/* ── Existing PDF Text Editing Layer (100% Background-Free Native Editing) ── */}
                   {(activeTool === "editText" || pageExisting.some((t) => t.isModified)) && (
                     <div className={styles.textDetectionLayer}>
+                      {/* SVG Alphabetic Baseline Layer for Modified Text (Locks to Exact Original Baseline) */}
+                      <svg
+                        style={{
+                          position: "absolute",
+                          inset: 0,
+                          width: "100%",
+                          height: "100%",
+                          pointerEvents: "none",
+                          overflow: "visible",
+                          zIndex: 14,
+                        }}
+                      >
+                        {pageExisting
+                          .filter((t) => t.isModified && !t.isDeleted && selectedExistingTextId !== t.id)
+                          .map((item) => {
+                            const bx = (item.baselineX ?? item.x) * zoom;
+                            const by = (item.baselineY ?? (item.y + item.fontSize * 0.82)) * zoom;
+                            let fam = "Helvetica, Arial, sans-serif";
+                            if (item.fontFamily === "TimesRoman") fam = "'Times New Roman', Times, serif";
+                            else if (item.fontFamily === "Courier") fam = "'Courier New', Courier, monospace";
+
+                            return (
+                              <text
+                                key={`svg_mod_${item.id}`}
+                                x={bx}
+                                y={by}
+                                fontSize={`${item.fontSize * zoom}px`}
+                                fontFamily={fam}
+                                fill={item.color || "#1E293B"}
+                                fontWeight={item.bold ? "bold" : "normal"}
+                                fontStyle={item.italic ? "italic" : "normal"}
+                                textDecoration={item.underline ? "underline" : "none"}
+                                dominantBaseline="alphabetic"
+                              >
+                                {item.currentText}
+                              </text>
+                            );
+                          })}
+                      </svg>
+
                       {pageExisting.map((item) => {
                         const isSelected = selectedExistingTextId === item.id;
                         const vx = item.x * zoom;
@@ -2684,17 +2751,22 @@ export function PdfEditorClient() {
                         }
 
                         if (isSelected) {
+                          const baseBy = (item.baselineY ?? (item.y + item.fontSize * 0.82)) * zoom;
+                          const inputH = Math.max(16, item.fontSize * zoom * 1.15);
+                          const inputTop = Math.max(0, baseBy - item.fontSize * zoom * 0.78);
+
                           return (
                             <div
                               key={item.id}
                               className={`${styles.existingTextItem} ${styles.existingTextSelected}`}
                               style={{
                                 left: `${vx}px`,
-                                top: `${vy}px`,
+                                top: `${inputTop}px`,
                                 width: `${vw}px`,
-                                height: `${vh}px`,
+                                height: `${inputH}px`,
                                 backgroundColor: item.isModified ? "transparent" : (item.bgColor || "#FFFFFF"),
                                 boxShadow: "none",
+                                zIndex: 25,
                               }}
                             >
                               <input
@@ -2717,7 +2789,7 @@ export function PdfEditorClient() {
                                   padding: "0 2px",
                                   margin: "0",
                                   boxShadow: "none",
-                                  lineHeight: 1.15,
+                                  lineHeight: 1,
                                 }}
                                 onChange={(e) => updateExistingText(item.id, e.target.value)}
                                 onBlur={(e) => {
@@ -2776,30 +2848,7 @@ export function PdfEditorClient() {
                                 : undefined
                             }
                           >
-                            {item.isModified ? (
-                              <span
-                                style={{
-                                  fontSize: `${item.fontSize * zoom}px`,
-                                  fontFamily: item.fontFamily,
-                                  color: item.color,
-                                  fontWeight: item.bold ? "bold" : "normal",
-                                  fontStyle: item.italic ? "italic" : "normal",
-                                  textDecoration: item.underline ? "underline" : "none",
-                                  textAlign: item.align,
-                                  lineHeight: 1.15,
-                                  display: "inline-block",
-                                  whiteSpace: "pre",
-                                  background: "transparent",
-                                  width: "100%",
-                                  height: "100%",
-                                  overflow: "visible",
-                                }}
-                              >
-                                {item.currentText}
-                              </span>
-                            ) : (
-                              <div style={{ width: "100%", height: "100%" }} />
-                            )}
+                            <div style={{ width: "100%", height: "100%" }} />
                           </div>
                         );
                       })}

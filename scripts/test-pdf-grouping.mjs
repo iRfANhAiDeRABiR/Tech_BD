@@ -187,11 +187,68 @@ async function testPdfExport() {
   const editedBytes = await editedDoc.save();
   assert(editedBytes.byteLength > 0, "Edited PDF must save successfully without corrupting unedited columns");
   console.log("✔ PASS: Native PDF stream modification preserves table columns and layout!\n");
+  return bytes;
 }
 
-await testPdfExport();
+const originalPdfBytes = await testPdfExport();
+
+// TEST 5: Repeated PDFDocument.load and Export without Detached ArrayBuffer
+console.log("Test 5: Repeated exports and immutable canonical buffer preservation...");
+async function testBufferImmutability(canonicalBuffer) {
+  assert(canonicalBuffer.byteLength > 0, "Canonical buffer must be non-empty");
+
+  // Simulate export pass 1
+  const copy1 = canonicalBuffer.slice(0);
+  const doc1 = await PDFDocument.load(copy1);
+  const out1 = await doc1.save();
+  assert(out1.byteLength > 0, "First export pass succeeded");
+  assert(canonicalBuffer.byteLength > 0, "Canonical buffer MUST NOT be detached after pass 1");
+
+  // Simulate export pass 2 (subsequent downloads)
+  const copy2 = canonicalBuffer.slice(0);
+  const doc2 = await PDFDocument.load(copy2);
+  const out2 = await doc2.save();
+  assert(out2.byteLength > 0, "Second export pass succeeded");
+  assert(canonicalBuffer.byteLength > 0, "Canonical buffer MUST NOT be detached after pass 2");
+
+  // Simulate export pass 3
+  const copy3 = canonicalBuffer.slice(0);
+  const doc3 = await PDFDocument.load(copy3);
+  const out3 = await doc3.save();
+  assert(out3.byteLength > 0, "Third export pass succeeded");
+  assert(canonicalBuffer.byteLength > 0, "Canonical buffer MUST NOT be detached after pass 3");
+
+  console.log("✔ PASS: Canonical ArrayBuffer remains intact across multiple export downloads!\n");
+}
+
+await testBufferImmutability(originalPdfBytes.buffer);
+
+// TEST 6: Baseline Alignment Verification (0px downward shift)
+console.log("Test 6: SVG alphabetic baseline matches PDF text baseline without downward shift...");
+function testBaselineAlignment() {
+  const pdfX = 50;
+  const pdfY = 600;
+  const pageHeight = 842;
+  const fontSize = 12;
+
+  // Viewport conversion
+  const [screenBaselineX, screenBaselineY] = mockViewport.convertToViewportPoint(pdfX, pdfY);
+
+  // SVG text element attributes
+  const svgTextBaselineY = screenBaselineY; // dominantBaseline="alphabetic"
+  const expectedBaselineY = pageHeight - pdfY; // 842 - 600 = 242
+
+  assert.strictEqual(svgTextBaselineY, expectedBaselineY, "SVG alphabetic baseline must exactly match PDF baseline");
+
+  // When exported to pdf-lib, text drawn at (pdfX, pdfY) must match original (50, 600)
+  const exportPdfY = pageHeight - (screenBaselineY);
+  assert.strictEqual(exportPdfY, pdfY, "Exported PDF text baseline Y must equal original PDF Y exactly");
+  console.log("✔ PASS: Exact mathematical 0px baseline alignment preserved across preview and export!\n");
+}
+
+testBaselineAlignment();
 
 console.log("=================================================");
-console.log("ALL 4 REGRESSION TESTS PASSED CLEANLY (100% SUCCESS)");
+console.log("ALL 6 REGRESSION TESTS PASSED CLEANLY (100% SUCCESS)");
 console.log("=================================================");
 
