@@ -557,7 +557,20 @@ export default function PaymentGatewayPage({
                   className={styles.btnSubmitOrder}
                 >
                   {isSubmitting ? (
-                    <span>যাচাই হচ্ছে...</span>
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                      <span
+                        style={{
+                          width: "14px",
+                          height: "14px",
+                          border: "2px solid rgba(255, 255, 255, 0.4)",
+                          borderTopColor: "#ffffff",
+                          borderRadius: "50%",
+                          animation: "spin 0.6s linear infinite",
+                          display: "inline-block",
+                        }}
+                      />
+                      <span>যাচাই হচ্ছে...</span>
+                    </span>
                   ) : (
                     <span>Verify & Submit →</span>
                   )}

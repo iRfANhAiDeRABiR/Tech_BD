@@ -242,42 +242,39 @@ export async function POST(request: Request) {
       },
     });
 
-    try {
-      await sendOrderConfirmationEmail({
-        order,
-        customer: data.customer,
-        items: resolvedItems,
-        totals: { subtotal, discount, total },
-        paymentLabel: data.payment.label,
-        siteUrl: request.headers.get("origin") ?? undefined,
-      });
-    } catch (emailError) {
+    // Dispatch background notifications asynchronously without blocking the client response
+    void sendOrderConfirmationEmail({
+      order,
+      customer: data.customer,
+      items: resolvedItems,
+      totals: { subtotal, discount, total },
+      paymentLabel: data.payment.label,
+      siteUrl: request.headers.get("origin") ?? undefined,
+    }).catch((emailError) => {
       console.error("Failed to send order confirmation email", emailError);
-    }
+    });
 
-    try {
-      await sendTelegramOrderNotification({
-        orderNumber: order.orderNumber,
-        customerName: data.customer.name,
-        customerEmail: data.customer.email,
-        customerPhone: data.customer.phone,
-        items: resolvedItems.map((item) => ({
-          productName: item.productName,
-          quantity: item.quantity,
-          lineTotal: item.lineTotal,
-        })),
-        total,
-        discount,
-        couponCode: validatedCoupon,
-        paymentMethod: data.payment.label,
-        senderNumber: data.payment.senderNumber,
-        receiverNumber: data.payment.paymentNumber,
-        transactionId: data.payment.transactionId,
-        notes: data.notes,
-      });
-    } catch (teleErr) {
+    void sendTelegramOrderNotification({
+      orderNumber: order.orderNumber,
+      customerName: data.customer.name,
+      customerEmail: data.customer.email,
+      customerPhone: data.customer.phone,
+      items: resolvedItems.map((item) => ({
+        productName: item.productName,
+        quantity: item.quantity,
+        lineTotal: item.lineTotal,
+      })),
+      total,
+      discount,
+      couponCode: validatedCoupon,
+      paymentMethod: data.payment.label,
+      senderNumber: data.payment.senderNumber,
+      receiverNumber: data.payment.paymentNumber,
+      transactionId: data.payment.transactionId,
+      notes: data.notes,
+    }).catch((teleErr) => {
       console.error("Failed to send order alert to Telegram", teleErr);
-    }
+    });
 
     return NextResponse.json({ order }, { status: 201 });
   } catch (error: any) {
