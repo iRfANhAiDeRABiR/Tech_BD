@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -10,7 +10,6 @@ import {
   AlertTriangle,
   ShieldCheck,
   PhoneCall,
-  MessageCircle,
 } from "lucide-react";
 import { BkashLogo, NagadLogo, RocketLogo } from "@/components/common/PaymentLogos";
 import styles from "./PaymentGatewayPage.module.css";
@@ -103,13 +102,47 @@ export default function PaymentGatewayPage({
   const currentGateway = GATEWAYS[methodKey] || GATEWAYS.bkash;
 
   const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [senderNumber, setSenderNumber] = useState(order.customerPhone || "");
+  const [senderNumber, setSenderNumber] = useState("");
   const [trxId, setTrxId] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(true);
   const [error, setError] = useState("");
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedOrder, setSubmittedOrder] = useState<SubmittedOrderData | null>(null);
+  const [verificationStatus, setVerificationStatus] = useState<"PENDING" | "CONFIRMED" | "INVALID">("PENDING");
+
+  // Step 3 Live Polling
+  useEffect(() => {
+    if (step !== 3) return;
+
+    const ref = submittedOrder?.orderNumber || order.refId;
+    let isCancelled = false;
+
+    const pollStatus = async () => {
+      try {
+        const res = await fetch(`/api/order/verify?ref=${encodeURIComponent(ref)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (isCancelled) return;
+
+        if (data.status === "CONFIRMED") {
+          setVerificationStatus("CONFIRMED");
+        } else if (data.status === "INVALID") {
+          setVerificationStatus("INVALID");
+        }
+      } catch {
+        // silent fallback
+      }
+    };
+
+    pollStatus();
+    const interval = setInterval(pollStatus, 2500);
+
+    return () => {
+      isCancelled = true;
+      clearInterval(interval);
+    };
+  }, [step, submittedOrder?.orderNumber, order.refId]);
 
   const handleCopy = async (text: string, fieldName: string) => {
     try {
@@ -224,23 +257,6 @@ export default function PaymentGatewayPage({
 
   const Logo = currentGateway.LogoComponent;
 
-  const buildWhatsAppMessage = () => {
-    const ref = submittedOrder?.orderNumber || order.refId;
-    const msg = [
-      `🛒 *Payment Verification - Tech Solutions BD*`,
-      `🆔 *Order Ref:* #${ref}`,
-      `👤 *Customer:* ${order.customerName}`,
-      `📧 *Email:* ${order.customerEmail}`,
-      `💳 *Method:* ${currentGateway.name}`,
-      `📱 *Sender:* ${senderNumber}`,
-      `🔖 *TrxID:* ${trxId}`,
-      `💰 *Amount:* ${order.totalPrice}`,
-      ``,
-      `Hello, I have submitted payment for my software order. Please verify and confirm activation.`,
-    ].join("\n");
-    return `https://wa.me/8801641699879?text=${encodeURIComponent(msg)}`;
-  };
-
   return (
     <div className={styles.overlay}>
       <div className={styles.modalCard}>
@@ -256,7 +272,7 @@ export default function PaymentGatewayPage({
               <div className={styles.companyMeta}>
                 <img
                   src="/logo-icon.png"
-                  alt="Tech Solutions BD"
+                  alt="Logo"
                   className={styles.companyLogo}
                   onError={(e) => {
                     e.currentTarget.onerror = null;
@@ -264,8 +280,9 @@ export default function PaymentGatewayPage({
                   }}
                 />
                 <div>
-                  <div className={styles.companyName}>Tech Solutions BD</div>
-                  <div className={styles.invoiceNum}>Invoice: {order.refId}</div>
+                  <div className={styles.invoiceNum} style={{ fontWeight: 600 }}>
+                    Invoice: {order.refId}
+                  </div>
                 </div>
               </div>
               <div className={styles.amountMeta}>
@@ -283,10 +300,7 @@ export default function PaymentGatewayPage({
                 <Logo size={28} />
               </div>
               <div>
-                <div style={{ fontSize: "12px", fontWeight: 700, letterSpacing: "0.02em" }}>
-                  Tech Solutions BD
-                </div>
-                <div style={{ fontSize: "10px", color: "#fecaca", fontFamily: "var(--font-mono, monospace)" }}>
+                <div style={{ fontSize: "11px", color: "#fecaca", fontFamily: "var(--font-mono, monospace)", fontWeight: 600 }}>
                   Invoice: {order.refId}
                 </div>
               </div>
@@ -310,7 +324,7 @@ export default function PaymentGatewayPage({
                     ডাচ-বাংলা ব্যাংক রকেট (Rocket)
                   </div>
                   <div style={{ fontSize: "10px", color: "#e9d5ff" }}>
-                    Tech Solutions BD &bull; Invoice: {order.refId}
+                    Invoice: {order.refId}
                   </div>
                 </div>
               </div>
@@ -557,21 +571,58 @@ export default function PaymentGatewayPage({
              ───────────────────────────────────────────────────────────── */}
           {step === 3 && (
             <div className={styles.step3Wrap}>
-              <div className={styles.successCircle}>
-                <CheckCircle2 size={34} />
-              </div>
-
-              <div>
-                <span className={styles.stepPill} style={{ background: "#fbbf24", color: "#020617", border: "none" }}>
-                  <span>ভেরিফিকেশন চলছে (Verification In Progress)</span>
-                </span>
-                <h3 className={styles.stepTitle} style={{ fontSize: "20px" }}>
-                  Payment Submitted Successfully!
-                </h3>
-                <p className={styles.stepSubtitle}>
-                  আপনার পেমেন্ট তথ্য সফলভাবে গ্রহণ করা হয়েছে। ভেরিফিকেশন কনফার্ম হওয়া মাত্রই আপনার ইমেইলে লাইসেন্স পৌঁছে যাবে।
-                </p>
-              </div>
+              {verificationStatus === "CONFIRMED" ? (
+                <>
+                  <div className={styles.successCircle} style={{ background: "#dcfce7", color: "#15803d" }}>
+                    <CheckCircle2 size={36} />
+                  </div>
+                  <div>
+                    <span className={styles.stepPill} style={{ background: "#10b981", color: "#ffffff", border: "none" }}>
+                      <span>✅ পেমেন্ট অনুমোদিত (Payment Verified & Confirmed!)</span>
+                    </span>
+                    <h3 className={styles.stepTitle} style={{ fontSize: "20px", marginTop: "8px" }}>
+                      Payment Verified Successfully!
+                    </h3>
+                    <p className={styles.stepSubtitle}>
+                      আপনার পেমেন্ট সফলভাবে অনুমোদিত হয়েছে। কিছুক্ষণের মধ্যেই আপনার ইমেইলে ({order.customerEmail}) লাইসেন্স কি ও সেটআপ নির্দেশনা পৌঁছে যাবে।
+                    </p>
+                  </div>
+                </>
+              ) : verificationStatus === "INVALID" ? (
+                <>
+                  <div className={styles.successCircle} style={{ background: "#fee2e2", color: "#b91c1c" }}>
+                    <AlertTriangle size={36} />
+                  </div>
+                  <div>
+                    <span className={styles.stepPill} style={{ background: "#ef4444", color: "#ffffff", border: "none" }}>
+                      <span>❌ ভুল TrxID (Verification Failed)</span>
+                    </span>
+                    <h3 className={styles.stepTitle} style={{ fontSize: "20px", marginTop: "8px" }}>
+                      TrxID Verification Failed
+                    </h3>
+                    <p className={styles.stepSubtitle} style={{ color: "#f87171" }}>
+                      আপনার প্রদত্ত ট্রানজেকশন আইডি ({trxId}) মেলেনি। অনুগ্রহ করে আবার আপনার {currentGateway.name} স্টেটমেন্ট চেক করে সঠিক TrxID লিখুন।
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className={styles.successCircle}>
+                    <CheckCircle2 size={34} />
+                  </div>
+                  <div>
+                    <span className={styles.stepPill} style={{ background: "#fbbf24", color: "#020617", border: "none" }}>
+                      <span>⏳ ভেরিফিকেশন চলছে (Verification In Progress)</span>
+                    </span>
+                    <h3 className={styles.stepTitle} style={{ fontSize: "20px", marginTop: "8px" }}>
+                      Payment Submitted Successfully!
+                    </h3>
+                    <p className={styles.stepSubtitle}>
+                      আপনার পেমেন্ট তথ্য সফলভাবে গ্রহণ করা হয়েছে। অ্যাডমিন ভেরিফিকেশন কনফার্ম করা মাত্রই আপনার স্ক্রিন স্বয়ংক্রিয়ভাবে আপডেট হবে এবং ইমেইলে লাইসেন্স পৌঁছে যাবে।
+                    </p>
+                  </div>
+                </>
+              )}
 
               <div className={styles.receiptCard}>
                 <div className={styles.receiptRowBorder}>
@@ -590,7 +641,7 @@ export default function PaymentGatewayPage({
                 </div>
                 <div className={styles.receiptRow}>
                   <span className={styles.receiptLabel}>Payment Gateway:</span>
-                  <span className={styles.receiptValue} style={{ color: "#7c3aed" }}>
+                  <span className={styles.receiptValue} style={{ color: "#7c3aed", fontWeight: 700 }}>
                     {currentGateway.name}
                   </span>
                 </div>
@@ -616,16 +667,20 @@ export default function PaymentGatewayPage({
                 </div>
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                <a
-                  href={buildWhatsAppMessage()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.btnWhatsApp}
-                >
-                  <MessageCircle size={16} />
-                  <span>WhatsApp এ সরাসরি যোগাযোগ করুন</span>
-                </a>
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "14px" }}>
+                {verificationStatus === "INVALID" && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStep(2);
+                      setError("অনুগ্রহ করে আপনার সঠিক Transaction ID (TrxID) দিন");
+                    }}
+                    className={styles.btnConfirm}
+                    style={{ background: "#ef4444", color: "#ffffff", padding: "12px 18px", borderRadius: "10px" }}
+                  >
+                    🔄 পুনরায় TrxID দিন (Re-enter TrxID)
+                  </button>
+                )}
 
                 <Link href="/products#products-by-category" className={styles.btnReturnHome}>
                   Return to Homepage / মূল পেজে ফিরুন

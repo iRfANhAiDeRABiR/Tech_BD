@@ -3,17 +3,16 @@
 import React, { useState, useEffect, useMemo, type FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Copy,
   Check,
   CheckCircle2,
   ShieldCheck,
   Zap,
-  MessageCircle,
   ShoppingBag,
   Trash2,
   AlertCircle,
-  ArrowRight,
   Headphones,
 } from "lucide-react";
 import type { ProductSummary } from "@/types/product";
@@ -23,9 +22,9 @@ import { createClient } from "@/lib/supabase/client";
 import { notify } from "@/lib/toast";
 import { getUserFriendlyError } from "@/lib/errorSanitizer";
 import { BkashLogo, NagadLogo, RocketLogo } from "@/components/common/PaymentLogos";
-import PaymentGatewayPage, {
-  type PaymentGatewayOrder,
-  type SubmittedOrderData,
+import type {
+  PaymentGatewayOrder,
+  SubmittedOrderData,
 } from "@/components/payment/PaymentGatewayPage";
 import styles from "@/app/cart/cart.module.css";
 
@@ -189,6 +188,8 @@ function normalizeBdPhone(phone: string): string {
 }
 
 export function CartPageClient({ products }: CartPageClientProps) {
+  const router = useRouter();
+
   // Cart state
   const {
     items,
@@ -205,9 +206,8 @@ export function CartPageClient({ products }: CartPageClientProps) {
   const [customerEmail, setCustomerEmail] = useState("");
   const [requirements, setRequirements] = useState("");
 
-  // Payment Selection & Verification state
+  // Payment Selection state
   const [selectedMethod, setSelectedMethod] = useState<PaymentProviderKey>("bkash");
-  const [activePaymentOrder, setActivePaymentOrder] = useState<PaymentGatewayOrder | null>(null);
 
   // Coupon state
   const [couponInput, setCouponInput] = useState("");
@@ -387,7 +387,7 @@ export function CartPageClient({ products }: CartPageClientProps) {
 
     const orderRef = `TECHBD-ATD-${Math.floor(100000 + Math.random() * 900000)}`;
 
-    setActivePaymentOrder({
+    const pendingPaymentOrder: PaymentGatewayOrder = {
       refId: orderRef,
       customerName: customerName.trim(),
       customerPhone: normalizeBdPhone(customerPhone.trim()),
@@ -408,44 +408,14 @@ export function CartPageClient({ products }: CartPageClientProps) {
         originalUnitPrice: originalPrice ?? null,
         quantity,
       })),
-    });
+    };
+
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("techbd_pending_payment", JSON.stringify(pendingPaymentOrder));
+    }
+
+    router.push("/checkout/payment");
   };
-
-  // WhatsApp Order Confirmation URL
-  const buildWhatsAppUrl = () => {
-    if (!submittedOrder) return "https://wa.me/8801641699879";
-    const msg = [
-      "🛒 *New Order Confirmation - Tech Solutions BD*",
-      `🆔 *Order ID:* #${submittedOrder.orderNumber}`,
-      `👤 *Name:* ${submittedOrder.customerName}`,
-      `📱 *Phone:* ${submittedOrder.customerPhone}`,
-      `📧 *Email:* ${submittedOrder.customerEmail}`,
-      "",
-      `💳 *Payment Method:* ${submittedOrder.paymentMethod}`,
-      `📱 *Sender Number:* ${submittedOrder.senderNumber}`,
-      `🔖 *TrxID:* ${submittedOrder.transactionId}`,
-      `💰 *Total Paid:* ${formatPrice(submittedOrder.total)}`,
-      "",
-      "Please verify my payment and deliver my software license keys. Thank you!",
-    ].join("\n");
-
-    return `https://wa.me/8801641699879?text=${encodeURIComponent(msg)}`;
-  };
-
-  // ── 0. Dedicated Payment Gateway Screen per Payment Option ─────────────
-  if (activePaymentOrder) {
-    return (
-      <PaymentGatewayPage
-        order={activePaymentOrder}
-        onCancel={() => setActivePaymentOrder(null)}
-        onSuccess={(confirmed) => {
-          clearCart();
-          setActivePaymentOrder(null);
-          setSubmittedOrder(confirmed);
-        }}
-      />
-    );
-  }
 
   // ── 1. Order Placed Confirmation View ──────────────────────────────────
   if (submittedOrder) {
@@ -461,11 +431,11 @@ export function CartPageClient({ products }: CartPageClientProps) {
 
             <div className={styles.confirmationBadge}>
               <span aria-hidden="true">⏳</span>
-              <span>Payment Submitted — Pending Manual Verification</span>
+              <span>Payment Submitted — Pending Verification</span>
             </div>
 
             <p className={styles.subtitle} style={{ marginBottom: "24px" }}>
-              Thank you for ordering with Tech Solutions BD. We have received your payment submission and our team is verifying your Transaction ID.
+              Thank you for ordering. We have received your payment submission and our team is verifying your Transaction ID.
             </p>
 
             <div className={styles.orderDetailsGrid}>
@@ -489,23 +459,6 @@ export function CartPageClient({ products }: CartPageClientProps) {
                   {submittedOrder.paymentMethod} (TrxID: {submittedOrder.transactionId})
                 </span>
               </div>
-            </div>
-
-            {/* Instant WhatsApp Delivery Action */}
-            <div className={styles.whatsAppBanner}>
-              <p className={styles.whatsAppBannerText}>
-                <strong>⚡ Want instant delivery in 5–10 minutes?</strong><br />
-                Message our verification team on WhatsApp with your Order ID for fast-track activation.
-              </p>
-              <a
-                href={buildWhatsAppUrl()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.whatsAppButton}
-              >
-                <MessageCircle size={18} />
-                <span>Confirm Instantly on WhatsApp →</span>
-              </a>
             </div>
 
             <div className={styles.confirmationActions}>
@@ -611,7 +564,7 @@ export function CartPageClient({ products }: CartPageClientProps) {
                   {/* Phone Number */}
                   <div className={styles.formGroup}>
                     <label htmlFor="customer-phone" className={styles.formLabel}>
-                      <span>Phone / WhatsApp Number <span className={styles.formRequired}>*</span></span>
+                      <span>Phone Number <span className={styles.formRequired}>*</span></span>
                     </label>
                     <input
                       id="customer-phone"
@@ -632,7 +585,7 @@ export function CartPageClient({ products }: CartPageClientProps) {
                     {fieldErrors.phone ? (
                       <p className={styles.formErrorText}>{fieldErrors.phone}</p>
                     ) : (
-                      <p className={styles.formHelpText}>Used for WhatsApp delivery & order alerts</p>
+                      <p className={styles.formHelpText}>Used for order delivery & verification alerts</p>
                     )}
                   </div>
 
@@ -744,23 +697,14 @@ export function CartPageClient({ products }: CartPageClientProps) {
                 <Zap className={styles.trustBadgeIcon} style={{ color: "#F59E0B" }} />
                 <div>
                   <h4 className={styles.trustBadgeTitle}>Fast Delivery</h4>
-                  <p className={styles.trustBadgeDesc}>Sent directly to Email & WhatsApp</p>
+                  <p className={styles.trustBadgeDesc}>Sent directly to your delivery email</p>
                 </div>
               </div>
               <div className={styles.trustBadgeItem}>
                 <Headphones className={styles.trustBadgeIcon} style={{ color: "#6C63FF" }} />
                 <div>
                   <h4 className={styles.trustBadgeTitle}>Live Support</h4>
-                  <a
-                    href="https://wa.me/8801641699879?text=Hello%20Tech%20Solutions%20BD,%20I%20need%20assistance%20with%20my%20software%20order."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.trustBadgeBtn}
-                    aria-label="Chat with Tech Solutions BD on WhatsApp"
-                  >
-                    <span>Chat on WhatsApp</span>
-                    <ArrowRight size={11} />
-                  </a>
+                  <p className={styles.trustBadgeDesc}>24/7 Dedicated Assistance</p>
                 </div>
               </div>
             </div>
@@ -793,8 +737,8 @@ export function CartPageClient({ products }: CartPageClientProps) {
                         <Image
                           src={product.image}
                           alt={name}
-                          width={65}
-                          height={65}
+                          width={75}
+                          height={75}
                           className="object-contain"
                         />
                       </div>
@@ -987,8 +931,8 @@ export function CartPageClient({ products }: CartPageClientProps) {
                   <span>Immediate License Dispatch After Verification</span>
                 </div>
                 <div className={styles.guaranteeItem}>
-                  <MessageCircle size={14} style={{ color: "#6C63FF" }} />
-                  <span>Dedicated WhatsApp Support Available 24/7</span>
+                  <Headphones size={14} style={{ color: "#6C63FF" }} />
+                  <span>Dedicated Support Available 24/7</span>
                 </div>
               </div>
             </div>
