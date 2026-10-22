@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     }
 
     const dataStr = String(cb.data).trim();
-    let action: "CONFIRMED" | "INVALID" | null = null;
+    let action: "CONFIRMED" | "INVALID" | "DONE" | null = null;
     let orderNumber: string | null = null;
 
     if (dataStr.startsWith("confirm_")) {
@@ -23,10 +23,24 @@ export async function POST(request: Request) {
     } else if (dataStr.startsWith("invalid_")) {
       action = "INVALID";
       orderNumber = dataStr.replace(/^invalid_/, "");
+    } else if (
+      dataStr.startsWith("done_") ||
+      dataStr.startsWith("confirmed_done_") ||
+      dataStr.startsWith("invalid_done_")
+    ) {
+      action = "DONE";
+      orderNumber = dataStr.replace(/^(done|confirmed_done|invalid_done)_/, "");
     }
 
     if (!action || !orderNumber) {
       return NextResponse.json({ ok: true, ignored: "Unknown action" });
+    }
+
+    const adminName = cb.from?.username ? `@${cb.from.username}` : cb.from?.first_name || "Admin";
+
+    if (action === "DONE") {
+      await answerTelegramCallbackQuery(cb.id, `Order #${orderNumber} has already been processed.`);
+      return NextResponse.json({ ok: true, action: "DONE", orderNumber });
     }
 
     // Update order in Prisma
@@ -52,7 +66,6 @@ export async function POST(request: Request) {
     }
 
     // Answer Telegram callback query
-    const adminName = cb.from?.username ? `@${cb.from.username}` : cb.from?.first_name || "Admin";
     await answerTelegramCallbackQuery(
       cb.id,
       action === "CONFIRMED"
@@ -78,4 +91,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
-

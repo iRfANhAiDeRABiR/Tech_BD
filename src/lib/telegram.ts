@@ -156,9 +156,12 @@ export async function updateTelegramMessageStatus(params: {
   if (!token) return;
 
   const isConfirm = params.action === "CONFIRMED";
+  const timeStr = new Date().toLocaleString("en-GB", { timeZone: "Asia/Dhaka" });
+  const adminLabel = params.adminName ? escapeTelegramHtml(params.adminName) : "Admin";
+
   const statusRemark = isConfirm
-    ? `✅ <b>PAYMENT CONFIRMED</b>\n<i>Verified by ${escapeTelegramHtml(params.adminName)} at ${new Date().toLocaleString("en-GB", { timeZone: "Asia/Dhaka" })}</i>`
-    : `❌ <b>INVALID TRANSACTION ID (REJECTED)</b>\n<i>Marked by ${escapeTelegramHtml(params.adminName)} at ${new Date().toLocaleString("en-GB", { timeZone: "Asia/Dhaka" })}</i>`;
+    ? `Status: ✅ <b>CONFIRMED (বৈধ পেমেন্ট - অর্ডার কনফার্মড)</b>\n📝 <b>Remark:</b> Payment Verified & Approved by <b>${adminLabel}</b> at ${timeStr}`
+    : `Status: ❌ <b>INVALID (ভুল ট্রানজেকশন আইডি - বাতিল)</b>\n📝 <b>Remark:</b> Rejected as Invalid TrxID by <b>${adminLabel}</b> at ${timeStr}`;
 
   let updatedText = "";
   if (params.originalText) {
@@ -183,16 +186,21 @@ ${statusRemark}
   }
 
   const inlineKeyboard = isConfirm
-    ? [[{ text: "✅ Confirmed (অনুমোদিত)", callback_data: `done_${params.orderNumber}` }]]
+    ? [
+        [
+          { text: "✅ Confirmed (যাচাই সম্পন্ন)", callback_data: `done_${params.orderNumber}` },
+          { text: "🔄 ভুল হলে Invalid করুন", callback_data: `invalid_${params.orderNumber}` },
+        ],
+      ]
     : [
         [
           { text: "❌ Invalid TrxID (বাতিল)", callback_data: `done_${params.orderNumber}` },
-          { text: "🔄 পুনরায় Confirm করুন", callback_data: `confirm_${params.orderNumber}` },
+          { text: "🔄 সঠিক হলে Confirm করুন", callback_data: `confirm_${params.orderNumber}` },
         ],
       ];
 
   try {
-    await fetch(`https://api.telegram.org/bot${token}/editMessageText`, {
+    const editRes = await fetch(`https://api.telegram.org/bot${token}/editMessageText`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -203,6 +211,18 @@ ${statusRemark}
         reply_markup: { inline_keyboard: inlineKeyboard },
       }),
     });
+    const editData = await editRes.json();
+    if (!editData.ok) {
+      await fetch(`https://api.telegram.org/bot${token}/editMessageReplyMarkup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: params.chatId,
+          message_id: params.messageId,
+          reply_markup: { inline_keyboard: inlineKeyboard },
+        }),
+      }).catch(() => {});
+    }
   } catch (err) {
     console.error("Failed to update telegram message status", err);
   }

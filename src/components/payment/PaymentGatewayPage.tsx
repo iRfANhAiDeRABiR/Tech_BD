@@ -117,6 +117,7 @@ export default function PaymentGatewayPage({
 
     const ref = submittedOrder?.orderNumber || order.refId;
     let isCancelled = false;
+    let interval: NodeJS.Timeout | null = null;
 
     const pollStatus = async () => {
       try {
@@ -127,8 +128,10 @@ export default function PaymentGatewayPage({
 
         if (data.status === "CONFIRMED") {
           setVerificationStatus("CONFIRMED");
+          if (interval) clearInterval(interval);
         } else if (data.status === "INVALID") {
           setVerificationStatus("INVALID");
+          if (interval) clearInterval(interval);
         }
       } catch {
         // silent fallback
@@ -136,11 +139,11 @@ export default function PaymentGatewayPage({
     };
 
     pollStatus();
-    const interval = setInterval(pollStatus, 2500);
+    interval = setInterval(pollStatus, 2000);
 
     return () => {
       isCancelled = true;
-      clearInterval(interval);
+      if (interval) clearInterval(interval);
     };
   }, [step, submittedOrder?.orderNumber, order.refId]);
 
