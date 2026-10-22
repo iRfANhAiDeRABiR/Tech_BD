@@ -436,34 +436,27 @@ export default async function AdminDashboard() {
                 <span className={styles.healthValue}>Asia/Dhaka</span>
               </div>
 
-              {/* Collapsible Technical Details */}
-              <details className={styles.techDetails}>
-                <summary className={styles.techDetailsToggle}>
-                  <span>Diagnostic Details</span>
-                  <ChevronDown size={13} className={styles.techDetailsChevron} />
-                </summary>
-                <div className={styles.techDetailsContent}>
-                  <div className={styles.techRow}>
-                    <span>Host:</span>
-                    <code>{databaseHealth.host}</code>
-                  </div>
-                  <div className={styles.techRow}>
-                    <span>Database:</span>
-                    <code>{databaseHealth.databaseName}</code>
-                  </div>
-                  <div className={styles.techRow}>
-                    <span>Schema:</span>
-                    <code>{databaseHealth.schemaName}</code>
-                  </div>
-                  <div className={styles.techRow}>
-                    <span>Server Time:</span>
-                    <code>{databaseHealth.serverTime}</code>
-                  </div>
-                  {databaseHealth.error && (
-                    <div className={styles.techError}>{databaseHealth.error}</div>
-                  )}
-                </div>
-              </details>
+              <Link
+                href="/admin/system"
+                className={styles.quickActionLink}
+                style={{
+                  marginTop: 10,
+                  padding: "10px 14px",
+                  borderRadius: 10,
+                  background: "rgba(99, 102, 241, 0.08)",
+                  border: "1px solid rgba(99, 102, 241, 0.2)",
+                  color: "#818cf8",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  textDecoration: "none",
+                }}
+              >
+                <span>Open System Diagnostics</span>
+                <ChevronRight size={14} />
+              </Link>
             </div>
           </section>
         </div>

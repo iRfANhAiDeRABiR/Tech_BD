@@ -16,6 +16,7 @@ import {
   ChevronRight,
   Plus,
   ShieldCheck,
+  Activity,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import styles from "@/app/admin/admin.module.css";
@@ -83,6 +84,9 @@ function getBreadcrumb(pathname: string): { title: string; subtitle?: string } {
   }
   if (pathname.startsWith("/admin/downloads")) {
     return { title: "Software Downloads", subtitle: "Downloads" };
+  }
+  if (pathname.startsWith("/admin/system")) {
+    return { title: "System Health & Diagnostics", subtitle: "System" };
   }
   return { title: "Admin Console", subtitle: "Tech BD" };
 }
@@ -184,6 +188,22 @@ export function AdminLayoutClient({
           </div>
 
           <div className={styles.navGroup}>
+            <span className={styles.navGroupLabel}>System</span>
+            <nav className={styles.navLinks}>
+              <Link
+                href="/admin/system"
+                className={`${styles.navLink} ${
+                  isItemActive("/admin/system", false) ? styles.navLinkActive : ""
+                }`}
+              >
+                <Activity size={17} className={styles.navLinkIcon} />
+                <span className={styles.navLinkLabel}>System Health</span>
+                {isItemActive("/admin/system", false) && <div className={styles.navActivePip} />}
+              </Link>
+            </nav>
+          </div>
+
+          <div className={styles.navGroup}>
             <span className={styles.navGroupLabel}>Storefront</span>
             <nav className={styles.navLinks}>
               <Link
@@ -202,10 +222,15 @@ export function AdminLayoutClient({
 
         {/* Sidebar Footer */}
         <div className={styles.sidebarFooter}>
-          <div className={styles.systemStatusBadge}>
+          <Link
+            href="/admin/system"
+            className={styles.systemStatusBadge}
+            style={{ textDecoration: "none", cursor: "pointer" }}
+            title="Click to view full System Health & Diagnostics"
+          >
             <span className={styles.systemStatusDot} />
             <span className={styles.systemStatusText}>System Online</span>
-          </div>
+          </Link>
 
           <div className={styles.userProfileRow}>
             <div className={styles.userAvatar}>
