@@ -565,7 +565,7 @@ export function CartPageClient({ products }: CartPageClientProps) {
           {/* ===============================================================
               LEFT COLUMN (60%): CUSTOMER INFO & PAYMENT FORM
              =============================================================== */}
-          <form className={styles.leftColumn} onSubmit={handlePlaceOrder} noValidate>
+          <form id="checkout-form" className={styles.leftColumn} onSubmit={handlePlaceOrder} noValidate>
             {/* Step 1: Customer Information */}
             <section className={styles.sectionCard} aria-labelledby="customer-info-title">
               <div className={styles.sectionHeader}>
@@ -728,16 +728,6 @@ export function CartPageClient({ products }: CartPageClientProps) {
                   placeholder="e.g. Need assistance with multi-seat setup or version compatibility..."
                   className={styles.formTextarea}
                 />
-              </div>
-
-              {/* Submit Order Blue Button (Screenshot 1) */}
-              <div style={{ marginTop: "24px" }}>
-                <button
-                  type="submit"
-                  className={styles.submitOrderButton}
-                >
-                  <span>Submit Order →</span>
-                </button>
               </div>
             </section>
 
@@ -963,6 +953,18 @@ export function CartPageClient({ products }: CartPageClientProps) {
                   <span className={styles.totalLabel}>TOTAL PAYABLE</span>
                   <span className={styles.totalAmount}>{formatPrice(total)}</span>
                 </div>
+              </div>
+
+              {/* Submit Order Blue Button on the Right Side */}
+              <div style={{ marginTop: "18px", marginBottom: "16px" }}>
+                <button
+                  type="submit"
+                  form="checkout-form"
+                  onClick={handlePlaceOrder}
+                  className={styles.submitOrderButton}
+                >
+                  <span>Submit Order →</span>
+                </button>
               </div>
 
               {/* Guarantee Notes */}
