@@ -344,7 +344,6 @@ export function PdfEditorClient() {
   const pageCanvasRefs = useRef<{ [key: number]: HTMLCanvasElement | null }>({});
   const drawCanvasRefs = useRef<{ [key: number]: HTMLCanvasElement | null }>({});
   const currentDrawPoints = useRef<Array<{ x: number; y: number }>>([]);
-  const isMouseDown = useRef<boolean>(false);
   const isPointerDownRef = useRef<boolean>(false);
   const activePointerIdRef = useRef<number | null>(null);
   const drawingPageIdxRef = useRef<number | null>(null);
@@ -962,9 +961,9 @@ export function PdfEditorClient() {
     try {
       const buffer = await selectedFile.arrayBuffer();
 
-      const header = new Uint8Array(buffer.slice(0, 5));
-      const headerStr = String.fromCharCode(...header);
-      if (!headerStr.startsWith("%PDF")) {
+      const headerBytes = new Uint8Array(buffer.slice(0, Math.min(buffer.byteLength, 1024)));
+      const headerStr = String.fromCharCode(...headerBytes);
+      if (!headerStr.includes("%PDF")) {
         throw new Error("This file does not appear to be a valid PDF document.");
       }
 
