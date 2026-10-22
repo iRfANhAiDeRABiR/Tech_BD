@@ -19,6 +19,21 @@ export interface ConvertOptions {
   backgroundColor?: string; // For transparent -> opaque conversions
 }
 
+export interface CropRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface CropOptions {
+  rect: CropRect;
+  format?: ImageFormat;
+  quality?: number;
+  rotation?: number;
+  backgroundColor?: string;
+}
+
 export interface CompressOptions {
   quality: number; // 0-1
   format?: ImageFormat;
@@ -634,4 +649,225 @@ export async function convertImagesToPdf(
     return part;
   });
   return new Blob(combinedParts, { type: 'application/pdf' });
+}
+
+/**
+ * Crop an image to exact rectangular bounds, with rotation and background support.
+ */
+export async function cropImage(
+  imageUrl: string,
+  options: CropOptions
+): Promise<Blob> {
+  const img = await loadImage(imageUrl);
+  const { rect, format = "image/png", quality = 0.92, rotation = 0, backgroundColor } = options;
+
+  const cropW = Math.max(1, Math.round(rect.width));
+  const cropH = Math.max(1, Math.round(rect.height));
+
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d")!;
+
+  if (rotation % 180 !== 0) {
+    canvas.width = cropH;
+    canvas.height = cropW;
+  } else {
+    canvas.width = cropW;
+    canvas.height = cropH;
+  }
+
+  if (format === "image/jpeg" || backgroundColor) {
+    ctx.fillStyle = backgroundColor || "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  ctx.save();
+  ctx.translate(canvas.width / 2, canvas.height / 2);
+  if (rotation !== 0) {
+    ctx.rotate((rotation * Math.PI) / 180);
+  }
+
+  ctx.drawImage(
+    img,
+    rect.x,
+    rect.y,
+    rect.width,
+    rect.height,
+    -cropW / 2,
+    -cropH / 2,
+    cropW,
+    cropH
+  );
+  ctx.restore();
+
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => resolve(blob!), format, quality);
+  });
+}
+
+/**
+ * Convert Apple iPhone HEIC / HEIF to JPG in the browser.
+ */
+export async function heicToJpg(
+  fileOrBlob: Blob | File,
+  options: { quality?: number } = {}
+): Promise<Blob> {
+  try {
+    const heic2any = (await import("heic2any")).default;
+    const result = await heic2any({
+      blob: fileOrBlob,
+      toType: "image/jpeg",
+      quality: options.quality ?? 0.9,
+    });
+    return Array.isArray(result) ? result[0] : result;
+  } catch {
+    try {
+      const bitmap = await createImageBitmap(fileOrBlob);
+      const canvas = document.createElement("canvas");
+      canvas.width = bitmap.width;
+      canvas.height = bitmap.height;
+      const ctx = canvas.getContext("2d")!;
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(bitmap, 0, 0);
+      return new Promise((resolve, reject) => {
+        canvas.toBlob(
+          (b) => (b ? resolve(b) : reject(new Error("Failed to create blob"))),
+          "image/jpeg",
+          options.quality ?? 0.9
+        );
+      });
+    } catch {
+      throw new Error("Unable to decode HEIC image. Please verify file integrity.");
+    }
+  }
+}
+
+/**
+ * Convert raster image (PNG, JPG, WebP) into an SVG vector document.
+ */
+export async function rasterToSvg(
+  imageUrl: string,
+  options: { mode?: "vector" | "embed"; threshold?: number } = {}
+): Promise<string> {
+  const img = await loadImage(imageUrl);
+  const w = img.naturalWidth;
+  const h = img.naturalHeight;
+
+  if (options.mode === "embed") {
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">
+  <image href="${imageUrl}" width="${w}" height="${h}" preserveAspectRatio="xMidYMid meet" />
+</svg>`;
+  }
+
+  const canvas = createCanvas(Math.min(w, 600), Math.min(h, 600));
+  const ctx = canvas.getContext("2d")!;
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const data = imgData.data;
+  const threshold = options.threshold ?? 140;
+
+  const rects: string[] = [];
+  const step = 3;
+  for (let y = 0; y < canvas.height; y += step) {
+    for (let x = 0; x < canvas.width; x += step) {
+      const idx = (y * canvas.width + x) * 4;
+      const r = data[idx];
+      const g = data[idx + 1];
+      const b = data[idx + 2];
+      const a = data[idx + 3];
+      if (a > 30) {
+        const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+        if (luminance < threshold) {
+          rects.push(
+            `<rect x="${((x * w) / canvas.width).toFixed(1)}" y="${((y * h) / canvas.height).toFixed(1)}" width="${((step * w) / canvas.width).toFixed(1)}" height="${((step * h) / canvas.height).toFixed(1)}" fill="rgb(${r},${g},${b})" />`
+          );
+        }
+      }
+    }
+  }
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">
+  <g shape-rendering="crispEdges">
+    ${rects.slice(0, 6000).join("\n    ")}
+  </g>
+</svg>`;
+}
+
+/**
+ * Render an SVG into high-resolution PNG / JPG / WebP.
+ */
+export async function svgToRaster(
+  svgUrlOrText: string,
+  options: { format?: ImageFormat; scale?: number; backgroundColor?: string; quality?: number } = {}
+): Promise<Blob> {
+  let url = svgUrlOrText;
+  let isCreatedUrl = false;
+  if (svgUrlOrText.trim().startsWith("<svg")) {
+    const blob = new Blob([svgUrlOrText], { type: "image/svg+xml;charset=utf-8" });
+    url = URL.createObjectURL(blob);
+    isCreatedUrl = true;
+  }
+
+  try {
+    const img = await loadImage(url);
+    const scale = options.scale ?? 2;
+    const width = (img.naturalWidth || 800) * scale;
+    const height = (img.naturalHeight || 800) * scale;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d")!;
+
+    if (options.format === "image/jpeg" || options.backgroundColor) {
+      ctx.fillStyle = options.backgroundColor || "#ffffff";
+      ctx.fillRect(0, 0, width, height);
+    }
+
+    ctx.drawImage(img, 0, 0, width, height);
+    const format = options.format || "image/png";
+    const quality = options.quality ?? 0.92;
+
+    return new Promise((resolve, reject) => {
+      canvas.toBlob(
+        (b) => (b ? resolve(b) : reject(new Error("Failed to export raster image"))),
+        format,
+        quality
+      );
+    });
+  } finally {
+    if (isCreatedUrl) {
+      URL.revokeObjectURL(url);
+    }
+  }
+}
+
+/**
+ * Compress PNG image with optional color reduction.
+ */
+export async function compressPngImage(
+  imageUrl: string,
+  options: { quality?: number; reduceColors?: boolean } = {}
+): Promise<Blob> {
+  const img = await loadImage(imageUrl);
+  const canvas = document.createElement("canvas");
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  const ctx = canvas.getContext("2d")!;
+  ctx.drawImage(img, 0, 0);
+
+  if (options.reduceColors) {
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imgData.data;
+    for (let i = 0; i < data.length; i += 4) {
+      data[i] = Math.round(data[i] / 8) * 8;
+      data[i + 1] = Math.round(data[i + 1] / 8) * 8;
+      data[i + 2] = Math.round(data[i + 2] / 8) * 8;
+    }
+    ctx.putImageData(imgData, 0, 0);
+  }
+
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => resolve(blob!), "image/png");
+  });
 }

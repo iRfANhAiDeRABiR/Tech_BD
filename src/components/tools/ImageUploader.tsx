@@ -22,10 +22,13 @@ interface ImageUploaderProps {
   className?: string;
 }
 
-const DEFAULT_ACCEPT = "image/jpeg,image/png,image/webp";
-const DEFAULT_MAX_SIZE_MB = 20;
+const DEFAULT_ACCEPT = "image/jpeg,image/png,image/webp,image/gif,image/svg+xml,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.gif,.svg,.heic,.heif";
+const DEFAULT_MAX_SIZE_MB = 35;
 
-function getFormatFromType(type: string): string {
+function getFormatFromType(type: string, fileName: string = ""): string {
+  const ext = fileName.split(".").pop()?.toUpperCase();
+  if (ext === "HEIC" || ext === "HEIF") return "HEIC";
+  if (ext === "SVG") return "SVG";
   switch (type) {
     case "image/jpeg":
       return "JPG";
@@ -35,8 +38,13 @@ function getFormatFromType(type: string): string {
       return "WebP";
     case "image/gif":
       return "GIF";
+    case "image/svg+xml":
+      return "SVG";
+    case "image/heic":
+    case "image/heif":
+      return "HEIC";
     default:
-      return type.split("/")[1]?.toUpperCase() || "Unknown";
+      return ext || type.split("/")[1]?.toUpperCase() || "Unknown";
   }
 }
 
@@ -84,9 +92,16 @@ export function ImageUploader({
         return;
       }
 
-      const acceptedTypes = accept.split(",");
-      if (!acceptedTypes.includes(file.type)) {
-        const msg = "Please upload a JPG, PNG, or WebP image.";
+      const fileExt = "." + (file.name.split(".").pop()?.toLowerCase() || "");
+      const acceptedTypes = accept.split(",").map((s) => s.trim().toLowerCase());
+      const isAccepted =
+        accept === "*" ||
+        acceptedTypes.includes("image/*") ||
+        acceptedTypes.includes(file.type.toLowerCase()) ||
+        acceptedTypes.includes(fileExt);
+
+      if (!isAccepted && !file.type.startsWith("image/")) {
+        const msg = "Please upload an image file (JPG, PNG, WebP, SVG, GIF, or HEIC).";
         setError(msg);
         notify.warning("Unsupported file", {
           description: msg,
@@ -96,27 +111,48 @@ export function ImageUploader({
       }
 
       const url = URL.createObjectURL(file);
+      const isHeic = fileExt === ".heic" || fileExt === ".heif" || file.type.includes("heic") || file.type.includes("heif");
+
+      if (isHeic) {
+        // HEIC is not directly renderable by HTML Image tag in non-Safari browsers
+        const data: ImageFileData = {
+          file,
+          url,
+          width: 0,
+          height: 0,
+          sizeMB,
+          format: "HEIC",
+        };
+        setPreview(data);
+        onImageSelect(data);
+        return;
+      }
+
       const img = new Image();
       img.onload = () => {
         const data: ImageFileData = {
           file,
           url,
-          width: img.naturalWidth,
-          height: img.naturalHeight,
+          width: img.naturalWidth || 800,
+          height: img.naturalHeight || 600,
           sizeMB,
-          format: getFormatFromType(file.type),
+          format: getFormatFromType(file.type, file.name),
         };
         setPreview(data);
         onImageSelect(data);
       };
       img.onerror = () => {
-        URL.revokeObjectURL(url);
-        const msg = "We couldn't process this image. Please try another file.";
-        setError(msg);
-        notify.error("Processing failed", {
-          description: msg,
-          id: "uploader-error",
-        });
+        // Fallback for SVGs or unusual formats
+        const data: ImageFileData = {
+          file,
+          url,
+          width: 800,
+          height: 800,
+          sizeMB,
+          format: getFormatFromType(file.type, file.name),
+        };
+        setPreview(data);
+        onImageSelect(data);
       };
       img.src = url;
     },
@@ -169,16 +205,35 @@ export function ImageUploader({
       <div className={`${styles.container} ${className}`}>
         <div className={styles.previewWrapper}>
           <div className={styles.previewImageContainer}>
-            <img
-              src={preview.url}
-              alt="Uploaded preview"
-              className={styles.previewImage}
-            />
+            {preview.format === "HEIC" ? (
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "rgba(255,255,255,0.05)",
+                  color: "#94a3b8",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  borderRadius: 8,
+                }}
+              >
+                Apple HEIC / HEIF Photo
+              </div>
+            ) : (
+              <img
+                src={preview.url}
+                alt="Uploaded preview"
+                className={styles.previewImage}
+              />
+            )}
           </div>
           <div className={styles.previewInfo}>
             <span className={styles.fileName}>{preview.file.name}</span>
             <span className={styles.fileMeta}>
-              {preview.width} × {preview.height} •{" "}
+              {preview.width > 0 ? `${preview.width} × ${preview.height} • ` : ""}
               {formatFileSize(preview.file.size)} • {preview.format}
             </span>
           </div>
@@ -251,7 +306,7 @@ export function ImageUploader({
           <p className={styles.dropSubtitle}>
             Drag & drop your image here or click to browse
           </p>
-          <p className={styles.dropFormats}>JPG, PNG, WebP supported</p>
+          <p className={styles.dropFormats}>JPG, PNG, WebP, SVG, GIF, HEIC supported</p>
         </div>
       </div>
       {error && (

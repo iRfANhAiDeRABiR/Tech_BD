@@ -19,6 +19,7 @@ import { ThumbnailMakerClient } from "@/components/tools/ThumbnailMakerClient";
 import { UrlEncoderDecoderClient } from "@/components/tools/UrlEncoderDecoderClient";
 import { WatermarkClient } from "@/components/tools/WatermarkClient";
 import { PdfEditorClient } from "@/components/tools/PdfEditorClient";
+import { ImageCropperClient } from "@/components/tools/ImageCropperClient";
 
 interface ToolPageProps {
   params: Promise<{ slug: string }>;
@@ -51,6 +52,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
   let ToolComponent: React.ReactNode = null;
 
   switch (slug) {
+    // --- Existing Utilities ---
     case "age-calculator":
       ToolComponent = <AgeCalculatorClient />;
       break;
@@ -102,6 +104,185 @@ export default async function ToolPage({ params }: ToolPageProps) {
     case "pdf-editor":
       ToolComponent = <PdfEditorClient />;
       break;
+
+    // --- Image Cropping Tools ---
+    case "crop-image":
+      ToolComponent = (
+        <ImageCropperClient
+          toolTitle="Crop Image"
+          toolSubtitle="Crop and trim any image with freeform or standard aspect ratios."
+        />
+      );
+      break;
+    case "crop-png":
+      ToolComponent = (
+        <ImageCropperClient
+          defaultFormat="image/png"
+          lockFormat={true}
+          allowedAccept="image/png,.png"
+          toolTitle="Crop PNG Image"
+          toolSubtitle="Crop transparent PNG images while preserving full alpha transparency."
+        />
+      );
+      break;
+    case "crop-webp":
+      ToolComponent = (
+        <ImageCropperClient
+          defaultFormat="image/webp"
+          lockFormat={true}
+          allowedAccept="image/webp,.webp"
+          toolTitle="Crop WebP Image"
+          toolSubtitle="Crop WebP files with precision and export to high-compression WebP format."
+        />
+      );
+      break;
+    case "crop-jpg":
+      ToolComponent = (
+        <ImageCropperClient
+          defaultFormat="image/jpeg"
+          lockFormat={true}
+          allowedAccept="image/jpeg,.jpg,.jpeg"
+          toolTitle="Crop JPG Image"
+          toolSubtitle="Crop JPG photos with precision aspect ratio controls and quality slider."
+        />
+      );
+      break;
+
+    // --- Image Converters ---
+    case "svg-converter":
+      ToolComponent = (
+        <ImageConverterClient
+          initialTargetFormat="image/png"
+          toolTitle="SVG Converter"
+          toolSubtitle="Convert SVG vectors to high-resolution PNG, JPG, WebP or vectorize photos into SVG."
+          allowedAccept="image/svg+xml,.svg,image/png,image/jpeg,image/webp"
+        />
+      );
+      break;
+    case "png-converter":
+      ToolComponent = (
+        <ImageConverterClient
+          initialTargetFormat="image/jpeg"
+          toolTitle="PNG Converter"
+          toolSubtitle="Convert PNG images to JPG, WebP, SVG, or GIF format instantly."
+          allowedAccept="image/png,.png"
+        />
+      );
+      break;
+    case "jpg-converter":
+      ToolComponent = (
+        <ImageConverterClient
+          initialTargetFormat="image/png"
+          toolTitle="JPG Converter"
+          toolSubtitle="Convert JPG / JPEG photos to transparent PNG, WebP or SVG format."
+          allowedAccept="image/jpeg,.jpg,.jpeg"
+        />
+      );
+      break;
+    case "gif-converter":
+      ToolComponent = (
+        <ImageConverterClient
+          initialTargetFormat="image/png"
+          toolTitle="GIF Converter"
+          toolSubtitle="Convert GIF animations and images into high-quality PNG, JPG or WebP."
+          allowedAccept="image/gif,.gif,image/png,image/jpeg,image/webp"
+        />
+      );
+      break;
+    case "heic-to-jpg":
+      ToolComponent = (
+        <ImageConverterClient
+          mode="heic"
+          initialTargetFormat="image/jpeg"
+          lockTargetFormat={true}
+          toolTitle="HEIC to JPG Converter"
+          toolSubtitle="Convert Apple iPhone HEIC and HEIF photos to universal high-quality JPG."
+          allowedAccept="image/heic,image/heif,.heic,.heif"
+        />
+      );
+      break;
+    case "webp-to-png":
+      ToolComponent = (
+        <ImageConverterClient
+          initialTargetFormat="image/png"
+          lockTargetFormat={true}
+          toolTitle="WebP to PNG Converter"
+          toolSubtitle="Convert WebP images to lossless PNG format preserving transparency."
+          allowedAccept="image/webp,.webp"
+        />
+      );
+      break;
+    case "webp-to-jpg":
+      ToolComponent = (
+        <ImageConverterClient
+          initialTargetFormat="image/jpeg"
+          lockTargetFormat={true}
+          toolTitle="WebP to JPG Converter"
+          toolSubtitle="Convert WebP images to high-compatibility JPG format with white background."
+          allowedAccept="image/webp,.webp"
+        />
+      );
+      break;
+    case "png-to-jpg":
+      ToolComponent = (
+        <ImageConverterClient
+          initialTargetFormat="image/jpeg"
+          lockTargetFormat={true}
+          toolTitle="PNG to JPG Converter"
+          toolSubtitle="Convert transparent PNG images to universal JPG format with clean background."
+          allowedAccept="image/png,.png"
+        />
+      );
+      break;
+    case "png-to-svg":
+      ToolComponent = (
+        <ImageConverterClient
+          mode="png-to-svg"
+          initialTargetFormat="image/svg+xml"
+          lockTargetFormat={true}
+          toolTitle="PNG to SVG Vectorizer"
+          toolSubtitle="Vectorize raster PNG images into scalable vector SVG graphics."
+          allowedAccept="image/png,.png,image/jpeg,.jpg"
+        />
+      );
+      break;
+
+    // --- Specialized Compressors ---
+    case "compress-jpeg":
+      ToolComponent = (
+        <ImageCompressorClient
+          initialFormat="image/jpeg"
+          targetFormatLock="image/jpeg"
+          defaultQuality={70}
+          toolTitle="Compress JPEG"
+          toolSubtitle="Reduce JPG and JPEG file size without visible loss in image quality."
+          allowedAccept="image/jpeg,.jpg,.jpeg"
+        />
+      );
+      break;
+    case "png-compressor":
+      ToolComponent = (
+        <ImageCompressorClient
+          initialFormat="image/png"
+          targetFormatLock="image/png"
+          toolTitle="PNG Compressor"
+          toolSubtitle="Compress PNG images up to 70% with palette quantization and lossless compression."
+          allowedAccept="image/png,.png"
+        />
+      );
+      break;
+    case "gif-compressor":
+      ToolComponent = (
+        <ImageCompressorClient
+          initialFormat="image/webp"
+          defaultQuality={65}
+          toolTitle="GIF Compressor"
+          toolSubtitle="Optimize and reduce GIF image file size for fast web loading."
+          allowedAccept="image/gif,.gif,image/png,image/jpeg,image/webp"
+        />
+      );
+      break;
+
     default:
       notFound();
   }

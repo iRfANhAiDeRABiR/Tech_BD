@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { Scissors, Download, RotateCcw } from "lucide-react";
 import { ImageUploader, type ImageFileData } from "./ImageUploader";
 import { notify } from "@/lib/toast";
 import {
   compressImage,
+  compressPngImage,
   downloadBlob,
   formatBytes,
   getExtensionFromMime,
@@ -13,25 +15,50 @@ import {
 import styles from "./ImageTool.module.css";
 
 const OUTPUT_FORMATS: { label: string; value: ImageFormat }[] = [
-  { label: "JPG (Best compression)", value: "image/jpeg" },
-  { label: "WebP (Modern format)", value: "image/webp" },
-  { label: "PNG (Lossless)", value: "image/png" },
+  { label: "JPG (High Compression)", value: "image/jpeg" },
+  { label: "WebP (Ultra-Efficient)", value: "image/webp" },
+  { label: "PNG (Lossless / Optimized)", value: "image/png" },
 ];
 
-export function ImageCompressorClient() {
+export interface ImageCompressorClientProps {
+  initialFormat?: ImageFormat;
+  targetFormatLock?: ImageFormat;
+  toolTitle?: string;
+  toolSubtitle?: string;
+  defaultQuality?: number;
+  allowedAccept?: string;
+}
+
+export function ImageCompressorClient({
+  initialFormat = "image/jpeg",
+  targetFormatLock,
+  toolTitle,
+  toolSubtitle,
+  defaultQuality = 75,
+  allowedAccept,
+}: ImageCompressorClientProps = {}) {
   const [imageData, setImageData] = useState<ImageFileData | null>(null);
-  const [outputFormat, setOutputFormat] = useState<ImageFormat>("image/jpeg");
-  const [quality, setQuality] = useState(75);
+  const [outputFormat, setOutputFormat] = useState<ImageFormat>(targetFormatLock || initialFormat);
+  const [quality, setQuality] = useState(defaultQuality);
+  const [reduceColors, setReduceColors] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [result, setResult] = useState<{ blob: Blob; url: string } | null>(null);
 
-  const handleImageSelect = useCallback((data: ImageFileData) => {
-    setImageData(data);
-    setResult(null);
-    // Default to JPEG for best compression
-    setOutputFormat("image/jpeg");
-    setQuality(75);
-  }, []);
+  const handleImageSelect = useCallback(
+    (data: ImageFileData) => {
+      setImageData(data);
+      setResult(null);
+      if (targetFormatLock) {
+        setOutputFormat(targetFormatLock);
+      } else if (data.format === "PNG") {
+        setOutputFormat("image/png");
+      } else {
+        setOutputFormat("image/jpeg");
+      }
+      setQuality(defaultQuality);
+    },
+    [defaultQuality, targetFormatLock]
+  );
 
   const handleClear = useCallback(() => {
     if (result?.url) URL.revokeObjectURL(result.url);
@@ -42,16 +69,28 @@ export function ImageCompressorClient() {
   const handleCompress = useCallback(async () => {
     if (!imageData) return;
     setProcessing(true);
+
     try {
-      const blob = await compressImage(imageData.url, {
-        quality: quality / 100,
-        format: outputFormat,
-      });
+      let blob: Blob;
+
+      if (outputFormat === "image/png") {
+        blob = await compressPngImage(imageData.url, {
+          reduceColors,
+          quality: quality / 100,
+        });
+      } else {
+        blob = await compressImage(imageData.url, {
+          quality: quality / 100,
+          format: outputFormat,
+        });
+      }
+
       if (result?.url) URL.revokeObjectURL(result.url);
       setResult({
         blob,
         url: URL.createObjectURL(blob),
       });
+
       const savedPct = ((imageData.file.size - blob.size) / imageData.file.size * 100).toFixed(0);
       notify.success("Image compressed", {
         description: `Size reduced by ${savedPct}% (${formatBytes(imageData.file.size)} → ${formatBytes(blob.size)}).`,
@@ -65,7 +104,7 @@ export function ImageCompressorClient() {
     } finally {
       setProcessing(false);
     }
-  }, [imageData, outputFormat, quality, result]);
+  }, [imageData, outputFormat, quality, reduceColors, result]);
 
   const handleDownload = useCallback(() => {
     if (!result || !imageData) return;
@@ -83,16 +122,30 @@ export function ImageCompressorClient() {
     setResult(null);
   }, [result]);
 
-  const savings = result && imageData
-    ? ((imageData.file.size - result.blob.size) / imageData.file.size * 100).toFixed(1)
-    : null;
+  const savings =
+    result && imageData
+      ? (((imageData.file.size - result.blob.size) / imageData.file.size) * 100).toFixed(1)
+      : null;
 
   if (!imageData) {
     return (
       <div className={styles.toolContainer}>
-        <ImageUploader onImageSelect={handleImageSelect} onClear={handleClear} />
+        {toolTitle && (
+          <div style={{ textAlign: "center", marginBottom: 20 }}>
+            <h2 style={{ fontSize: 22, fontWeight: 800, margin: 0 }}>{toolTitle}</h2>
+            {toolSubtitle && (
+              <p style={{ fontSize: 13, color: "#94a3b8", margin: "6px 0 0" }}>{toolSubtitle}</p>
+            )}
+          </div>
+        )}
+        <ImageUploader
+          onImageSelect={handleImageSelect}
+          onClear={handleClear}
+          accept={allowedAccept}
+          label="Upload Image to Compress"
+        />
         <p className={styles.privacyNote}>
-          Your images are processed locally in your browser.
+          Your images are processed 100% locally in your browser. No files are uploaded to any server.
         </p>
       </div>
     );
@@ -103,7 +156,9 @@ export function ImageCompressorClient() {
       <div className={styles.editorLayout}>
         {/* Preview Section */}
         <div className={styles.previewSection}>
-          <h3 className={styles.sectionTitle}>Preview</h3>
+          <h3 className={styles.sectionTitle}>
+            {result ? "Compressed Preview" : "Original Preview"}
+          </h3>
           <div className={styles.previewArea}>
             {result ? (
               <img src={result.url} alt="Compressed preview" className={styles.previewImage} />
@@ -111,6 +166,7 @@ export function ImageCompressorClient() {
               <img src={imageData.url} alt="Original preview" className={styles.previewImage} />
             )}
           </div>
+
           <div className={styles.imageInfo}>
             <div className={styles.infoRow}>
               <span className={styles.infoLabel}>Original:</span>
@@ -121,16 +177,17 @@ export function ImageCompressorClient() {
             {result && (
               <div className={styles.infoRow}>
                 <span className={styles.infoLabel}>Compressed:</span>
-                <span className={styles.infoValue}>
-                  {formatBytes(result.blob.size)} • {getExtensionFromMime(outputFormat).toUpperCase()}
+                <span className={styles.infoValue} style={{ color: "#34d399", fontWeight: 700 }}>
+                  {formatBytes(result.blob.size)} • {savings}% smaller
                 </span>
               </div>
             )}
           </div>
-          {result && (
+
+          {result && savings && (
             <div className={styles.resultStats}>
               <div className={styles.statItem}>
-                <span className={styles.statLabel}>Original Size</span>
+                <span className={styles.statLabel}>Original</span>
                 <span className={styles.statValue}>{formatBytes(imageData.file.size)}</span>
               </div>
               <div className={styles.statItem}>
@@ -140,9 +197,9 @@ export function ImageCompressorClient() {
                 </span>
               </div>
               <div className={styles.statItem}>
-                <span className={styles.statLabel}>Saved</span>
-                <span className={`${styles.statValue} ${styles.statHighlight}`}>
-                  {savings}%
+                <span className={styles.statLabel}>Savings</span>
+                <span className={`${styles.statValue} ${styles.statSavings}`}>
+                  -{savings}%
                 </span>
               </div>
             </div>
@@ -153,73 +210,113 @@ export function ImageCompressorClient() {
         <div className={styles.controlsSection}>
           <h3 className={styles.sectionTitle}>Compression Settings</h3>
 
-          {/* Output Format */}
-          <div className={styles.controlGroup}>
-            <label className={styles.controlLabel} htmlFor="compress-format">Output Format</label>
-            <select
-              id="compress-format"
-              value={outputFormat}
-              onChange={(e) => setOutputFormat(e.target.value as ImageFormat)}
-              className={styles.selectInput}
-            >
-              {OUTPUT_FORMATS.map((fmt) => (
-                <option key={fmt.value} value={fmt.value}>{fmt.label}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Quality Slider */}
-          {outputFormat !== "image/png" && (
+          {/* Format selection */}
+          {!targetFormatLock && (
             <div className={styles.controlGroup}>
-              <label className={styles.controlLabel} htmlFor="compress-quality">
-                Quality: {quality}%
-              </label>
-              <input
-                id="compress-quality"
-                type="range"
-                min="1"
-                max="100"
-                value={quality}
-                onChange={(e) => setQuality(parseInt(e.target.value))}
-                className={styles.slider}
-              />
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", color: "var(--text-muted, #94a3b8)" }}>
-                <span>Smaller file</span>
-                <span>Better quality</span>
+              <label className={styles.controlLabel}>Output Format</label>
+              <div className={styles.formatGrid}>
+                {OUTPUT_FORMATS.map((f) => (
+                  <button
+                    key={f.value}
+                    type="button"
+                    className={`${styles.formatButton} ${outputFormat === f.value ? styles.formatButtonActive : ""}`}
+                    onClick={() => {
+                      setOutputFormat(f.value);
+                      setResult(null);
+                    }}
+                  >
+                    {f.label}
+                  </button>
+                ))}
               </div>
             </div>
           )}
 
+          {/* Quality Slider */}
+          <div className={styles.controlGroup}>
+            <div className={styles.sliderHeader}>
+              <label className={styles.controlLabel}>Quality Level</label>
+              <span className={styles.sliderValue}>{quality}%</span>
+            </div>
+            <input
+              type="range"
+              min="20"
+              max="95"
+              value={quality}
+              onChange={(e) => {
+                setQuality(Number(e.target.value));
+                setResult(null);
+              }}
+              className={styles.slider}
+            />
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#64748b", marginTop: 4 }}>
+              <span>High Compression (Smaller)</span>
+              <span>High Quality (Clearer)</span>
+            </div>
+          </div>
+
+          {/* PNG Color Reduction Toggle */}
           {outputFormat === "image/png" && (
-            <p style={{ fontSize: "0.85rem", color: "var(--text-muted, #94a3b8)", margin: 0 }}>
-              PNG is lossless. For better compression, try JPG or WebP.
-            </p>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, padding: 12, borderRadius: 8, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <input
+                type="checkbox"
+                id="png-quantize"
+                checked={reduceColors}
+                onChange={(e) => {
+                  setReduceColors(e.target.checked);
+                  setResult(null);
+                }}
+                style={{ width: 16, height: 16, accentColor: "#6366f1", cursor: "pointer" }}
+              />
+              <label htmlFor="png-quantize" style={{ fontSize: 13, color: "#cbd5e1", cursor: "pointer" }}>
+                Enable Palette Quantization (Cuts PNG size up to 70% with transparency)
+              </label>
+            </div>
           )}
 
-          {/* Action Buttons */}
+          {/* Action buttons */}
           <div className={styles.actionButtons}>
-            <button
-              type="button"
-              className={styles.primaryButton}
-              onClick={handleCompress}
-              disabled={processing}
-            >
-              {processing ? "Compressing..." : "Compress Image"}
-            </button>
-            {result && (
+            {result ? (
               <>
-                <button type="button" className={styles.successButton} onClick={handleDownload}>
-                  Download {getExtensionFromMime(outputFormat).toUpperCase()}
+                <button
+                  type="button"
+                  className={styles.buttonPrimary}
+                  onClick={handleDownload}
+                >
+                  <Download size={16} />
+                  <span>Download Compressed Image</span>
                 </button>
-                <button type="button" className={styles.secondaryButton} onClick={handleReset}>
-                  Reset
+                <button
+                  type="button"
+                  className={styles.buttonSecondary}
+                  onClick={handleReset}
+                >
+                  <RotateCcw size={15} />
+                  <span>Adjust Compression</span>
                 </button>
               </>
+            ) : (
+              <button
+                type="button"
+                className={styles.buttonPrimary}
+                onClick={handleCompress}
+                disabled={processing}
+              >
+                <Scissors size={16} />
+                <span>{processing ? "Compressing..." : "Compress Image"}</span>
+              </button>
             )}
+
+            <button
+              type="button"
+              className={styles.buttonSecondary}
+              onClick={handleClear}
+            >
+              Choose Another File
+            </button>
           </div>
         </div>
       </div>
-      <ImageUploader onImageSelect={handleImageSelect} onClear={handleClear} className={styles.replaceUpload} />
     </div>
   );
 }

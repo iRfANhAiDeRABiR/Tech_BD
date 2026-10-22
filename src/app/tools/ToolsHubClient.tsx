@@ -55,7 +55,7 @@ export function ToolsHubClient() {
           <Search size={18} className={styles.searchIcon} />
           <input
             type="text"
-            placeholder="Search 17+ free utilities (e.g. QR code, image, PDF editor)..."
+            placeholder="Search 30+ free utilities (e.g. Crop, HEIC to JPG, WebP, SVG, Compress)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className={styles.searchInput}
