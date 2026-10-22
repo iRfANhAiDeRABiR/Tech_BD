@@ -4,9 +4,9 @@ import { getStoreProducts } from "@/data/products";
 import type { ProductSummary } from "@/types/product";
 
 export const metadata: Metadata = {
-  title: "Shopping Cart",
+  title: "Checkout & Shopping Cart | Tech Solutions BD",
   description:
-    "Review the digital products in your Tech Solutions BD shopping cart.",
+    "Review your digital software licenses and complete checkout securely with bKash, Nagad, or Rocket.",
 };
 
 export default async function CartPage() {

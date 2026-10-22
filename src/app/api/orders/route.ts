@@ -16,7 +16,7 @@ const checkoutOrderItemSchema = z.object({
 const checkoutOrderSchema = z.object({
   customer: z.object({
     name: z.string().trim().min(1).max(100),
-    phone: z.string().trim().min(6).max(20),
+    phone: z.string().trim().min(6).max(25),
     email: z.string().trim().email().max(200),
   }),
   payment: z.object({
@@ -24,8 +24,10 @@ const checkoutOrderSchema = z.object({
     label: z.string().trim().min(1).max(60),
     paymentNumber: z.string().trim().min(1).max(30),
     senderNumber: z.string().trim().min(1).max(30),
-    transactionId: z.string().trim().min(1).max(120),
+    transactionId: z.string().trim().min(4).max(120),
   }),
+  notes: z.string().trim().max(1000).optional().nullable(),
+  couponCode: z.string().trim().max(50).optional().nullable(),
   items: z.array(checkoutOrderItemSchema).min(1).max(50),
 });
 
@@ -173,16 +175,28 @@ export async function POST(request: Request) {
       });
     }
 
-    // Totals are computed exclusively from database prices.
-    // No coupon system exists yet, so no discount is applied server-side.
+    // Authoritative totals computed exclusively from database prices
     const subtotal = resolvedItems.reduce(
       (total, item) => total + item.lineTotal,
       0,
     );
-    const discount = 0;
+
+    // Server-side authoritative coupon validation
+    let discount = 0;
+    let validatedCoupon: string | null = null;
+    const cleanCoupon = data.couponCode?.trim().toUpperCase();
+    if (cleanCoupon === "TECHBD10" || cleanCoupon === "SAVE10" || cleanCoupon === "SAFE10") {
+      discount = Math.min(subtotal, Math.round(subtotal * 0.10));
+      validatedCoupon = cleanCoupon;
+    }
+
     const total = Math.max(0, subtotal - discount);
 
     const orderNumber = await getUniqueOrderNumber();
+    const orderNotes = data.notes
+      ? `Payment: ${data.payment.label} | Requirements: ${data.notes}`
+      : `Payment method: ${data.payment.label}`;
+
     const order = await prisma.order.create({
       data: {
         orderNumber,
@@ -190,12 +204,12 @@ export async function POST(request: Request) {
         customerEmail: data.customer.email,
         customerPhone: data.customer.phone,
         customerWhatsApp: data.customer.phone,
-        couponCode: null,
+        couponCode: validatedCoupon,
         subtotal,
         discount,
         total,
         status: "PAYMENT_SUBMITTED",
-        notes: `Payment method selected: ${data.payment.label}`,
+        notes: orderNotes,
         items: {
           create: resolvedItems.map((item) => ({
             productId: item.productId,
@@ -241,8 +255,16 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ order }, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to create checkout order", error);
+
+    // Prevent duplicate payment submission errors
+    if (error?.code === "P2002") {
+      return NextResponse.json(
+        { message: "This Transaction ID has already been submitted for an existing order. Please verify your TrxID or reach out to our WhatsApp support." },
+        { status: 409 },
+      );
+    }
 
     return NextResponse.json(
       { message: "Could not save the order. Please try again." },

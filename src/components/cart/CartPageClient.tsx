@@ -1,30 +1,38 @@
 "use client";
 
+import React, { useState, useEffect, useMemo, type FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  useEffect,
-  useMemo,
-  useState,
-  type FormEvent,
-} from "react";
+  Copy,
+  Check,
+  CheckCircle2,
+  ShieldCheck,
+  Zap,
+  MessageCircle,
+  ShoppingBag,
+  Trash2,
+  AlertCircle,
+  ArrowRight,
+  Headphones,
+} from "lucide-react";
 import type { ProductSummary } from "@/types/product";
 import { toPlainText } from "@/lib/text";
-import styles from "@/app/cart/cart.module.css";
 import { useCart } from "./CartProvider";
 import { createClient } from "@/lib/supabase/client";
 import { notify } from "@/lib/toast";
 import { getUserFriendlyError } from "@/lib/errorSanitizer";
+import { BkashLogo, NagadLogo, RocketLogo } from "@/components/common/PaymentLogos";
+import styles from "@/app/cart/cart.module.css";
 
 interface CartPageClientProps {
   products: ProductSummary[];
 }
 
 const COUPONS = {
-  TECHBD10: {
-    rate: 0.1,
-    label: "10% off",
-  },
+  TECHBD10: { rate: 0.1, label: "10% off" },
+  SAVE10: { rate: 0.1, label: "10% off" },
+  SAFE10: { rate: 0.1, label: "10% off" },
 } as const;
 
 type CouponCode = keyof typeof COUPONS;
@@ -34,19 +42,16 @@ interface CouponFeedback {
   message: string;
 }
 
-type CheckoutStep = 1 | 2 | 3 | 4;
-
-interface PaymentMethod {
-  label: string;
-  number: string;
-  accent: string;
-  logoUrl: string;
-}
-
 interface SubmittedOrder {
   id: string;
   orderNumber: string;
   total: number;
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
+  paymentMethod?: string;
+  senderNumber?: string;
+  transactionId?: string;
 }
 
 interface CheckoutOrderResponse {
@@ -54,68 +59,133 @@ interface CheckoutOrderResponse {
   message?: string;
 }
 
-const PAYMENT_METHODS: Record<string, PaymentMethod> = {
+type PaymentProviderKey = "bkash" | "nagad" | "rocket";
+
+interface PaymentConfig {
+  id: PaymentProviderKey;
+  name: string;
+  label: string;
+  type: string;
+  number: string;
+  ussd: string;
+  accent: string;
+  accentBg: string;
+  LogoComponent: React.ComponentType<{ className?: string; size?: number }>;
+  instructions: {
+    app: string[];
+    ussd: string[];
+  };
+}
+
+const PAYMENT_CONFIGS: Record<PaymentProviderKey, PaymentConfig> = {
   bkash: {
+    id: "bkash",
+    name: "bKash",
     label: "Bkash Send Money",
+    type: "Personal Account",
     number: "01641699879",
+    ussd: "*247#",
     accent: "#E2136E",
-    logoUrl: "/img_content/bkash.png",
+    accentBg: "rgba(226, 19, 110, 0.1)",
+    LogoComponent: BkashLogo,
+    instructions: {
+      app: [
+        "Open your bKash App and tap Send Money.",
+        "Enter recipient number: 01641699879",
+        "Enter the exact payable amount.",
+        "Enter your PIN to complete the transfer.",
+        "Copy the Transaction ID (TrxID) and enter it below.",
+      ],
+      ussd: [
+        "Dial *247# on your mobile handset.",
+        "Select Option 1: Send Money.",
+        "Enter receiver number: 01641699879",
+        "Enter the exact payable amount.",
+        "Enter your bKash PIN to confirm payment.",
+        "Enter the TrxID received in SMS below.",
+      ],
+    },
   },
   nagad: {
+    id: "nagad",
+    name: "Nagad",
     label: "Nagad Send Money",
+    type: "Personal Account",
     number: "01641699879",
+    ussd: "*167#",
     accent: "#F6821F",
-    logoUrl: "/img_content/nagad.png",
+    accentBg: "rgba(246, 130, 31, 0.1)",
+    LogoComponent: NagadLogo,
+    instructions: {
+      app: [
+        "Open your Nagad App and tap Send Money.",
+        "Enter recipient number: 01641699879",
+        "Enter the exact payable amount.",
+        "Enter your Nagad PIN to complete the transfer.",
+        "Copy the Transaction ID (TrxID) and enter it below.",
+      ],
+      ussd: [
+        "Dial *167# on your mobile handset.",
+        "Select Option 1: Send Money.",
+        "Enter receiver number: 01641699879",
+        "Enter the exact payable amount.",
+        "Enter your Nagad PIN to confirm payment.",
+        "Enter the TrxID received in SMS below.",
+      ],
+    },
   },
   rocket: {
+    id: "rocket",
+    name: "Rocket",
     label: "Rocket Send Money",
+    type: "Personal Account",
     number: "015189028225",
+    ussd: "*322#",
     accent: "#8C3494",
-    logoUrl: "/img_content/rocket.png",
+    accentBg: "rgba(140, 52, 148, 0.1)",
+    LogoComponent: RocketLogo,
+    instructions: {
+      app: [
+        "Open your Rocket App and select Send Money.",
+        "Enter recipient number: 015189028225",
+        "Enter the exact payable amount.",
+        "Enter your Rocket PIN to complete the transfer.",
+        "Copy the Transaction ID (TrxID) and enter it below.",
+      ],
+      ussd: [
+        "Dial *322# on your mobile handset.",
+        "Select Option 1: Send Money.",
+        "Enter receiver number: 015189028225",
+        "Enter the exact payable amount.",
+        "Enter your Rocket PIN to confirm payment.",
+        "Enter the TrxID received in SMS below.",
+      ],
+    },
   },
-  upay: {
-    label: "Upay Send Money",
-    number: "01518902822",
-    accent: "#00A859",
-    logoUrl: "/img_content/upay.png",
-  },
-} as const;
-
-type PaymentMethodKey = keyof typeof PAYMENT_METHODS;
+};
 
 function isCouponCode(value: string): value is CouponCode {
   return Object.prototype.hasOwnProperty.call(COUPONS, value);
 }
 
 function formatPrice(value: number): string {
-  return `৳${value.toLocaleString("en-BD")}`;
+  return `৳${Math.max(0, Math.round(value)).toLocaleString("en-BD")}`;
 }
 
-export function CartPageClient({
-  products,
-}: CartPageClientProps) {
-  const [couponInput, setCouponInput] = useState("");
-  const [appliedCoupon, setAppliedCoupon] =
-    useState<CouponCode | null>(null);
-  const [couponFeedback, setCouponFeedback] =
-    useState<CouponFeedback | null>(null);
-  const [checkoutOpen, setCheckoutOpen] = useState(false);
-  const [checkoutStep, setCheckoutStep] = useState<CheckoutStep>(1);
-  const [selectedMethod, setSelectedMethod] =
-    useState<PaymentMethodKey | null>(null);
-  const [customerName, setCustomerName] = useState("");
-  const [customerPhone, setCustomerPhone] = useState("");
-  const [customerEmail, setCustomerEmail] = useState("");
-  const [senderNumber, setSenderNumber] = useState("");
-  const [transactionId, setTransactionId] = useState("");
-  const [submittedOrder, setSubmittedOrder] =
-    useState<SubmittedOrder | null>(null);
-  const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
-  const [copiedPaymentNumber, setCopiedPaymentNumber] = useState(false);
-  const [checkoutError, setCheckoutError] = useState<string | null>(
-    null,
-  );
+function isValidBdPhone(phone: string): boolean {
+  const clean = phone.replace(/[\s\-\(\)]/g, "");
+  return /^(?:\+?88)?01[3-9]\d{8}$/.test(clean);
+}
 
+function normalizeBdPhone(phone: string): string {
+  const clean = phone.replace(/[\s\-\(\)]/g, "");
+  if (clean.startsWith("+88")) return clean.slice(3);
+  if (clean.startsWith("88")) return clean.slice(2);
+  return clean;
+}
+
+export function CartPageClient({ products }: CartPageClientProps) {
+  // Cart state
   const {
     items,
     isHydrated,
@@ -125,28 +195,77 @@ export function CartPageClient({
     clearCart,
   } = useCart();
 
+  // Customer Information state
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [requirements, setRequirements] = useState("");
+
+  // Payment Selection & Verification state
+  const [selectedMethod, setSelectedMethod] = useState<PaymentProviderKey>("bkash");
+  const [senderNumber, setSenderNumber] = useState("");
+  const [transactionId, setTransactionId] = useState("");
+
+  // Copy feedback state
+  const [copiedNumber, setCopiedNumber] = useState(false);
+  const [copiedAmount, setCopiedAmount] = useState(false);
+
+  // Coupon state
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<CouponCode | null>(null);
+  const [couponFeedback, setCouponFeedback] = useState<CouponFeedback | null>(null);
+
+  // Form submission state
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submittedOrder, setSubmittedOrder] = useState<SubmittedOrder | null>(null);
+
+  // Products map
   const productsById = useMemo(
-    () =>
-      new Map(
-        products.map((product) => [product.id, product]),
-      ),
-    [products],
+    () => new Map(products.map((product) => [product.id, product])),
+    [products]
   );
 
+  // Reconcile cart
   useEffect(() => {
-    if (!isHydrated) {
-      return;
-    }
-
+    if (!isHydrated) return;
     reconcileCart((line) => productsById.has(line.productId));
   }, [isHydrated, productsById, reconcileCart]);
 
+  // Auto-populate customer info if authenticated via Supabase
+  useEffect(() => {
+    async function loadUserProfile() {
+      try {
+        const supabase = createClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (user) {
+          const { data: profile } = await (supabase.from("profiles") as any)
+            .select("username, phone_e164, whatsapp_e164")
+            .eq("id", user.id)
+            .single();
+
+          if (profile) {
+            setCustomerName((prev) => (prev ? prev : profile.username || ""));
+            setCustomerEmail((prev) => (prev ? prev : user.email || ""));
+            const phone = String(profile.phone_e164 ?? profile.whatsapp_e164 ?? "");
+            setCustomerPhone((prev) => (prev ? prev : phone));
+          }
+        }
+      } catch (err) {
+        // Silently continue with empty fields if unauthenticated
+      }
+    }
+    loadUserProfile();
+  }, []);
+
+  // Cart products calculations
   const cartProducts = items.flatMap((line) => {
     const product = productsById.get(line.productId);
-
-    if (!product) {
-      return [];
-    }
+    if (!product) return [];
 
     const option = line.optionId
       ? product.options?.find((item) => item.id === line.optionId)
@@ -173,968 +292,919 @@ export function CartPageClient({
   });
 
   const subtotal = cartProducts.reduce(
-    (total, line) =>
-      total + line.unitPrice * line.quantity,
-    0,
+    (total, line) => total + line.unitPrice * line.quantity,
+    0
   );
 
-  const originalSubtotal = cartProducts.reduce(
-    (total, line) => {
-      const originalPrice = line.originalPrice ?? line.unitPrice;
+  const originalSubtotal = cartProducts.reduce((total, line) => {
+    const originalPrice = line.originalPrice ?? line.unitPrice;
+    return total + originalPrice * line.quantity;
+  }, 0);
 
-      return total + originalPrice * line.quantity;
-    },
-    0,
-  );
-
-  const savings = Math.max(0, originalSubtotal - subtotal);
-  const selectedPayment = selectedMethod
-    ? PAYMENT_METHODS[selectedMethod]
-    : null;
+  const productSavings = Math.max(0, originalSubtotal - subtotal);
 
   const couponDiscount = appliedCoupon
-    ? Math.min(
-      subtotal,
-      Math.round(subtotal * COUPONS[appliedCoupon].rate),
-    )
+    ? Math.min(subtotal, Math.round(subtotal * COUPONS[appliedCoupon].rate))
     : 0;
 
   const total = Math.max(0, subtotal - couponDiscount);
+  const totalSavings = productSavings + couponDiscount;
 
-  useEffect(() => {
-    if (!checkoutOpen) {
+  const currentPayment = PAYMENT_CONFIGS[selectedMethod];
+
+  // Copy helper
+  const handleCopyNumber = async () => {
+    if (!currentPayment?.number) return;
+    try {
+      await navigator.clipboard.writeText(currentPayment.number);
+      setCopiedNumber(true);
+      notify.success("Number copied", {
+        description: `${currentPayment.name} number (${currentPayment.number}) copied to clipboard.`,
+        id: "copied-num",
+      });
+      setTimeout(() => setCopiedNumber(false), 2000);
+    } catch {
+      notify.error("Could not copy number");
+    }
+  };
+
+  const handleCopyAmount = async () => {
+    try {
+      await navigator.clipboard.writeText(total.toString());
+      setCopiedAmount(true);
+      notify.success("Amount copied", {
+        description: `Payable amount (৳${total}) copied to clipboard.`,
+        id: "copied-amt",
+      });
+      setTimeout(() => setCopiedAmount(false), 2000);
+    } catch {
+      notify.error("Could not copy amount");
+    }
+  };
+
+  // Coupon handlers
+  const handleApplyCoupon = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const cleanCode = couponInput.trim().toUpperCase();
+
+    if (!cleanCode) {
+      setCouponFeedback({ tone: "error", message: "Please enter a coupon code." });
       return;
     }
 
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, [checkoutOpen]);
-
-  function applyCoupon(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const normalizedCode = couponInput.trim().toUpperCase();
-
-    if (!isCouponCode(normalizedCode)) {
+    if (!isCouponCode(cleanCode)) {
       setAppliedCoupon(null);
-      const msg = "That coupon code is not valid. Check it and try again.";
       setCouponFeedback({
         tone: "error",
-        message: msg,
+        message: "Invalid or expired coupon code.",
       });
       notify.error("Invalid coupon", {
-        description: msg,
-        id: "coupon-toast",
+        description: "That coupon code is not recognized.",
+        id: "coupon-err",
       });
       return;
     }
 
-    setCouponInput(normalizedCode);
-    setAppliedCoupon(normalizedCode);
-    const msg = `${normalizedCode} applied — ${COUPONS[normalizedCode].label}.`;
+    setAppliedCoupon(cleanCode);
     setCouponFeedback({
       tone: "success",
-      message: msg,
+      message: `${cleanCode} applied! 10% discount added.`,
     });
     notify.success("Coupon applied", {
-      description: msg,
-      id: "coupon-toast",
+      description: `${cleanCode} gave you 10% discount on your order.`,
+      id: "coupon-ok",
     });
-  }
+  };
 
-  function removeCoupon() {
+  const handleRemoveCoupon = () => {
     setAppliedCoupon(null);
     setCouponInput("");
     setCouponFeedback(null);
-    notify.info("Coupon removed", {
-      description: "Coupon discount has been removed.",
-      id: "coupon-toast",
-    });
-  }
+    notify.info("Coupon removed", { id: "coupon-rm" });
+  };
 
-  function resetCheckout() {
-    setCheckoutStep(1);
-    setSelectedMethod(null);
-    setCustomerName("");
-    setCustomerPhone("");
-    setCustomerEmail("");
-    setSenderNumber("");
-    setTransactionId("");
-    setSubmittedOrder(null);
-    setIsSubmittingOrder(false);
-    setCopiedPaymentNumber(false);
-    setCheckoutError(null);
-  }
+  // Form Validation
+  const validateForm = (): boolean => {
+    const errors: { [key: string]: string } = {};
 
-  async function openCheckout() {
-    resetCheckout();
-    setCheckoutOpen(true);
-
-    try {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (user) {
-        const { data: profile } = await (supabase.from("profiles") as any)
-          .select("username, phone_e164, whatsapp_e164")
-          .eq("id", user.id)
-          .single();
-
-        if (profile && profile.username) {
-          setCustomerName(profile.username);
-          setCustomerEmail(user.email ?? "");
-          // Prefer phone_e164, fallback to whatsapp_e164
-          // Ensure phone is always a string to prevent .trim() errors
-          const phone = String(profile.phone_e164 ?? profile.whatsapp_e164 ?? "");
-          setCustomerPhone(phone);
-
-          // Only skip to payment step if we have essential contact info
-          if (profile.username && user.email && phone) {
-            setCheckoutStep(2);
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Failed to load user profile for checkout:", error);
-      // Fallback to manual entry (Step 1) remains active via resetCheckout defaults
+    if (!customerName.trim() || customerName.trim().length < 2) {
+      errors.name = "Full name is required (minimum 2 characters).";
     }
-  }
 
-  function closeCheckout() {
-    setCheckoutOpen(false);
-    setCheckoutError(null);
-  }
+    if (!customerPhone.trim() || !isValidBdPhone(customerPhone)) {
+      errors.phone = "Enter a valid Bangladesh mobile number (e.g., 01XXXXXXXXX).";
+    }
 
-  function goBack() {
-    setCheckoutError(null);
-    setCheckoutStep((currentStep) =>
-      Math.max(1, currentStep - 1) as CheckoutStep,
-    );
-  }
-
-  function validateStepOne() {
     if (
-      !customerName.trim() ||
-      !customerPhone.trim() ||
       !customerEmail.trim() ||
-      !/^\S+@\S+\.\S+$/.test(customerEmail.trim())
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail.trim())
     ) {
-      const msg = "Please complete your name, phone, and a valid email.";
-      setCheckoutError(msg);
-      notify.warning("Required information missing", {
-        description: msg,
-        id: "checkout-val-1",
-      });
-      return false;
+      errors.email = "Valid delivery email address is required for software activation.";
     }
 
-    setCheckoutError(null);
-    return true;
-  }
-
-  function validateStepTwo() {
-    if (!selectedMethod) {
-      const msg = "Please select a payment method.";
-      setCheckoutError(msg);
-      notify.warning("Payment method required", {
-        description: msg,
-        id: "checkout-val-2",
-      });
-      return false;
+    if (!senderNumber.trim() || !isValidBdPhone(senderNumber)) {
+      errors.senderNumber = "Enter the 11-digit mobile number you sent the money from.";
     }
 
-    setCheckoutError(null);
-    return true;
-  }
-
-  function validateStepThree() {
-    if (!senderNumber.trim() || !transactionId.trim()) {
-      const msg = "Please enter the sender number and transaction ID.";
-      setCheckoutError(msg);
-      notify.warning("Transaction details required", {
-        description: msg,
-        id: "checkout-val-3",
-      });
-      return false;
+    if (!transactionId.trim() || transactionId.trim().length < 4) {
+      errors.transactionId = "Transaction ID (TrxID) is required (at least 4 characters).";
     }
 
-    setCheckoutError(null);
-    return true;
-  }
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
-  async function copyPaymentNumber() {
-    if (!selectedPayment?.number) {
+  // Handle Order Placement
+  const handlePlaceOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isSubmitting) return;
+
+    if (!validateForm()) {
+      notify.warning("Required fields missing", {
+        description: "Please check the highlighted fields and correct any errors.",
+        id: "checkout-val-err",
+      });
       return;
     }
 
-    try {
-      await navigator.clipboard.writeText(selectedPayment.number);
-      setCopiedPaymentNumber(true);
-      notify.success("Number copied", {
-        description: `${selectedPayment.label} number copied to clipboard.`,
-        id: "payment-copy-toast",
-      });
-      window.setTimeout(() => setCopiedPaymentNumber(false), 1500);
-    } catch {
-      notify.error("Failed to copy", {
-        description: "Could not copy number to clipboard.",
-        id: "payment-copy-toast",
-      });
-    }
-  }
-
-  function buildOrderMessage() {
-    const payment = selectedMethod
-      ? PAYMENT_METHODS[selectedMethod]
-      : null;
-
-    return [
-      "🛒 *New Order - Tech Solutions BD*",
-      submittedOrder ? `🆔 *Order ID:* ${submittedOrder.orderNumber}` : "🆔 *Order ID:*",
-      "",
-      `👤 *Name:* ${customerName.trim()}`,
-      `📱 *Mobile/WhatsApp:* ${customerPhone.trim()}`,
-      `📧 *Email:* ${customerEmail.trim()}`,
-      "",
-      `💳 *Payment Method:* ${payment?.label ?? "N/A"}`,
-      `💰 *Total Paid:* ${formatPrice(total)}`,
-      `🔖 *TrxID:* ${transactionId.trim()}`,
-      "",
-      "Thank you!",
-    ]
-      .filter(Boolean)
-      .join("\n");
-  }
-
-  async function submitCheckoutOrder() {
-    if (!selectedMethod || !selectedPayment) {
-      setCheckoutError("Please select a payment method.");
-      return null;
-    }
-
-    setIsSubmittingOrder(true);
-    setCheckoutError(null);
+    setIsSubmitting(true);
+    setSubmitError(null);
 
     try {
       const response = await fetch("/api/orders", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           customer: {
             name: customerName.trim(),
-            phone: customerPhone.trim(),
+            phone: normalizeBdPhone(customerPhone.trim()),
             email: customerEmail.trim(),
           },
           payment: {
             method: selectedMethod,
-            label: selectedPayment.label,
-            paymentNumber: selectedPayment.number,
-            senderNumber: senderNumber.trim(),
-            transactionId: transactionId.trim(),
+            label: currentPayment.label,
+            paymentNumber: currentPayment.number,
+            senderNumber: normalizeBdPhone(senderNumber.trim()),
+            transactionId: transactionId.trim().toUpperCase(),
           },
-          coupon: appliedCoupon ? { code: appliedCoupon } : null,
-          totals: {
-            subtotal,
-            discount: couponDiscount,
-            total,
-          },
-          items: cartProducts.map(
-            ({ line, product, quantity, unitPrice, originalPrice, optionLabel }) => ({
-              productId: product.id,
-              optionId: line.optionId,
-              optionName: optionLabel ?? undefined,
-              optionType: line.optionType,
-              productName: toPlainText(product.name),
-              productImage: product.image,
-              unitPrice,
-              originalUnitPrice: originalPrice ?? null,
-              quantity,
-            }),
-          ),
+          notes: requirements.trim() || null,
+          couponCode: appliedCoupon || null,
+          items: cartProducts.map(({ line, product, quantity, unitPrice, originalPrice, optionLabel }) => ({
+            productId: product.id,
+            optionId: line.optionId,
+            optionName: optionLabel ?? undefined,
+            optionType: line.optionType,
+            productName: toPlainText(product.name),
+            productImage: product.image,
+            unitPrice,
+            originalUnitPrice: originalPrice ?? null,
+            quantity,
+          })),
         }),
       });
 
       const result = (await response.json()) as CheckoutOrderResponse;
 
       if (!response.ok || !result.order) {
-        throw new Error(result.message ?? "Could not save your order.");
+        throw new Error(result.message || "Failed to submit your order.");
       }
 
-      // Order saved successfully — empty the cart so items aren't
-      // re-purchasable or lingering after checkout.
+      // Success
       clearCart();
-      setSubmittedOrder(result.order);
-
-      notify.success("Order placed successfully", {
-        description: `Your order #${result.order.orderNumber} has been received.`,
-        duration: 6000,
-        id: `order-success-${result.order.orderNumber}`,
+      setSubmittedOrder({
+        ...result.order,
+        customerName: customerName.trim(),
+        customerEmail: customerEmail.trim(),
+        customerPhone: customerPhone.trim(),
+        paymentMethod: currentPayment.name,
+        senderNumber: senderNumber.trim(),
+        transactionId: transactionId.trim().toUpperCase(),
       });
 
-      return result.order;
-    } catch (error) {
-      const sanitized = getUserFriendlyError(
-        error,
-        "Please check your information and try again."
+      notify.success("Order Placed Successfully!", {
+        description: `Order #${result.order.orderNumber} is pending verification. Check your email shortly.`,
+        duration: 7000,
+        id: `order-ok-${result.order.orderNumber}`,
+      });
+    } catch (err: any) {
+      const friendly = getUserFriendlyError(
+        err,
+        "Could not place order. Please check your transaction details and try again."
       );
-      setCheckoutError(sanitized);
-      notify.error("Order could not be placed", {
-        description: sanitized,
-        id: "order-error-toast",
+      setSubmitError(friendly);
+      notify.error("Order Submission Failed", {
+        description: friendly,
+        id: "order-fail",
       });
-      return null;
     } finally {
-      setIsSubmittingOrder(false);
+      setIsSubmitting(false);
     }
-  }
+  };
 
-  async function handleCheckoutAdvance() {
-    if (checkoutStep === 1) {
-      if (!validateStepOne()) {
-        return;
-      }
+  // WhatsApp Order Confirmation URL
+  const buildWhatsAppUrl = () => {
+    if (!submittedOrder) return "https://wa.me/8801641699879";
+    const msg = [
+      "🛒 *New Order Confirmation - Tech Solutions BD*",
+      `🆔 *Order ID:* #${submittedOrder.orderNumber}`,
+      `👤 *Name:* ${submittedOrder.customerName}`,
+      `📱 *Phone:* ${submittedOrder.customerPhone}`,
+      `📧 *Email:* ${submittedOrder.customerEmail}`,
+      "",
+      `💳 *Payment Method:* ${submittedOrder.paymentMethod}`,
+      `📱 *Sender Number:* ${submittedOrder.senderNumber}`,
+      `🔖 *TrxID:* ${submittedOrder.transactionId}`,
+      `💰 *Total Paid:* ${formatPrice(submittedOrder.total)}`,
+      "",
+      "Please verify my payment and deliver my software license keys. Thank you!",
+    ].join("\n");
 
-      setCheckoutStep(2);
-      return;
-    }
+    return `https://wa.me/8801641699879?text=${encodeURIComponent(msg)}`;
+  };
 
-    if (checkoutStep === 2) {
-      if (!validateStepTwo()) {
-        return;
-      }
-
-      setCheckoutStep(3);
-      return;
-    }
-
-    if (checkoutStep === 3) {
-      if (!validateStepThree()) {
-        return;
-      }
-
-      const order = await submitCheckoutOrder();
-
-      if (order) {
-        setCheckoutStep(4);
-      }
-    }
-  }
-
-  function launchWhatsAppOrder() {
-    const message = buildOrderMessage();
-    const url = `https://wa.me/66647109664?text=${encodeURIComponent(message)}`;
-    window.open(url, "_blank", "noopener,noreferrer");
-  }
-
-  if (!isHydrated) {
+  // ── 1. Order Placed Confirmation View ──────────────────────────────────
+  if (submittedOrder) {
     return (
       <main className={styles.page}>
-        <div className="container">
-          <div className={styles.loading} role="status">
-            Loading your cart...
+        <div className={styles.container}>
+          <div className={styles.confirmationCard}>
+            <div className={styles.successCheckWrap} aria-hidden="true">
+              ✓
+            </div>
+
+            <h1 className={styles.confirmationTitle}>Order Placed Successfully!</h1>
+
+            <div className={styles.confirmationBadge}>
+              <span aria-hidden="true">⏳</span>
+              <span>Payment Submitted — Pending Manual Verification</span>
+            </div>
+
+            <p className={styles.subtitle} style={{ marginBottom: "24px" }}>
+              Thank you for ordering with Tech Solutions BD. We have received your payment submission and our team is verifying your Transaction ID.
+            </p>
+
+            <div className={styles.orderDetailsGrid}>
+              <div className={styles.orderDetailItem}>
+                <span className={styles.orderDetailLabel}>Order Reference</span>
+                <span className={styles.orderDetailValue}>#{submittedOrder.orderNumber}</span>
+              </div>
+              <div className={styles.orderDetailItem}>
+                <span className={styles.orderDetailLabel}>Total Amount</span>
+                <span className={styles.orderDetailValue} style={{ color: "var(--accent-secondary, #00D4AA)" }}>
+                  {formatPrice(submittedOrder.total)}
+                </span>
+              </div>
+              <div className={styles.orderDetailItem}>
+                <span className={styles.orderDetailLabel}>Delivery Email</span>
+                <span className={styles.orderDetailValue}>{submittedOrder.customerEmail}</span>
+              </div>
+              <div className={styles.orderDetailItem}>
+                <span className={styles.orderDetailLabel}>Payment via</span>
+                <span className={styles.orderDetailValue}>
+                  {submittedOrder.paymentMethod} (TrxID: {submittedOrder.transactionId})
+                </span>
+              </div>
+            </div>
+
+            {/* Instant WhatsApp Delivery Action */}
+            <div className={styles.whatsAppBanner}>
+              <p className={styles.whatsAppBannerText}>
+                <strong>⚡ Want instant delivery in 5–10 minutes?</strong><br />
+                Message our verification team on WhatsApp with your Order ID for fast-track activation.
+              </p>
+              <a
+                href={buildWhatsAppUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.whatsAppButton}
+              >
+                <MessageCircle size={18} />
+                <span>Confirm Instantly on WhatsApp →</span>
+              </a>
+            </div>
+
+            <div className={styles.confirmationActions}>
+              <Link href="/products#products-by-category" className={styles.continueButton}>
+                ← Continue Shopping
+              </Link>
+              <Link href="/account/orders" className={styles.continueButton}>
+                View My Account Orders
+              </Link>
+            </div>
           </div>
         </div>
       </main>
     );
   }
 
-  // Keep the checkout success modal mounted even though the cart was
-  // just cleared — only show the empty state once the modal is closed.
-  const showEmptyCart =
-    cartProducts.length === 0 && !(checkoutOpen && submittedOrder);
-
-  if (showEmptyCart) {
+  // ── 2. Empty Cart View ─────────────────────────────────────────────────
+  if (cartProducts.length === 0) {
     return (
       <main className={styles.page}>
-        <div className="container">
-          <section className={styles.empty}>
+        <div className={styles.container}>
+          <div className={styles.emptyState}>
             <span className={styles.emptyIcon} aria-hidden="true">
               🛒
             </span>
-
-            <h1>Your cart is empty</h1>
-
-            <p>
-              Browse our digital software catalogue and add products
-              to your cart.
+            <h1 className={styles.emptyTitle}>Your cart is empty</h1>
+            <p className={styles.emptySubtitle}>
+              You have not selected any digital software products yet. Browse our marketplace for genuine operating systems, office packages, CAD tools, and security suites.
             </p>
-
-            <Link
-              href="/products#products-by-category"
-              className="btn btn--primary btn--lg"
-            >
-              Browse Products
+            <Link href="/products#products-by-category" className={styles.emptyButton}>
+              <ShoppingBag size={18} />
+              <span>Browse Software Catalog →</span>
             </Link>
-          </section>
+          </div>
         </div>
       </main>
     );
   }
 
+  // ── 3. Active Two-Column Checkout View ──────────────────────────────────
   return (
     <main className={styles.page}>
-      <div className="container">
-        <div className={styles.pageHeader}>
-          <div>
-            <span className="section-tag">Shopping Cart</span>
-
-            <h1 className={styles.title}>
-              Your <span className="gradient-text">Cart</span>
-            </h1>
-
-            <p className={styles.subtitle}>
-              Review your selected digital products.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            className={styles.clearButton}
-            onClick={() => {
-              clearCart();
-              notify.info("Cart cleared", {
-                description: "All items have been removed from your shopping cart.",
-                id: "cart-cleared",
-              });
-            }}
-          >
-            Clear Cart
-          </button>
+      <div className={styles.container}>
+        {/* Checkout Header */}
+        <div className={styles.header}>
+          <span className={styles.headerBadge}>Secure Digital Checkout</span>
+          <h1 className={styles.title}>
+            Tech Solutions BD <span className={styles.titleGradient}>Checkout</span>
+          </h1>
+          <p className={styles.subtitle}>
+            Complete your customer details and mobile banking payment to receive genuine software licenses.
+          </p>
         </div>
 
-        <div className={styles.layout}>
-          <section
-            className={styles.items}
-            aria-label="Cart products"
-          >
-            {cartProducts.map(({ line, product, quantity, unitPrice, originalPrice, optionLabel }) => {
-              const name = toPlainText(product.name);
-              const hasOriginalPrice =
-                originalPrice !== null &&
-                originalPrice > unitPrice;
+        {/* Two-Column Grid */}
+        <div className={styles.checkoutLayout}>
+          {/* ===============================================================
+              LEFT COLUMN (60%): CUSTOMER INFO & PAYMENT FORM
+             =============================================================== */}
+          <form className={styles.leftColumn} onSubmit={handlePlaceOrder} noValidate>
+            {/* Step 1: Customer Information */}
+            <section className={styles.sectionCard} aria-labelledby="customer-info-title">
+              <div className={styles.sectionHeader}>
+                <span className={styles.sectionNumber}>1</span>
+                <div className={styles.sectionTitleGroup}>
+                  <h2 id="customer-info-title" className={styles.sectionTitle}>
+                    Customer Information
+                  </h2>
+                  <p className={styles.sectionSubtitle}>
+                    Provide your contact details where your digital licenses and invoices will be delivered.
+                  </p>
+                </div>
+              </div>
 
-              return (
-                <article
-                  className={styles.item}
-                  key={`${product.id}:${line.optionId ?? "base"}`}
-                >
-                  <Link
-                    href={`/products/${product.id}`}
-                    className={styles.imageLink}
-                    aria-label={`View ${name}`}
-                  >
-                    <Image
-                      src={product.image}
-                      alt={name}
-                      width={140}
-                      height={110}
-                      sizes="140px"
-                      className={styles.image}
+              <div className={styles.formGrid}>
+                {/* Full Name */}
+                <div className={styles.formGroup}>
+                  <label htmlFor="customer-name" className={styles.formLabel}>
+                    <span>Full Name <span className={styles.formRequired}>*</span></span>
+                  </label>
+                  <input
+                    id="customer-name"
+                    name="name"
+                    type="text"
+                    required
+                    value={customerName}
+                    onChange={(e) => {
+                      setCustomerName(e.target.value);
+                      if (fieldErrors.name) {
+                        setFieldErrors((prev) => ({ ...prev, name: "" }));
+                      }
+                    }}
+                    placeholder="e.g. Tanvir Ahmed"
+                    autoComplete="name"
+                    className={`${styles.formInput} ${fieldErrors.name ? styles.formInputError : ""}`}
+                  />
+                  {fieldErrors.name && (
+                    <p className={styles.formErrorText}>{fieldErrors.name}</p>
+                  )}
+                </div>
+
+                <div className={styles.formGridTwoCol}>
+                  {/* Phone Number */}
+                  <div className={styles.formGroup}>
+                    <label htmlFor="customer-phone" className={styles.formLabel}>
+                      <span>Phone / WhatsApp Number <span className={styles.formRequired}>*</span></span>
+                    </label>
+                    <input
+                      id="customer-phone"
+                      name="phone"
+                      type="tel"
+                      required
+                      value={customerPhone}
+                      onChange={(e) => {
+                        setCustomerPhone(e.target.value);
+                        if (fieldErrors.phone) {
+                          setFieldErrors((prev) => ({ ...prev, phone: "" }));
+                        }
+                      }}
+                      placeholder="01XXXXXXXXX"
+                      autoComplete="tel"
+                      className={`${styles.formInput} ${fieldErrors.phone ? styles.formInputError : ""}`}
                     />
-                  </Link>
-
-                  <div className={styles.itemInfo}>
-                    <span className={styles.category}>
-                      {product.category}
-                    </span>
-
-                    <Link
-                      href={`/products/${product.id}`}
-                      className={styles.name}
-                    >
-                      {name}
-                    </Link>
-
-                    {optionLabel && (
-                      <span className={styles.category}>
-                        Type: {optionLabel}
-                      </span>
+                    {fieldErrors.phone ? (
+                      <p className={styles.formErrorText}>{fieldErrors.phone}</p>
+                    ) : (
+                      <p className={styles.formHelpText}>Used for WhatsApp delivery & order alerts</p>
                     )}
+                  </div>
 
-                    <div className={styles.prices}>
-                      <span className={styles.price}>
-                        {formatPrice(unitPrice)}
-                      </span>
+                  {/* Email Address */}
+                  <div className={styles.formGroup}>
+                    <label htmlFor="customer-email" className={styles.formLabel}>
+                      <span>Delivery Email Address <span className={styles.formRequired}>*</span></span>
+                    </label>
+                    <input
+                      id="customer-email"
+                      name="email"
+                      type="email"
+                      required
+                      value={customerEmail}
+                      onChange={(e) => {
+                        setCustomerEmail(e.target.value);
+                        if (fieldErrors.email) {
+                          setFieldErrors((prev) => ({ ...prev, email: "" }));
+                        }
+                      }}
+                      placeholder="your.email@example.com"
+                      autoComplete="email"
+                      className={`${styles.formInput} ${fieldErrors.email ? styles.formInputError : ""}`}
+                    />
+                    {fieldErrors.email ? (
+                      <p className={styles.formErrorText}>{fieldErrors.email}</p>
+                    ) : (
+                      <p className={styles.formHelpText}>Official license keys & setup guide will be sent here</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </section>
 
-                      {hasOriginalPrice && (
-                        <span className={styles.originalPrice}>
-                          {formatPrice(originalPrice!)}
+            {/* Step 2: Payment Method Selection */}
+            <section className={styles.sectionCard} aria-labelledby="payment-method-title">
+              <div className={styles.sectionHeader}>
+                <span className={styles.sectionNumber}>2</span>
+                <div className={styles.sectionTitleGroup}>
+                  <h2 id="payment-method-title" className={styles.sectionTitle}>
+                    Payment Method
+                  </h2>
+                  <p className={styles.sectionSubtitle}>
+                    Select your preferred Bangladeshi mobile banking provider to send money.
+                  </p>
+                </div>
+              </div>
+
+              {/* 3 Selectable Payment Cards: bKash | Nagad | Rocket */}
+              <div className={styles.paymentCardsGrid} role="radiogroup" aria-label="Select Payment Method">
+                {(Object.keys(PAYMENT_CONFIGS) as PaymentProviderKey[]).map((key) => {
+                  const cfg = PAYMENT_CONFIGS[key];
+                  const isSelected = selectedMethod === key;
+                  const Logo = cfg.LogoComponent;
+
+                  return (
+                    <div
+                      key={key}
+                      role="radio"
+                      aria-checked={isSelected}
+                      tabIndex={0}
+                      className={`${styles.paymentCard} ${isSelected ? styles.paymentCardSelected : ""}`}
+                      style={{
+                        borderColor: isSelected ? cfg.accent : undefined,
+                        boxShadow: isSelected ? `0 0 0 1px ${cfg.accent}` : undefined,
+                      }}
+                      onClick={() => setSelectedMethod(key)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setSelectedMethod(key);
+                        }
+                      }}
+                    >
+                      {isSelected && (
+                        <span className={styles.paymentCardCheck} style={{ backgroundColor: cfg.accent }}>
+                          ✓
                         </span>
                       )}
+                      <div className={styles.paymentCardLogoWrap}>
+                        <Logo className="w-8 h-8" size={32} />
+                      </div>
+                      <span className={styles.paymentCardName}>{cfg.name}</span>
+                      <span className={styles.paymentCardBadge}>Send Money</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Dynamic Payment Instruction Panel */}
+              <div className={styles.paymentInstructionPanel}>
+                <div className={styles.paymentAccountBoxes}>
+                  {/* Recipient Account Box */}
+                  <div className={styles.paymentAccountBox}>
+                    <span className={styles.paymentAccountBoxLabel}>
+                      Send Money to ({currentPayment.name} {currentPayment.type})
+                    </span>
+                    <div className={styles.paymentAccountBoxNumberRow}>
+                      <span className={styles.paymentAccountBoxNumber}>
+                        {currentPayment.number}
+                      </span>
+                      <button
+                        type="button"
+                        className={`${styles.copyButton} ${copiedNumber ? styles.copyButtonCopied : ""}`}
+                        onClick={handleCopyNumber}
+                        aria-label={`Copy ${currentPayment.name} account number`}
+                      >
+                        {copiedNumber ? <Check size={13} /> : <Copy size={13} />}
+                        <span>{copiedNumber ? "Copied" : "Copy Number"}</span>
+                      </button>
                     </div>
                   </div>
 
-                  <div className={styles.itemActions}>
-                    <div
-                      className={styles.quantity}
-                      role="group"
-                      aria-label={`Quantity for ${name}`}
-                    >
+                  {/* Total Payable Box */}
+                  <div className={styles.paymentAccountBox}>
+                    <span className={styles.paymentAccountBoxLabel}>Exact Payable Amount</span>
+                    <div className={styles.paymentAccountBoxNumberRow}>
+                      <span className={styles.paymentAccountBoxAmount}>
+                        {formatPrice(total)}
+                      </span>
                       <button
                         type="button"
-                        aria-label={`Decrease ${name} quantity`}
-                        disabled={quantity <= 1}
-                        onClick={() =>
-                          updateQuantity(product.id, quantity - 1, line.optionId)
-                        }
+                        className={`${styles.copyButton} ${copiedAmount ? styles.copyButtonCopied : ""}`}
+                        onClick={handleCopyAmount}
+                        aria-label="Copy exact total amount"
                       >
-                        −
-                      </button>
-
-                      <span aria-live="polite">{quantity}</span>
-
-                      <button
-                        type="button"
-                        aria-label={`Increase ${name} quantity`}
-                        disabled={quantity >= 99}
-                        onClick={() =>
-                          updateQuantity(product.id, quantity + 1, line.optionId)
-                        }
-                      >
-                        +
+                        {copiedAmount ? <Check size={13} /> : <Copy size={13} />}
+                        <span>{copiedAmount ? "Copied" : "Copy Amount"}</span>
                       </button>
                     </div>
+                  </div>
+                </div>
 
-                    <span className={styles.lineTotal}>
-                      {formatPrice(unitPrice * quantity)}
+                {/* Step-by-Step Instructions */}
+                <ol className={styles.stepsList}>
+                  {currentPayment.instructions.app.map((stepText, idx) => (
+                    <li key={idx}>
+                      <span>{stepText}</span>
+                    </li>
+                  ))}
+                </ol>
+
+                {/* Transaction Verification Fields */}
+                <div className={styles.verificationInputsGroup}>
+                  {/* Sender Number */}
+                  <div className={styles.formGroup}>
+                    <label htmlFor="sender-number" className={styles.formLabel}>
+                      <span>Sender Mobile Number <span className={styles.formRequired}>*</span></span>
+                    </label>
+                    <input
+                      id="sender-number"
+                      name="senderNumber"
+                      type="tel"
+                      required
+                      value={senderNumber}
+                      onChange={(e) => {
+                        setSenderNumber(e.target.value);
+                        if (fieldErrors.senderNumber) {
+                          setFieldErrors((prev) => ({ ...prev, senderNumber: "" }));
+                        }
+                      }}
+                      placeholder="01XXXXXXXXX"
+                      className={`${styles.formInput} ${fieldErrors.senderNumber ? styles.formInputError : ""}`}
+                    />
+                    {fieldErrors.senderNumber ? (
+                      <p className={styles.formErrorText}>{fieldErrors.senderNumber}</p>
+                    ) : (
+                      <p className={styles.formHelpText}>The mobile number you transferred money from</p>
+                    )}
+                  </div>
+
+                  {/* Transaction ID */}
+                  <div className={styles.formGroup}>
+                    <label htmlFor="transaction-id" className={styles.formLabel}>
+                      <span>Transaction ID (TrxID) <span className={styles.formRequired}>*</span></span>
+                    </label>
+                    <input
+                      id="transaction-id"
+                      name="transactionId"
+                      type="text"
+                      required
+                      value={transactionId}
+                      onChange={(e) => {
+                        setTransactionId(e.target.value.toUpperCase());
+                        if (fieldErrors.transactionId) {
+                          setFieldErrors((prev) => ({ ...prev, transactionId: "" }));
+                        }
+                      }}
+                      placeholder="e.g. TRX982348712"
+                      className={`${styles.formInput} ${fieldErrors.transactionId ? styles.formInputError : ""}`}
+                    />
+                    {fieldErrors.transactionId ? (
+                      <p className={styles.formErrorText}>{fieldErrors.transactionId}</p>
+                    ) : (
+                      <p className={styles.formHelpText}>8–10 alphanumeric characters from SMS receipt</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Step 3: Additional Requirements (Optional) */}
+            <section className={styles.sectionCard} aria-labelledby="additional-notes-title">
+              <div className={styles.sectionHeader}>
+                <span className={styles.sectionNumber}>3</span>
+                <div className={styles.sectionTitleGroup}>
+                  <h2 id="additional-notes-title" className={styles.sectionTitle}>
+                    Additional Requirements
+                  </h2>
+                  <p className={styles.sectionSubtitle}>
+                    Have specific instructions? Let our provisioning team know.
+                  </p>
+                </div>
+                <span className={styles.formOptional}>Optional</span>
+              </div>
+
+              <div className={styles.formGroup}>
+                <textarea
+                  id="order-requirements"
+                  name="requirements"
+                  rows={3}
+                  value={requirements}
+                  onChange={(e) => setRequirements(e.target.value)}
+                  placeholder="e.g., Specific software build, organization tax invoice name, or activation timing preferences."
+                  className={styles.formTextarea}
+                />
+              </div>
+            </section>
+
+            {/* Trust and Guarantee Badges */}
+            <div className={styles.trustBadgesRow}>
+              <div className={styles.trustBadgeItem}>
+                <ShieldCheck className={styles.trustBadgeIcon} style={{ color: "#10B981" }} />
+                <div>
+                  <h4 className={styles.trustBadgeTitle}>Genuine Software</h4>
+                  <p className={styles.trustBadgeDesc}>100% Authentic Licenses</p>
+                </div>
+              </div>
+              <div className={styles.trustBadgeItem}>
+                <Zap className={styles.trustBadgeIcon} style={{ color: "#F59E0B" }} />
+                <div>
+                  <h4 className={styles.trustBadgeTitle}>Fast Delivery</h4>
+                  <p className={styles.trustBadgeDesc}>Sent directly to Email & WhatsApp</p>
+                </div>
+              </div>
+              <div className={styles.trustBadgeItem}>
+                <Headphones className={styles.trustBadgeIcon} style={{ color: "#6C63FF" }} />
+                <div>
+                  <h4 className={styles.trustBadgeTitle}>Live Support</h4>
+                  <p className={styles.trustBadgeDesc}>WhatsApp: 01641699879</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Error Message Alert */}
+            {submitError && (
+              <div className={styles.errorMessage} role="alert">
+                <AlertCircle size={18} />
+                <span>{submitError}</span>
+              </div>
+            )}
+
+            {/* Place Order Button */}
+            <div className={styles.placeOrderWrapper}>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={styles.placeOrderButton}
+              >
+                {isSubmitting ? (
+                  <span>Verifying & Placing Order...</span>
+                ) : (
+                  <>
+                    <span>Place Order — {formatPrice(total)}</span>
+                    <ArrowRight size={20} />
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+
+          {/* ===============================================================
+              RIGHT COLUMN (40%): COMPLETE PRODUCT DETAILS & ORDER SUMMARY
+             =============================================================== */}
+          <aside className={styles.rightColumn} aria-label="Order Summary">
+            <div className={styles.orderSummaryCard}>
+              <h2 className={styles.orderSummaryTitle}>Your Order</h2>
+              <p className={styles.orderSummarySubtitle}>
+                Review your products before placing your order.
+              </p>
+
+              {/* Product List */}
+              <div className={styles.productList} role="list">
+                {cartProducts.map(({ line, product, quantity, unitPrice, originalPrice, optionLabel }) => {
+                  const name = toPlainText(product.name);
+                  const hasDiscount = originalPrice !== null && originalPrice > unitPrice;
+
+                  return (
+                    <div
+                      key={`${product.id}:${line.optionId ?? "base"}`}
+                      className={styles.productRow}
+                      role="listitem"
+                    >
+                      {/* Product Thumbnail */}
+                      <div className={styles.productThumbnail}>
+                        <Image
+                          src={product.image}
+                          alt={name}
+                          width={56}
+                          height={56}
+                          className="object-contain"
+                        />
+                      </div>
+
+                      {/* Product Info */}
+                      <div className={styles.productInfo}>
+                        <Link href={`/products/${product.id}`} className={styles.productName}>
+                          {name}
+                        </Link>
+
+                        {optionLabel && (
+                          <span className={styles.productOptionBadge}>
+                            {optionLabel}
+                          </span>
+                        )}
+
+                        {/* Quantity controls */}
+                        <div className={styles.productQuantityControls}>
+                          <button
+                            type="button"
+                            className={styles.qtyButton}
+                            disabled={quantity <= 1}
+                            onClick={() => updateQuantity(product.id, quantity - 1, line.optionId)}
+                            aria-label={`Decrease quantity of ${name}`}
+                          >
+                            −
+                          </button>
+                          <span className={styles.qtyValue}>{quantity}</span>
+                          <button
+                            type="button"
+                            className={styles.qtyButton}
+                            disabled={quantity >= 99}
+                            onClick={() => updateQuantity(product.id, quantity + 1, line.optionId)}
+                            aria-label={`Increase quantity of ${name}`}
+                          >
+                            +
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.productRemoveBtn}
+                            onClick={() => removeItem(product.id, line.optionId)}
+                            aria-label={`Remove ${name} from order`}
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Price Column */}
+                      <div className={styles.productPriceCol}>
+                        <span className={styles.productLineTotal}>
+                          {formatPrice(unitPrice * quantity)}
+                        </span>
+                        {hasDiscount && (
+                          <span className={styles.productOriginalPrice}>
+                            {formatPrice(originalPrice! * quantity)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Coupon Section */}
+              <div className={styles.couponSection}>
+                <label htmlFor="coupon-input" className={styles.couponLabel}>
+                  Have a coupon code?
+                </label>
+
+                {appliedCoupon ? (
+                  <div className={styles.couponAppliedBadge}>
+                    <span className={styles.couponAppliedText}>
+                      <span>✓ {appliedCoupon} ({COUPONS[appliedCoupon].label})</span>
                     </span>
-
                     <button
                       type="button"
-                      className={styles.removeButton}
-                      aria-label={`Remove ${name} from cart`}
-                      onClick={() => {
-                        removeItem(product.id, line.optionId);
-                        notify.info("Product removed", {
-                          description: `${name} was removed from your cart.`,
-                          id: `cart-remove-${product.id}`,
-                        });
-                      }}
+                      className={styles.couponRemoveBtn}
+                      onClick={handleRemoveCoupon}
+                      aria-label="Remove applied coupon"
                     >
                       Remove
                     </button>
                   </div>
-                </article>
-              );
-            })}
-          </section>
+                ) : (
+                  <form className={styles.couponForm} onSubmit={handleApplyCoupon}>
+                    <input
+                      id="coupon-input"
+                      type="text"
+                      value={couponInput}
+                      onChange={(e) => {
+                        setCouponInput(e.target.value.toUpperCase());
+                        if (couponFeedback?.tone === "error") {
+                          setCouponFeedback(null);
+                        }
+                      }}
+                      placeholder="TECHBD10 / SAVE10"
+                      className={styles.couponInput}
+                    />
+                    <button
+                      type="submit"
+                      disabled={!couponInput.trim()}
+                      className={styles.couponApplyBtn}
+                    >
+                      Apply
+                    </button>
+                  </form>
+                )}
 
-          <aside className={styles.summary}>
-            <h2>Order Summary</h2>
-
-            <section
-              className={styles.coupon}
-              aria-labelledby="coupon-title"
-            >
-              <div className={styles.couponHeading}>
-                <h3 id="coupon-title">Have a coupon code?</h3>
-                <span>Optional</span>
-              </div>
-
-              {appliedCoupon ? (
-                <div className={styles.couponApplied}>
-                  <div>
-                    <strong>{appliedCoupon}</strong>
-                    <span>{COUPONS[appliedCoupon].label}</span>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={removeCoupon}
-                    aria-label={`Remove ${appliedCoupon} coupon`}
+                {couponFeedback && (
+                  <p
+                    className={
+                      couponFeedback.tone === "success"
+                        ? styles.couponAppliedBadge
+                        : styles.couponError
+                    }
                   >
-                    Remove
-                  </button>
-                </div>
-              ) : (
-                <form
-                  className={styles.couponForm}
-                  onSubmit={applyCoupon}
-                >
-                  <label htmlFor="coupon-code" className={styles.srOnly}>
-                    Coupon code
-                  </label>
-
-                  <input
-                    id="coupon-code"
-                    name="coupon-code"
-                    type="text"
-                    value={couponInput}
-                    onChange={(event) => {
-                      setCouponInput(event.target.value.toUpperCase());
-
-                      if (couponFeedback?.tone === "error") {
-                        setCouponFeedback(null);
-                      }
-                    }}
-                    placeholder="Enter code"
-                    autoComplete="off"
-                    spellCheck={false}
-                    aria-describedby="coupon-hint"
-                  />
-
-                  <button type="submit" disabled={!couponInput.trim()}>
-                    Apply
-                  </button>
-                </form>
-              )}
-
-              {couponFeedback && (
-                <p
-                  className={
-                    couponFeedback.tone === "success"
-                      ? styles.couponMessageSuccess
-                      : styles.couponMessageError
-                  }
-                  role={
-                    couponFeedback.tone === "error"
-                      ? "alert"
-                      : "status"
-                  }
-                >
-                  {couponFeedback.message}
-                </p>
-              )}
-            </section>
-
-            <div className={styles.summaryRows}>
-              <div className={styles.summaryRow}>
-                <span>Products</span>
-                <span>{formatPrice(subtotal)}</span>
+                    {couponFeedback.message}
+                  </p>
+                )}
               </div>
 
-              <div className={styles.summaryRow}>
-                <span>Digital delivery</span>
-                <span>Free</span>
+              {/* Order Total Breakdown */}
+              <div className={styles.priceBreakdown}>
+                <div className={styles.priceRow}>
+                  <span>Products Subtotal</span>
+                  <span className={styles.priceRowValue}>{formatPrice(subtotal)}</span>
+                </div>
+
+                {productSavings > 0 && (
+                  <div className={styles.priceRow}>
+                    <span>Product Discounts</span>
+                    <span className={`${styles.priceRowValue} ${styles.priceRowSavings}`}>
+                      −{formatPrice(productSavings)}
+                    </span>
+                  </div>
+                )}
+
+                {couponDiscount > 0 && appliedCoupon && (
+                  <div className={styles.priceRow}>
+                    <span>Coupon ({appliedCoupon})</span>
+                    <span className={`${styles.priceRowValue} ${styles.priceRowSavings}`}>
+                      −{formatPrice(couponDiscount)}
+                    </span>
+                  </div>
+                )}
+
+                <div className={styles.priceRow}>
+                  <span>Digital Delivery</span>
+                  <span className={styles.deliveryFree}>Free (Instant)</span>
+                </div>
+
+                {totalSavings > 0 && (
+                  <div className={styles.priceRow}>
+                    <span>Total Savings</span>
+                    <span className={`${styles.priceRowValue} ${styles.priceRowSavings}`}>
+                      −{formatPrice(totalSavings)}
+                    </span>
+                  </div>
+                )}
+
+                <div className={styles.divider} />
+
+                <div className={styles.totalRow}>
+                  <span className={styles.totalLabel}>TOTAL PAYABLE</span>
+                  <span className={styles.totalAmount}>{formatPrice(total)}</span>
+                </div>
               </div>
 
-              {savings > 0 && (
-                <div
-                  className={`${styles.summaryRow} ${styles.savings}`}
-                >
-                  <span>You save</span>
-                  <span>−{formatPrice(savings)}</span>
+              {/* Guarantee Notes */}
+              <div className={styles.guaranteeNotes}>
+                <div className={styles.guaranteeItem}>
+                  <CheckCircle2 size={14} style={{ color: "#10B981" }} />
+                  <span>Official Genuine License Guarantee</span>
                 </div>
-              )}
-
-              {couponDiscount > 0 && appliedCoupon && (
-                <div
-                  className={`${styles.summaryRow} ${styles.couponSavings}`}
-                >
-                  <span>Coupon ({appliedCoupon})</span>
-                  <span>−{formatPrice(couponDiscount)}</span>
+                <div className={styles.guaranteeItem}>
+                  <Zap size={14} style={{ color: "#F59E0B" }} />
+                  <span>Immediate License Dispatch After Verification</span>
                 </div>
-              )}
+                <div className={styles.guaranteeItem}>
+                  <MessageCircle size={14} style={{ color: "#6C63FF" }} />
+                  <span>Dedicated WhatsApp Support Available 24/7</span>
+                </div>
+              </div>
             </div>
-
-            <div className={styles.total}>
-              <span>Total</span>
-              <strong>{formatPrice(total)}</strong>
-            </div>
-
-            <button
-              type="button"
-              className="btn btn--primary btn--lg"
-              onClick={openCheckout}
-            >
-              Proceed to Checkout
-            </button>
-
-            <Link href="/products#products-by-category" className={styles.continueLink}>
-              ← Continue Shopping
-            </Link>
           </aside>
         </div>
-
-        {checkoutOpen && (
-          <div
-            className={styles.checkoutOverlay}
-            role="presentation"
-            onClick={(event) => {
-              if (event.target === event.currentTarget) {
-                closeCheckout();
-              }
-            }}
-          >
-            <div className={styles.checkoutModal} role="dialog" aria-modal="true" aria-labelledby="checkout-title">
-              <button
-                type="button"
-                className={styles.checkoutClose}
-                onClick={closeCheckout}
-                aria-label="Close checkout"
-              >
-                ✕
-              </button>
-
-              <div className={styles.checkoutProgress} aria-hidden="true">
-                {[1, 2, 3, 4].map((step) => (
-                  <span
-                    key={step}
-                    className={`${styles.checkoutDot} ${step <= checkoutStep ? styles.checkoutDotActive : ""} ${step < checkoutStep ? styles.checkoutDotDone : ""}`}
-                  >
-                    {step}
-                  </span>
-                ))}
-              </div>
-
-              {checkoutStep === 1 && (
-                <section className={styles.checkoutStep}>
-                  <span className={styles.checkoutBadge}>Step 1</span>
-                  <h2 id="checkout-title">Your details</h2>
-                  <p className={styles.checkoutSubtitle}>
-                    Tell us who to contact for the order.
-                  </p>
-
-                  <div className={styles.checkoutForm}>
-                    <label>
-                      <span>Full name</span>
-                      <input
-                        type="text"
-                        value={customerName}
-                        onChange={(event) => setCustomerName(event.target.value)}
-                        placeholder="Enter your full name"
-                        autoComplete="name"
-                      />
-                    </label>
-
-                    <label>
-                      <span>Mobile / WhatsApp number</span>
-                      <input
-                        type="tel"
-                        value={customerPhone}
-                        onChange={(event) => setCustomerPhone(event.target.value)}
-                        placeholder="01XXXXXXXXX"
-                        autoComplete="tel"
-                      />
-                    </label>
-
-                    <label>
-                      <span>Email address</span>
-                      <input
-                        type="email"
-                        value={customerEmail}
-                        onChange={(event) => setCustomerEmail(event.target.value)}
-                        placeholder="your@email.com"
-                        autoComplete="email"
-                      />
-                    </label>
-                  </div>
-                </section>
-              )}
-
-              {checkoutStep === 2 && (
-                <section className={styles.checkoutStep}>
-                  <span className={styles.checkoutBadge}>Step 2</span>
-                  <h2>Payment method</h2>
-                  <p className={styles.checkoutSubtitle}>
-                    Choose the mobile banking option you want to use.
-                  </p>
-
-                  <div className={styles.paymentGrid}>
-                    {(Object.entries(PAYMENT_METHODS) as Array<[
-                      PaymentMethodKey,
-                      PaymentMethod,
-                    ]>).map(([key, payment]) => (
-                      <button
-                        key={key}
-                        type="button"
-                        className={`${styles.paymentOption} ${selectedMethod === key ? styles.paymentOptionSelected : ""}`}
-                        onClick={() => setSelectedMethod(key)}
-                        style={{
-                          borderColor:
-                            selectedMethod === key
-                              ? payment.accent
-                              : undefined,
-                        }}
-                      >
-                        <span
-                          className={styles.paymentLogo}
-                          style={{ backgroundColor: payment.accent }}
-                        >
-                          <Image
-                            src={payment.logoUrl}
-                            alt={`${payment.label} logo`}
-                            className={styles.paymentLogoImage}
-                            width={52}
-                            height={52}
-                          />
-                        </span>
-                        <strong>{payment.label}</strong>
-                        <span>Tap to select</span>
-                      </button>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {checkoutStep === 3 && selectedMethod && (
-                <section className={styles.checkoutStep}>
-                  <span className={styles.checkoutBadge}>Step 3</span>
-                  <h2>{selectedPayment?.label ?? "Payment"}</h2>
-                  <p className={styles.checkoutSubtitle}>
-                    Send the amount below, then enter the transaction ID.
-                  </p>
-
-                  <div className={styles.paymentHeaderBrand}>
-                    <span
-                      className={styles.paymentLogo}
-                      style={{ backgroundColor: selectedPayment?.accent }}
-                    >
-                      {selectedPayment && (
-                        <Image
-                          src={selectedPayment.logoUrl}
-                          alt={`${selectedPayment.label} logo`}
-                          className={styles.paymentLogoImage}
-                          width={52}
-                          height={52}
-                        />
-                      )}
-                    </span>
-                    <div>
-                      <strong>{selectedPayment?.label}</strong>
-                      <p>Complete the payment and share the TrxID.</p>
-                    </div>
-                  </div>
-
-                  <div className={styles.paymentNumberBox}>
-                    <span>Send money to</span>
-                    <strong>{selectedPayment?.number}</strong>
-                    <button
-                      className={styles.copyNumberButton}
-                      type="button"
-                      onClick={copyPaymentNumber}
-                    >
-                      <span aria-hidden="true">📋</span>
-                      {copiedPaymentNumber ? "Copied" : "Copy"}
-                    </button>
-                  </div>
-
-                  <div className={styles.checkoutTotalBox}>
-                    <span>Total to pay</span>
-                    <strong>{formatPrice(total)}</strong>
-                  </div>
-
-                  <label>
-                    <span>Sender Number</span>
-                    <input
-                      type="tel"
-                      value={senderNumber}
-                      onChange={(event) => setSenderNumber(event.target.value)}
-                      placeholder="Enter sender mobile number"
-                      autoComplete="tel"
-                    />
-                  </label>
-
-                  <label>
-                    <span>Transaction ID</span>
-                    <input
-                      type="text"
-                      value={transactionId}
-                      onChange={(event) => setTransactionId(event.target.value)}
-                      placeholder="e.g. TRX123456789"
-                    />
-                  </label>
-                </section>
-              )}
-
-              {checkoutStep === 4 && (
-                <section className={`${styles.checkoutStep} ${styles.checkoutStepFinal}`}>
-                  <div className={styles.checkoutSuccessIcon} aria-hidden="true">
-                    <span>✓</span>
-                  </div>
-                  <h2>Payment Processing</h2>
-                  <p className={styles.checkoutSubtitle}>
-                    We&apos;re verifying your payment and will send your license key to your email shortly.
-                  </p>
-
-                  {submittedOrder && (
-                    <div className={styles.checkoutSummaryBox}>
-                      <div>
-                        <span>Order ID</span>
-                        <strong>{submittedOrder.orderNumber}</strong>
-                      </div>
-                      <div>
-                        <span>Total submitted</span>
-                        <strong>{formatPrice(submittedOrder.total)}</strong>
-                      </div>
-                    </div>
-                  )}
-
-                  <p className={styles.checkoutFinalNote}>
-                    <strong>For instant delivery, contact us on WhatsApp!</strong>
-                  </p>
-
-                  <button
-                    type="button"
-                    className={`${styles.checkoutWhatsAppAction} btn btn--primary btn--lg`}
-                    onClick={() => {
-                      launchWhatsAppOrder();
-                      closeCheckout();
-                    }}
-                  >
-                    Message Tech Solutions BD on WhatsApp
-                  </button>
-
-                  <div className={styles.checkoutFinalActions}>
-                    <button
-                      type="button"
-                      className={styles.checkoutSecondaryAction}
-                      onClick={goBack}
-                    >
-                      ← Back
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.checkoutSecondaryAction}
-                      onClick={closeCheckout}
-                    >
-                      Close
-                    </button>
-                  </div>
-                </section>
-              )}
-
-              {checkoutError && (
-                <p className={styles.checkoutError} role="alert">
-                  {checkoutError}
-                </p>
-              )}
-
-              {checkoutStep < 4 ? (
-                <div className={styles.checkoutActions}>
-                  <button
-                    type="button"
-                    className={styles.checkoutSecondaryAction}
-                    onClick={checkoutStep === 1 ? closeCheckout : goBack}
-                  >
-                    {checkoutStep === 1 ? "Cancel" : "Back"}
-                  </button>
-
-                  <button
-                    type="button"
-                    className={`${styles.checkoutPrimaryAction} btn btn--primary`}
-                    onClick={handleCheckoutAdvance}
-                    disabled={isSubmittingOrder}
-                  >
-                    {checkoutStep === 3
-                      ? isSubmittingOrder
-                        ? "Saving order..."
-                        : "Confirm order"
-                      : "Continue"}
-                  </button>
-                </div>
-              ) : null}
-            </div>
-          </div>
-        )}
       </div>
     </main>
   );
