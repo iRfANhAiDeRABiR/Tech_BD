@@ -2,18 +2,18 @@ import nodemailer from "nodemailer";
 import { existsSync } from "node:fs";
 import path from "node:path";
 
-type ConfirmationOrder = {
+export type ConfirmationOrder = {
   orderNumber: string;
   total: number;
 };
 
-type ConfirmationCustomer = {
+export type ConfirmationCustomer = {
   name: string;
   email: string;
   phone: string;
 };
 
-type ConfirmationItem = {
+export type ConfirmationItem = {
   productName: string;
   productImage?: string;
   optionName?: string;
@@ -21,13 +21,13 @@ type ConfirmationItem = {
   unitPrice: number;
 };
 
-type ConfirmationTotals = {
+export type ConfirmationTotals = {
   subtotal: number;
   discount: number;
   total: number;
 };
 
-type SendOrderConfirmationEmailInput = {
+export type SendOrderConfirmationEmailInput = {
   order: ConfirmationOrder;
   customer: ConfirmationCustomer;
   items: ConfirmationItem[];
@@ -36,7 +36,7 @@ type SendOrderConfirmationEmailInput = {
   siteUrl?: string;
 };
 
-type ProductImageAsset = {
+export type ProductImageAsset = {
   sources: Map<number, string>;
   attachments: Array<{
     filename: string;
@@ -51,12 +51,13 @@ const currencyFormatter = new Intl.NumberFormat("en-BD", {
   maximumFractionDigits: 0,
 });
 
-function formatCurrency(amount: number) {
+export function formatCurrency(amount: number) {
   return currencyFormatter.format(amount);
 }
 
-function escapeHtml(value: string) {
-  return value
+export function escapeHtml(value: string | null | undefined) {
+  if (value === null || value === undefined) return "";
+  return String(value)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -64,7 +65,7 @@ function escapeHtml(value: string) {
     .replace(/'/g, "&#039;");
 }
 
-function resolveImageUrl(imageUrl: string | undefined, siteUrl: string | undefined) {
+export function resolveImageUrl(imageUrl: string | undefined, siteUrl: string | undefined) {
   if (!imageUrl) {
     return null;
   }
@@ -82,7 +83,7 @@ function resolveImageUrl(imageUrl: string | undefined, siteUrl: string | undefin
   return new URL(imageUrl, baseUrl).toString();
 }
 
-function getPublicImagePath(imageUrl: string | undefined) {
+export function getPublicImagePath(imageUrl: string | undefined) {
   if (!imageUrl || !imageUrl.startsWith("/")) {
     return null;
   }
@@ -103,7 +104,7 @@ function getPublicImagePath(imageUrl: string | undefined) {
   return filePath;
 }
 
-function buildProductImageAssets(
+export function buildProductImageAssets(
   items: ConfirmationItem[],
   siteUrl: string | undefined,
 ): ProductImageAsset {
@@ -135,7 +136,7 @@ function buildProductImageAssets(
   return { sources, attachments };
 }
 
-function getMailConfig() {
+export function getMailConfig() {
   const host = process.env.SMTP_HOST;
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
@@ -151,7 +152,7 @@ function getMailConfig() {
   return { host, port, secure, user, pass, from };
 }
 
-function shouldAllowSelfSignedSmtpCertificate() {
+export function shouldAllowSelfSignedSmtpCertificate() {
   return process.env.SMTP_ALLOW_SELF_SIGNED === "true";
 }
 

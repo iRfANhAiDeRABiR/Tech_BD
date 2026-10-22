@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { answerTelegramCallbackQuery, updateTelegramMessageStatus } from "@/lib/telegram";
+import { processTelegramOrderAction } from "@/lib/orderVerificationService";
 
 export const runtime = "nodejs";
 
@@ -42,51 +43,23 @@ async function syncTelegramUpdates() {
 
           if (action === "DONE") {
             await answerTelegramCallbackQuery(cb.id, `Order #${orderRef} has already been processed.`);
-          } else if (action === "CONFIRMED") {
-            try {
-              await prisma.order.update({
-                where: { orderNumber: orderRef },
-                data: {
-                  status: "COMPLETED",
-                  payment: { update: { status: "VERIFIED" } },
-                },
-              });
-            } catch (e) {
-              console.error("DB update error on confirm", e);
-            }
+          } else if (action === "CONFIRMED" || action === "INVALID") {
+            // Update DB & send customer status email
+            await processTelegramOrderAction({ orderNumber: orderRef, action });
 
-            await answerTelegramCallbackQuery(cb.id, `✅ Order #${orderRef} Confirmed by ${adminName}!`);
+            await answerTelegramCallbackQuery(
+              cb.id,
+              action === "CONFIRMED"
+                ? `✅ Order #${orderRef} Confirmed by ${adminName}!`
+                : `❌ Order #${orderRef} marked as Invalid by ${adminName}!`
+            );
 
             if (cb.message?.chat?.id && cb.message?.message_id) {
               await updateTelegramMessageStatus({
                 chatId: cb.message.chat.id,
                 messageId: cb.message.message_id,
                 orderNumber: orderRef,
-                action: "CONFIRMED",
-                adminName,
-                originalText: cb.message.text,
-              });
-            }
-          } else if (action === "INVALID") {
-            try {
-              await prisma.order.update({
-                where: { orderNumber: orderRef },
-                data: {
-                  payment: { update: { status: "REJECTED" } },
-                },
-              });
-            } catch (e) {
-              console.error("DB update error on invalid", e);
-            }
-
-            await answerTelegramCallbackQuery(cb.id, `❌ Order #${orderRef} marked Invalid by ${adminName}!`);
-
-            if (cb.message?.chat?.id && cb.message?.message_id) {
-              await updateTelegramMessageStatus({
-                chatId: cb.message.chat.id,
-                messageId: cb.message.message_id,
-                orderNumber: orderRef,
-                action: "INVALID",
+                action,
                 adminName,
                 originalText: cb.message.text,
               });

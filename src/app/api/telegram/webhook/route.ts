@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
 import { answerTelegramCallbackQuery, updateTelegramMessageStatus } from "@/lib/telegram";
+import { processTelegramOrderAction } from "@/lib/orderVerificationService";
 
 export const runtime = "nodejs";
 
@@ -43,27 +43,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: true, action: "DONE", orderNumber });
     }
 
-    // Update order in Prisma
-    if (action === "CONFIRMED") {
-      await prisma.order.update({
-        where: { orderNumber },
-        data: {
-          status: "COMPLETED",
-          payment: {
-            update: { status: "VERIFIED" },
-          },
-        },
-      });
-    } else {
-      await prisma.order.update({
-        where: { orderNumber },
-        data: {
-          payment: {
-            update: { status: "REJECTED" },
-          },
-        },
-      });
-    }
+    // Update order in Prisma & dispatch customer email notification
+    await processTelegramOrderAction({
+      orderNumber,
+      action,
+    });
 
     // Answer Telegram callback query
     await answerTelegramCallbackQuery(

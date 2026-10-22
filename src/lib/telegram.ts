@@ -68,7 +68,7 @@ export async function sendTelegramOrderNotification(
 
   const headerTitle = payload.isReminder
     ? `⚠️ <b>URGENT REMINDER (#${payload.reminderIndex || 1}/${payload.maxReminders || 8})</b>\n🔔 <b>ORDER AWAITING CONFIRMATION</b>`
-    : `🔔 <b>NEW TECH SOLUTIONS BD ORDER</b>`;
+    : `🔔 <b>NEW ORDER NOTIFICATION</b>`;
 
   const statusLine = payload.isReminder
     ? `Status: ⏳ <b>PENDING VERIFICATION (ACTION REQUIRED #${payload.reminderIndex || 1})</b>`
@@ -172,14 +172,14 @@ export async function updateTelegramMessageStatus(params: {
       .trim();
 
     updatedText = `
-${isConfirm ? "✅" : "❌"} <b>TECH SOLUTIONS BD ORDER — ${isConfirm ? "CONFIRMED" : "INVALID"}</b>
+${isConfirm ? "✅" : "❌"} <b>ORDER — ${isConfirm ? "CONFIRMED" : "INVALID"}</b>
 ${baseText.replace(/^[^\n]*\n/, "")}
 ━━━━━━━━━━━━━━━━━━━━━
 ${statusRemark}
     `.trim();
   } else {
     updatedText = `
-${isConfirm ? "✅" : "❌"} <b>TECH SOLUTIONS BD ORDER #${escapeTelegramHtml(params.orderNumber)} — ${isConfirm ? "CONFIRMED" : "INVALID"}</b>
+${isConfirm ? "✅" : "❌"} <b>ORDER #${escapeTelegramHtml(params.orderNumber)} — ${isConfirm ? "CONFIRMED" : "INVALID"}</b>
 ━━━━━━━━━━━━━━━━━━━━━
 ${statusRemark}
     `.trim();
