@@ -238,104 +238,144 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .paymentCard {
   position: relative;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 16px 12px;
-  background: var(--bg-glass, rgba(255, 255, 255, 0.03));
-  border: 2px solid var(--border-color, rgba(255, 255, 255, 0.08));
-  border-radius: var(--radius-md, 12px);
+  gap: 10px;
+  padding: 13px 14px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 9999px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   text-align: center;
   user-select: none;
 }
 
-[data-theme="light"] .paymentCard {
-  background: #f8fafc;
-  border-color: #e2e8f0;
+[data-theme="dark"] .paymentCard {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 .paymentCard:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.25);
-  background: var(--bg-glass-hover, rgba(255, 255, 255, 0.06));
+  transform: translateY(-1px);
+  border-color: #cbd5e1;
+  background: #f8fafc;
 }
 
-[data-theme="light"] .paymentCard:hover {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
+[data-theme="dark"] .paymentCard:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.22);
 }
 
 .paymentCardSelected {
-  transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  border: 2px solid #10b981 !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 1px #10b981 !important;
 }
 
-[data-theme="light"] .paymentCardSelected {
-  background: #ffffff;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+[data-theme="dark"] .paymentCardSelected {
+  background: rgba(16, 185, 129, 0.08) !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 1px #10b981 !important;
 }
 
 .paymentCardLogoWrap {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
+  width: 26px;
+  height: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
-  background: #ffffff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  flex-shrink: 0;
 }
 
 .paymentCardName {
   font-size: 0.95rem;
   font-weight: 800;
-  color: var(--text-primary, #f0f0ff);
-}
-
-[data-theme="light"] .paymentCardName {
   color: #0f172a;
 }
 
-.paymentCardBadge {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--text-muted, #8a8aaa);
-  background: rgba(255, 255, 255, 0.05);
-  padding: 2px 6px;
-  border-radius: 4px;
+[data-theme="dark"] .paymentCardName {
+  color: #f1f5f9;
 }
 
-[data-theme="light"] .paymentCardBadge {
-  background: #e2e8f0;
-  color: #475569;
+.paymentCardBadge {
+  display: none;
 }
 
 .paymentCardCheck {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--accent-primary, #6C63FF);
+  display: none;
+}
+
+/* ── Single Hint Bar under Payment Options (Screenshot 1) ───────────────── */
+.paymentHintBar {
+  padding: 10px 18px;
+  border-radius: 9999px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  font-size: 11.5px;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+[data-theme="dark"] .paymentHintBar {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+}
+
+.paymentHintBrand {
+  font-weight: 800;
+  color: #2563eb;
+  font-family: var(--font-mono, monospace);
+  margin-left: 8px;
+}
+
+/* ── Submit Order Blue Button (Screenshot 1) ────────────────────────────── */
+.submitOrderButton {
+  width: 100%;
+  padding: 15px 24px;
+  border-radius: 12px;
+  background: #0d80e8;
+  background: linear-gradient(135deg, #0d80e8 0%, #0284c7 100%);
   color: #ffffff;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 750;
+  border: none;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
-  font-weight: 800;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(13, 128, 232, 0.35);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  letter-spacing: 0.01em;
+}
+
+.submitOrderButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0b72ce 0%, #0274ae 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(13, 128, 232, 0.45);
+}
+
+.submitOrderButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submitOrderButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* ── Dynamic Payment Instructions & Verification ───────────────────────── */

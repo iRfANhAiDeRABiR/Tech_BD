@@ -23,6 +23,10 @@ import { createClient } from "@/lib/supabase/client";
 import { notify } from "@/lib/toast";
 import { getUserFriendlyError } from "@/lib/errorSanitizer";
 import { BkashLogo, NagadLogo, RocketLogo } from "@/components/common/PaymentLogos";
+import PaymentGatewayPage, {
+  type PaymentGatewayOrder,
+  type SubmittedOrderData,
+} from "@/components/payment/PaymentGatewayPage";
 import styles from "@/app/cart/cart.module.css";
 
 interface CartPageClientProps {
@@ -203,12 +207,7 @@ export function CartPageClient({ products }: CartPageClientProps) {
 
   // Payment Selection & Verification state
   const [selectedMethod, setSelectedMethod] = useState<PaymentProviderKey>("bkash");
-  const [senderNumber, setSenderNumber] = useState("");
-  const [transactionId, setTransactionId] = useState("");
-
-  // Copy feedback state
-  const [copiedNumber, setCopiedNumber] = useState(false);
-  const [copiedAmount, setCopiedAmount] = useState(false);
+  const [activePaymentOrder, setActivePaymentOrder] = useState<PaymentGatewayOrder | null>(null);
 
   // Coupon state
   const [couponInput, setCouponInput] = useState("");
@@ -217,9 +216,7 @@ export function CartPageClient({ products }: CartPageClientProps) {
 
   // Form submission state
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [submittedOrder, setSubmittedOrder] = useState<SubmittedOrder | null>(null);
+  const [submittedOrder, setSubmittedOrder] = useState<SubmittedOrderData | null>(null);
 
   // Products map
   const productsById = useMemo(
@@ -312,36 +309,6 @@ export function CartPageClient({ products }: CartPageClientProps) {
 
   const currentPayment = PAYMENT_CONFIGS[selectedMethod];
 
-  // Copy helper
-  const handleCopyNumber = async () => {
-    if (!currentPayment?.number) return;
-    try {
-      await navigator.clipboard.writeText(currentPayment.number);
-      setCopiedNumber(true);
-      notify.success("Number copied", {
-        description: `${currentPayment.name} number (${currentPayment.number}) copied to clipboard.`,
-        id: "copied-num",
-      });
-      setTimeout(() => setCopiedNumber(false), 2000);
-    } catch {
-      notify.error("Could not copy number");
-    }
-  };
-
-  const handleCopyAmount = async () => {
-    try {
-      await navigator.clipboard.writeText(total.toString());
-      setCopiedAmount(true);
-      notify.success("Amount copied", {
-        description: `Payable amount (৳${total}) copied to clipboard.`,
-        id: "copied-amt",
-      });
-      setTimeout(() => setCopiedAmount(false), 2000);
-    } catch {
-      notify.error("Could not copy amount");
-    }
-  };
-
   // Coupon handlers
   const handleApplyCoupon = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -383,8 +350,8 @@ export function CartPageClient({ products }: CartPageClientProps) {
     notify.info("Coupon removed", { id: "coupon-rm" });
   };
 
-  // Form Validation
-  const validateForm = (): boolean => {
+  // Form Validation (Customer Info only for initial order submission)
+  const validateCustomerForm = (): boolean => {
     const errors: { [key: string]: string } = {};
 
     if (!customerName.trim() || customerName.trim().length < 2) {
@@ -402,103 +369,46 @@ export function CartPageClient({ products }: CartPageClientProps) {
       errors.email = "Valid delivery email address is required for software activation.";
     }
 
-    if (!senderNumber.trim() || !isValidBdPhone(senderNumber)) {
-      errors.senderNumber = "Enter the 11-digit mobile number you sent the money from.";
-    }
-
-    if (!transactionId.trim() || transactionId.trim().length < 4) {
-      errors.transactionId = "Transaction ID (TrxID) is required (at least 4 characters).";
-    }
-
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  // Handle Order Placement
-  const handlePlaceOrder = async (e: React.FormEvent) => {
+  // Handle Order Placement -> Transitions to dedicated Payment Gateway page
+  const handlePlaceOrder = (e: React.FormEvent) => {
     e.preventDefault();
-    if (isSubmitting) return;
 
-    if (!validateForm()) {
+    if (!validateCustomerForm()) {
       notify.warning("Required fields missing", {
-        description: "Please check the highlighted fields and correct any errors.",
+        description: "Please enter your full name, mobile number, and delivery email address.",
         id: "checkout-val-err",
       });
       return;
     }
 
-    setIsSubmitting(true);
-    setSubmitError(null);
+    const orderRef = `TECHBD-ATD-${Math.floor(100000 + Math.random() * 900000)}`;
 
-    try {
-      const response = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          customer: {
-            name: customerName.trim(),
-            phone: normalizeBdPhone(customerPhone.trim()),
-            email: customerEmail.trim(),
-          },
-          payment: {
-            method: selectedMethod,
-            label: currentPayment.label,
-            paymentNumber: currentPayment.number,
-            senderNumber: normalizeBdPhone(senderNumber.trim()),
-            transactionId: transactionId.trim().toUpperCase(),
-          },
-          notes: requirements.trim() || null,
-          couponCode: appliedCoupon || null,
-          items: cartProducts.map(({ line, product, quantity, unitPrice, originalPrice, optionLabel }) => ({
-            productId: product.id,
-            optionId: line.optionId,
-            optionName: optionLabel ?? undefined,
-            optionType: line.optionType,
-            productName: toPlainText(product.name),
-            productImage: product.image,
-            unitPrice,
-            originalUnitPrice: originalPrice ?? null,
-            quantity,
-          })),
-        }),
-      });
-
-      const result = (await response.json()) as CheckoutOrderResponse;
-
-      if (!response.ok || !result.order) {
-        throw new Error(result.message || "Failed to submit your order.");
-      }
-
-      // Success
-      clearCart();
-      setSubmittedOrder({
-        ...result.order,
-        customerName: customerName.trim(),
-        customerEmail: customerEmail.trim(),
-        customerPhone: customerPhone.trim(),
-        paymentMethod: currentPayment.name,
-        senderNumber: senderNumber.trim(),
-        transactionId: transactionId.trim().toUpperCase(),
-      });
-
-      notify.success("Order Placed Successfully!", {
-        description: `Order #${result.order.orderNumber} is pending verification. Check your email shortly.`,
-        duration: 7000,
-        id: `order-ok-${result.order.orderNumber}`,
-      });
-    } catch (err: any) {
-      const friendly = getUserFriendlyError(
-        err,
-        "Could not place order. Please check your transaction details and try again."
-      );
-      setSubmitError(friendly);
-      notify.error("Order Submission Failed", {
-        description: friendly,
-        id: "order-fail",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    setActivePaymentOrder({
+      refId: orderRef,
+      customerName: customerName.trim(),
+      customerPhone: normalizeBdPhone(customerPhone.trim()),
+      customerEmail: customerEmail.trim(),
+      total,
+      totalPrice: formatPrice(total),
+      paymentMethod: selectedMethod,
+      notes: requirements.trim() || null,
+      couponCode: appliedCoupon || null,
+      items: cartProducts.map(({ line, product, quantity, unitPrice, originalPrice, optionLabel }) => ({
+        productId: product.id,
+        optionId: line.optionId,
+        optionName: optionLabel ?? undefined,
+        optionType: line.optionType,
+        productName: toPlainText(product.name),
+        productImage: product.image,
+        unitPrice,
+        originalUnitPrice: originalPrice ?? null,
+        quantity,
+      })),
+    });
   };
 
   // WhatsApp Order Confirmation URL
@@ -521,6 +431,21 @@ export function CartPageClient({ products }: CartPageClientProps) {
 
     return `https://wa.me/8801641699879?text=${encodeURIComponent(msg)}`;
   };
+
+  // ── 0. Dedicated Payment Gateway Screen per Payment Option ─────────────
+  if (activePaymentOrder) {
+    return (
+      <PaymentGatewayPage
+        order={activePaymentOrder}
+        onCancel={() => setActivePaymentOrder(null)}
+        onSuccess={(confirmed) => {
+          clearCart();
+          setActivePaymentOrder(null);
+          setSubmittedOrder(confirmed);
+        }}
+      />
+    );
+  }
 
   // ── 1. Order Placed Confirmation View ──────────────────────────────────
   if (submittedOrder) {
@@ -673,7 +598,7 @@ export function CartPageClient({ products }: CartPageClientProps) {
                         setFieldErrors((prev) => ({ ...prev, name: "" }));
                       }
                     }}
-                    placeholder="e.g. Tanvir Ahmed"
+                    placeholder=""
                     autoComplete="name"
                     className={`${styles.formInput} ${fieldErrors.name ? styles.formInputError : ""}`}
                   />
@@ -742,21 +667,17 @@ export function CartPageClient({ products }: CartPageClientProps) {
               </div>
             </section>
 
-            {/* Step 2: Payment Method Selection */}
+            {/* Payment Method Selection */}
             <section className={styles.sectionCard} aria-labelledby="payment-method-title">
-              <div className={styles.sectionHeader}>
-                <span className={styles.sectionNumber}>2</span>
+              <div className={styles.sectionHeader} style={{ marginBottom: "14px" }}>
                 <div className={styles.sectionTitleGroup}>
-                  <h2 id="payment-method-title" className={styles.sectionTitle}>
-                    Payment Method
-                  </h2>
-                  <p className={styles.sectionSubtitle}>
-                    Select your preferred Bangladeshi mobile banking provider to send money.
-                  </p>
+                  <label id="payment-method-title" className={styles.formLabel} style={{ fontSize: "12px", letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: 0 }}>
+                    <span>PAYMENT METHOD <span className={styles.formRequired}>*</span></span>
+                  </label>
                 </div>
               </div>
 
-              {/* 3 Selectable Payment Cards: bKash | Nagad | Rocket */}
+              {/* 3 Selectable Payment Cards: Bkash | Nagad | Rocket (Screenshot 1) */}
               <div className={styles.paymentCardsGrid} role="radiogroup" aria-label="Select Payment Method">
                 {(Object.keys(PAYMENT_CONFIGS) as PaymentProviderKey[]).map((key) => {
                   const cfg = PAYMENT_CONFIGS[key];
@@ -764,176 +685,59 @@ export function CartPageClient({ products }: CartPageClientProps) {
                   const Logo = cfg.LogoComponent;
 
                   return (
-                    <div
+                    <button
                       key={key}
+                      type="button"
                       role="radio"
                       aria-checked={isSelected}
-                      tabIndex={0}
                       className={`${styles.paymentCard} ${isSelected ? styles.paymentCardSelected : ""}`}
-                      style={{
-                        borderColor: isSelected ? cfg.accent : undefined,
-                        boxShadow: isSelected ? `0 0 0 1px ${cfg.accent}` : undefined,
-                      }}
                       onClick={() => setSelectedMethod(key)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          setSelectedMethod(key);
-                        }
-                      }}
                     >
-                      {isSelected && (
-                        <span className={styles.paymentCardCheck} style={{ backgroundColor: cfg.accent }}>
-                          ✓
-                        </span>
-                      )}
                       <div className={styles.paymentCardLogoWrap}>
-                        <Logo className="w-8 h-8" size={32} />
+                        <Logo className="w-6 h-6" size={24} />
                       </div>
                       <span className={styles.paymentCardName}>{cfg.name}</span>
-                      <span className={styles.paymentCardBadge}>Send Money</span>
-                    </div>
+                    </button>
                   );
                 })}
               </div>
 
-              {/* Dynamic Payment Instruction Panel */}
-              <div className={styles.paymentInstructionPanel}>
-                <div className={styles.paymentAccountBoxes}>
-                  {/* Recipient Account Box */}
-                  <div className={styles.paymentAccountBox}>
-                    <span className={styles.paymentAccountBoxLabel}>
-                      Send Money to ({currentPayment.name} {currentPayment.type})
-                    </span>
-                    <div className={styles.paymentAccountBoxNumberRow}>
-                      <span className={styles.paymentAccountBoxNumber}>
-                        {currentPayment.number}
-                      </span>
-                      <button
-                        type="button"
-                        className={`${styles.copyButton} ${copiedNumber ? styles.copyButtonCopied : ""}`}
-                        onClick={handleCopyNumber}
-                        aria-label={`Copy ${currentPayment.name} account number`}
-                      >
-                        {copiedNumber ? <Check size={13} /> : <Copy size={13} />}
-                        <span>{copiedNumber ? "Copied" : "Copy Number"}</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Total Payable Box */}
-                  <div className={styles.paymentAccountBox}>
-                    <span className={styles.paymentAccountBoxLabel}>Exact Payable Amount</span>
-                    <div className={styles.paymentAccountBoxNumberRow}>
-                      <span className={styles.paymentAccountBoxAmount}>
-                        {formatPrice(total)}
-                      </span>
-                      <button
-                        type="button"
-                        className={`${styles.copyButton} ${copiedAmount ? styles.copyButtonCopied : ""}`}
-                        onClick={handleCopyAmount}
-                        aria-label="Copy exact total amount"
-                      >
-                        {copiedAmount ? <Check size={13} /> : <Copy size={13} />}
-                        <span>{copiedAmount ? "Copied" : "Copy Amount"}</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Step-by-Step Instructions */}
-                <ol className={styles.stepsList}>
-                  {currentPayment.instructions.app.map((stepText, idx) => (
-                    <li key={idx}>
-                      <span>{stepText}</span>
-                    </li>
-                  ))}
-                </ol>
-
-                {/* Transaction Verification Fields */}
-                <div className={styles.verificationInputsGroup}>
-                  {/* Sender Number */}
-                  <div className={styles.formGroup}>
-                    <label htmlFor="sender-number" className={styles.formLabel}>
-                      <span>Sender Mobile Number <span className={styles.formRequired}>*</span></span>
-                    </label>
-                    <input
-                      id="sender-number"
-                      name="senderNumber"
-                      type="tel"
-                      required
-                      value={senderNumber}
-                      onChange={(e) => {
-                        setSenderNumber(e.target.value);
-                        if (fieldErrors.senderNumber) {
-                          setFieldErrors((prev) => ({ ...prev, senderNumber: "" }));
-                        }
-                      }}
-                      placeholder="01XXXXXXXXX"
-                      className={`${styles.formInput} ${fieldErrors.senderNumber ? styles.formInputError : ""}`}
-                    />
-                    {fieldErrors.senderNumber ? (
-                      <p className={styles.formErrorText}>{fieldErrors.senderNumber}</p>
-                    ) : (
-                      <p className={styles.formHelpText}>The mobile number you transferred money from</p>
-                    )}
-                  </div>
-
-                  {/* Transaction ID */}
-                  <div className={styles.formGroup}>
-                    <label htmlFor="transaction-id" className={styles.formLabel}>
-                      <span>Transaction ID (TrxID) <span className={styles.formRequired}>*</span></span>
-                    </label>
-                    <input
-                      id="transaction-id"
-                      name="transactionId"
-                      type="text"
-                      required
-                      value={transactionId}
-                      onChange={(e) => {
-                        setTransactionId(e.target.value.toUpperCase());
-                        if (fieldErrors.transactionId) {
-                          setFieldErrors((prev) => ({ ...prev, transactionId: "" }));
-                        }
-                      }}
-                      placeholder="e.g. TRX982348712"
-                      className={`${styles.formInput} ${fieldErrors.transactionId ? styles.formInputError : ""}`}
-                    />
-                    {fieldErrors.transactionId ? (
-                      <p className={styles.formErrorText}>{fieldErrors.transactionId}</p>
-                    ) : (
-                      <p className={styles.formHelpText}>8–10 alphanumeric characters from SMS receipt</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* Step 3: Additional Requirements (Optional) */}
-            <section className={styles.sectionCard} aria-labelledby="additional-notes-title">
-              <div className={styles.sectionHeader}>
-                <span className={styles.sectionNumber}>3</span>
-                <div className={styles.sectionTitleGroup}>
-                  <h2 id="additional-notes-title" className={styles.sectionTitle}>
-                    Additional Requirements
-                  </h2>
-                  <p className={styles.sectionSubtitle}>
-                    Have specific instructions? Let our provisioning team know.
-                  </p>
-                </div>
-                <span className={styles.formOptional}>Optional</span>
+              {/* Single Helper Line under Payment Options (Screenshot 1) */}
+              <div className={styles.paymentHintBar}>
+                <span>
+                  {selectedMethod === "bkash" && "Send Money / Payment via bKash App or dial *247#"}
+                  {selectedMethod === "nagad" && "Send Money via Nagad App or dial *167#"}
+                  {selectedMethod === "rocket" && "Send Money via Rocket App or dial *322#"}
+                </span>
+                <span className={styles.paymentHintBrand}>
+                  {currentPayment.name}
+                </span>
               </div>
 
+              {/* Additional Requirements (Optional) */}
               <div className={styles.formGroup}>
+                <label htmlFor="order-requirements" className={styles.formLabel}>
+                  <span>Additional Requirements (Optional)</span>
+                </label>
                 <textarea
                   id="order-requirements"
                   name="requirements"
-                  rows={3}
+                  rows={2}
                   value={requirements}
                   onChange={(e) => setRequirements(e.target.value)}
-                  placeholder="e.g., Specific software build, organization tax invoice name, or activation timing preferences."
+                  placeholder="e.g. Need assistance with multi-seat setup or version compatibility..."
                   className={styles.formTextarea}
                 />
+              </div>
+
+              {/* Submit Order Blue Button (Screenshot 1) */}
+              <div style={{ marginTop: "24px" }}>
+                <button
+                  type="submit"
+                  className={styles.submitOrderButton}
+                >
+                  <span>Submit Order →</span>
+                </button>
               </div>
             </section>
 
@@ -960,32 +764,6 @@ export function CartPageClient({ products }: CartPageClientProps) {
                   <p className={styles.trustBadgeDesc}>WhatsApp: 01641699879</p>
                 </div>
               </div>
-            </div>
-
-            {/* Error Message Alert */}
-            {submitError && (
-              <div className={styles.errorMessage} role="alert">
-                <AlertCircle size={18} />
-                <span>{submitError}</span>
-              </div>
-            )}
-
-            {/* Place Order Button */}
-            <div className={styles.placeOrderWrapper}>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className={styles.placeOrderButton}
-              >
-                {isSubmitting ? (
-                  <span>Verifying & Placing Order...</span>
-                ) : (
-                  <>
-                    <span>Place Order — {formatPrice(total)}</span>
-                    <ArrowRight size={20} />
-                  </>
-                )}
-              </button>
             </div>
           </form>
 
@@ -1114,7 +892,7 @@ export function CartPageClient({ products }: CartPageClientProps) {
                           setCouponFeedback(null);
                         }
                       }}
-                      placeholder="TECHBD10 / SAVE10"
+                      placeholder=""
                       className={styles.couponInput}
                     />
                     <button

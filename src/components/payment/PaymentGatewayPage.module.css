@@ -1,0 +1,722 @@
+.overlay {
+  min-height: 100vh;
+  width: 100%;
+  background-color: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  overflow-y: auto;
+}
+
+.modalCard {
+  width: 100%;
+  max-width: 480px;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6);
+  background-color: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  position: relative;
+  margin: auto;
+  animation: modalIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   BKASH HEADER
+   ───────────────────────────────────────────────────────────── */
+.bkashHeader {
+  background: #ffffff;
+  padding: 18px 24px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bkashLogoWrap {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.subHeaderRow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.companyMeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.companyLogo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.companyName {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.invoiceNum {
+  font-size: 10px;
+  color: #64748b;
+  font-family: var(--font-mono, monospace);
+}
+
+.amountMeta {
+  text-align: right;
+}
+
+.amountMetaLabel {
+  font-size: 10px;
+  color: #94a3b8;
+  display: block;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.amountMetaValBkash {
+  font-size: 18px;
+  font-weight: 900;
+  color: #e2136e;
+  font-family: var(--font-mono, monospace);
+  line-height: 1.2;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   NAGAD HEADER
+   ───────────────────────────────────────────────────────────── */
+.nagadHeader {
+  background: linear-gradient(to right, #990000, #700000);
+  color: #ffffff;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(153, 0, 0, 0.4);
+}
+
+.nagadLogoBadge {
+  width: 34px;
+  height: 34px;
+  background: #ffffff;
+  padding: 3px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.nagadAmountVal {
+  font-size: 18px;
+  font-weight: 900;
+  font-family: var(--font-mono, monospace);
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ROCKET HEADER
+   ───────────────────────────────────────────────────────────── */
+.rocketHeader {
+  background: #8c2282;
+  color: #ffffff;
+  padding: 16px 24px 12px;
+  border-bottom: 1px solid rgba(74, 8, 69, 0.4);
+}
+
+.rocketTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.rocketLogoBadge {
+  width: 34px;
+  height: 34px;
+  background: #ffffff;
+  padding: 3px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.rocketAmountVal {
+  font-size: 18px;
+  font-weight: 900;
+  font-family: var(--font-mono, monospace);
+  color: #ffffff;
+}
+
+.rocketSubLine {
+  font-size: 10px;
+  color: #f3e8ff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(216, 180, 254, 0.3);
+  padding-top: 6px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   BODY THEMES
+   ───────────────────────────────────────────────────────────── */
+.bodyBkash {
+  background: linear-gradient(135deg, #e2136e 0%, #cb095e 50%, #990044 100%);
+  color: #ffffff;
+  padding: 24px 24px;
+}
+
+.bodyNagad {
+  background: linear-gradient(135deg, #8b0000 0%, #750000 50%, #500000 100%);
+  color: #ffffff;
+  padding: 24px 24px;
+}
+
+.bodyRocket {
+  background: linear-gradient(135deg, #8c2282 0%, #6d1264 50%, #450740 100%);
+  color: #ffffff;
+  padding: 24px 24px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   STEP 1 STYLES
+   ───────────────────────────────────────────────────────────── */
+.stepHeader {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.stepPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  margin-bottom: 8px;
+}
+
+.stepTitle {
+  font-size: 19px;
+  font-weight: 900;
+  color: #ffffff;
+  margin: 0 0 4px;
+}
+
+.stepSubtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+}
+
+.innerWhiteCard {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 18px 20px;
+  color: #0f172a;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.inputLabel {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.senderPhoneInput {
+  width: 100%;
+  padding: 13px 16px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.1em;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 2px solid #cbd5e1;
+  color: #0f172a;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.18s, background-color 0.18s;
+}
+
+.senderPhoneInput:focus {
+  border-color: #0f172a;
+  background: #ffffff;
+}
+
+.errorMessage {
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #e11d48;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.checkboxRow {
+  margin-top: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 11px;
+  color: #475569;
+}
+
+.checkboxRow input[type="checkbox"] {
+  margin-top: 2px;
+  accent-color: #0284c7;
+  cursor: pointer;
+}
+
+.checkboxRow label {
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.actionGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.btnCancel {
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: background 0.18s;
+  text-align: center;
+}
+
+.btnCancel:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.btnConfirm {
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: #ffffff;
+  color: #0f172a;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: background 0.18s, transform 0.18s;
+  text-align: center;
+}
+
+.btnConfirm:hover {
+  background: #f1f5f9;
+  transform: translateY(-1px);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   STEP 2 STYLES
+   ───────────────────────────────────────────────────────────── */
+.step2Header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 12px;
+}
+
+.step2HeaderSub {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: uppercase;
+  display: block;
+}
+
+.step2HeaderTitle {
+  font-size: 16px;
+  font-weight: 900;
+  color: #ffffff;
+  margin: 2px 0 0;
+}
+
+.officialBadge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.noticeBanner {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 12px;
+  line-height: 1.5;
+  color: #ffffff;
+  margin-bottom: 14px;
+}
+
+.accountBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 10px;
+}
+
+.accountBoxLabel {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748b;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.accountBoxValue {
+  font-size: 16px;
+  font-weight: 900;
+  font-family: var(--font-mono, monospace);
+  color: #0f172a;
+}
+
+.accountBoxValueAmount {
+  font-size: 18px;
+  font-weight: 900;
+  font-family: var(--font-mono, monospace);
+  color: #047857;
+}
+
+.btnCopy {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #e2e8f0;
+  color: #1e293b;
+  border: none;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.btnCopy:hover {
+  background: #cbd5e1;
+}
+
+.btnCopied {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.senderRefRow {
+  font-size: 11px;
+  color: #64748b;
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 4px 0;
+}
+
+.trxIdCard {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 16px 20px;
+  color: #0f172a;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  margin-top: 12px;
+}
+
+.trxInput {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 2px solid #cbd5e1;
+  color: #0f172a;
+  font-family: var(--font-mono, monospace);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.18s, background-color 0.18s;
+}
+
+.trxInput:focus {
+  border-color: #0f172a;
+  background: #ffffff;
+}
+
+.trxHelper {
+  font-size: 10px;
+  color: #64748b;
+  margin: 6px 0 0;
+  line-height: 1.4;
+}
+
+.btnSubmitOrder {
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: #10b981;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-mono, monospace);
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+  transition: background 0.18s, transform 0.18s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btnSubmitOrder:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.btnSubmitOrder:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   STEP 3: CONFIRMATION RECEIPT
+   ───────────────────────────────────────────────────────────── */
+.step3Wrap {
+  text-align: center;
+}
+
+.successCircle {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #059669;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+.receiptCard {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 16px 20px;
+  color: #0f172a;
+  font-size: 12px;
+  text-align: left;
+  margin: 16px 0 14px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.receiptRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.receiptRowBorder {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.receiptLabel {
+  color: #64748b;
+  font-size: 11px;
+}
+
+.receiptValue {
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 12px;
+}
+
+.receiptValueMono {
+  font-family: var(--font-mono, monospace);
+  font-weight: 700;
+  color: #0284c7;
+}
+
+.receiptValueTrx {
+  font-family: var(--font-mono, monospace);
+  font-weight: 800;
+  color: #059669;
+  letter-spacing: 0.05em;
+}
+
+.receiptTotalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 6px;
+  border-top: 1px solid #e2e8f0;
+  margin-top: 2px;
+}
+
+.receiptTotalValue {
+  font-family: var(--font-mono, monospace);
+  font-size: 16px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.btnWhatsApp {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 12px;
+  background: #10b981;
+  color: #ffffff;
+  text-decoration: none;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background 0.18s;
+  box-sizing: border-box;
+}
+
+.btnWhatsApp:hover {
+  background: #059669;
+}
+
+.btnReturnHome {
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  text-decoration: none;
+  display: block;
+  text-align: center;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background 0.18s;
+  box-sizing: border-box;
+}
+
+.btnReturnHome:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   BOTTOM BRAND FOOTER
+   ───────────────────────────────────────────────────────────── */
+.modalFooter {
+  background: #f8fafc;
+  padding: 12px 24px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.footerSecure {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #047857;
+}
+
+.footerHelpline {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono, monospace);
+  font-weight: 700;
+  color: #334155;
+}
+
