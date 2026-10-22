@@ -1191,18 +1191,19 @@
 }
 
 .existingTextItemEditable:hover {
-  outline: 1px dashed rgba(37, 99, 235, 0.4);
+  outline: 1px dashed rgba(37, 99, 235, 0.45);
   outline-offset: 1px;
-  background: transparent;
-  box-shadow: none;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 .existingTextSelected {
   outline: 1.5px solid #2563EB !important;
   outline-offset: 1px;
-  border: 1px solid transparent !important;
+  border: none !important;
   border-radius: 2px;
-  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.15) !important;
+  background: #FFFFFF !important;
+  box-shadow: none !important;
   z-index: 25;
 }
 
@@ -1220,23 +1221,44 @@
 .inlineTextEditor {
   position: absolute;
   inset: 0;
-  border: 1px solid #2563EB;
+  border: none !important;
   border-radius: 2px;
-  background: transparent;
-  color: inherit;
-  outline: none;
+  background: #FFFFFF !important;
+  color: #1E293B !important;
+  outline: none !important;
   font-family: inherit;
   z-index: 30;
   padding: 0 2px;
   margin: 0;
-  box-shadow: none;
+  box-shadow: none !important;
+  text-shadow: none !important;
   box-sizing: border-box;
   line-height: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.inlineTextEditor::selection {
+  background: rgba(37, 99, 235, 0.25) !important;
+  color: #1E293B !important;
+}
+
+[data-theme="dark"] .existingTextSelected {
+  outline: 1.5px solid #3B82F6 !important;
+  background: #FFFFFF !important;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .inlineTextEditor {
-  background: transparent;
-  color: inherit;
+  background: #FFFFFF !important;
+  color: #1E293B !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+[data-theme="dark"] .inlineTextEditor::selection {
+  background: rgba(37, 99, 235, 0.3) !important;
+  color: #1E293B !important;
 }
 
 .ocrBanner {

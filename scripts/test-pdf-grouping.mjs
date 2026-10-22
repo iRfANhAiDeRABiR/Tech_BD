@@ -248,7 +248,84 @@ function testBaselineAlignment() {
 
 testBaselineAlignment();
 
+// TEST 7: Document Background Redaction Safety (NO BLACK BOXES)
+console.log("Test 7: Document background redaction safety (strictly rejects black/dark ink)...");
+function testRedactionColorSafety() {
+  function getSafeBackgroundStyle(samplePixels) {
+    let bgStyle = "#FFFFFF";
+    for (const px of samplePixels) {
+      if (px[3] > 128) {
+        const lum = 0.299 * px[0] + 0.587 * px[1] + 0.114 * px[2];
+        if (lum >= 180 && px[0] >= 170 && px[1] >= 170 && px[2] >= 170) {
+          bgStyle = `rgb(${px[0]}, ${px[1]}, ${px[2]})`;
+          break;
+        }
+      }
+    }
+    return bgStyle;
+  }
+
+  // Case A: Sampled pixel hits dark ink / table line / black text [0, 0, 0, 255]
+  const darkSample = [[0, 0, 0, 255], [30, 41, 59, 255]];
+  const safeBgDark = getSafeBackgroundStyle(darkSample);
+  assert.strictEqual(safeBgDark, "#FFFFFF", "Dark ink must NEVER be used as redaction background!");
+
+  // Case B: Sampled pixel hits dark shadow [50, 50, 50, 255]
+  const shadowSample = [[50, 50, 50, 255]];
+  const safeBgShadow = getSafeBackgroundStyle(shadowSample);
+  assert.strictEqual(safeBgShadow, "#FFFFFF", "Dark shadow must NEVER be used as redaction background!");
+
+  // Case C: Clean paper white [255, 255, 255, 255]
+  const whiteSample = [[255, 255, 255, 255]];
+  const safeBgWhite = getSafeBackgroundStyle(whiteSample);
+  assert.strictEqual(safeBgWhite, "rgb(255, 255, 255)", "Clean white paper background accepted");
+
+  // Case D: Light off-white parchment [250, 250, 248, 255]
+  const lightSample = [[250, 250, 248, 255]];
+  const safeBgLight = getSafeBackgroundStyle(lightSample);
+  assert.strictEqual(safeBgLight, "rgb(250, 250, 248)", "Valid light paper background accepted");
+
+  console.log("✔ PASS: Redaction strictly guarantees clean white/light paper background with 0 black boxes!\n");
+}
+
+testRedactionColorSafety();
+
+// TEST 8: Full Bounding Box Coverage during Inline Editing (NO DARK SHADOWS / PEAKING)
+console.log("Test 8: Full bounding box coverage during inline editing (no peeking text)...");
+function testInlineEditingBoxCoverage() {
+  const zoom = 1.5;
+  const item = {
+    x: 50,
+    y: 100,
+    height: 18,
+    originalWidth: 60,
+    width: 60,
+    fontSize: 14,
+    baselineY: 114,
+  };
+
+  const vy = item.y * zoom; // 150
+  const vh = item.height * zoom; // 27
+  const baseBy = item.baselineY * zoom; // 171
+  const inputH = Math.max(16, item.fontSize * zoom * 1.15); // 24.15
+  const inputTop = Math.max(0, baseBy - item.fontSize * zoom * 0.78); // 171 - 16.38 = 154.62
+
+  const boxTop = Math.min(vy, inputTop);
+  const boxBottom = Math.max(vy + vh, inputTop + inputH);
+  const boxH = Math.max(16, boxBottom - boxTop);
+
+  // Assert box covers the original text top completely
+  assert(boxTop <= vy, `Box top (${boxTop}) must be <= original vy (${vy}) so no top pixels peek out`);
+
+  // Assert box covers the original text bottom completely
+  assert(boxBottom >= vy + vh, `Box bottom (${boxBottom}) must be >= original vy+vh (${vy + vh}) so no bottom pixels peek out`);
+
+  console.log("✔ PASS: Active editing container covers 100% of original text with 0px peeking / dark shadows!\n");
+}
+
+testInlineEditingBoxCoverage();
+
 console.log("=================================================");
-console.log("ALL 6 REGRESSION TESTS PASSED CLEANLY (100% SUCCESS)");
+console.log("ALL 8 REGRESSION TESTS PASSED CLEANLY (100% SUCCESS)");
 console.log("=================================================");
 

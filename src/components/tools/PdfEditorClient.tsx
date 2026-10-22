@@ -309,6 +309,11 @@ export function PdfEditorClient() {
   // ── Existing Text Detection & Editing State ───────────────────────
   const [existingTexts, setExistingTexts] = useState<ExistingTextItem[]>([]);
   const [selectedExistingTextId, setSelectedExistingTextId] = useState<string | null>(null);
+  const existingTextsRef = useRef<ExistingTextItem[]>(existingTexts);
+  useEffect(() => {
+    existingTextsRef.current = existingTexts;
+  }, [existingTexts]);
+  const [canvasRefreshKey, setCanvasRefreshKey] = useState<number>(0);
   const [isExtractingText, setIsExtractingText] = useState<boolean>(false);
   const [isOcrRunning, setIsOcrRunning] = useState<boolean>(false);
   const [ocrProgressText, setOcrProgressText] = useState<string>("");
@@ -395,6 +400,7 @@ export function PdfEditorClient() {
       setHistoryIndex(historyIndex - 1);
       setSelectedId(null);
       setSelectedExistingTextId(null);
+      setCanvasRefreshKey((k) => k + 1);
     }
   }, [history, historyIndex]);
 
@@ -407,6 +413,7 @@ export function PdfEditorClient() {
       setHistoryIndex(historyIndex + 1);
       setSelectedId(null);
       setSelectedExistingTextId(null);
+      setCanvasRefreshKey((k) => k + 1);
     }
   }, [history, historyIndex]);
 
@@ -447,6 +454,7 @@ export function PdfEditorClient() {
 
     const updated = existingTexts.map((t) => (t.id === id ? { ...t, isModified: isActuallyModified } : t));
     setExistingTexts(updated);
+    setCanvasRefreshKey((k) => k + 1);
 
     if (isActuallyModified) {
       pushHistory(annotations, pages, updated);
@@ -478,6 +486,7 @@ export function PdfEditorClient() {
       })
     );
     setSelectedExistingTextId(null);
+    setCanvasRefreshKey((k) => k + 1);
     notify.info("Canceled text change");
   };
 
@@ -489,6 +498,7 @@ export function PdfEditorClient() {
     setExistingTexts(updated);
     pushHistory(annotations, pages, updated);
     setSelectedExistingTextId(null);
+    setCanvasRefreshKey((k) => k + 1);
     notify.info("Original text deleted from document");
   };
 
@@ -506,6 +516,7 @@ export function PdfEditorClient() {
     });
     setExistingTexts(updated);
     pushHistory(annotations, pages, updated);
+    setCanvasRefreshKey((k) => k + 1);
     notify.success("Restored original text");
   };
 
@@ -905,6 +916,7 @@ export function PdfEditorClient() {
               source: "pdf-native",
               subStrings: groupItems.map((i: any) => i.str),
               rotation,
+              bgColor: "#FFFFFF",
             });
           });
         } catch (err) {
@@ -1001,6 +1013,7 @@ export function PdfEditorClient() {
           canNativeEdit: false,
           source: "ocr",
           subStrings: [text],
+          bgColor: "#FFFFFF",
         });
       });
 
@@ -1189,30 +1202,53 @@ export function PdfEditorClient() {
           }
         }
 
-        // Cleanly redact original text on the canvas for modified/deleted items using local background color
+        // Cleanly redact original text on the canvas for modified/deleted items using guaranteed clean paper background (NO BLACK ARTIFACTS)
         const targetPageIdx = pageMeta.pageIndex;
-        const modifiedOnThisPage = existingTexts.filter(
-          (t) => (t.pageIndex === targetPageIdx || t.pageIndex === pageMeta.originalPageIndex) && (t.isModified || t.isDeleted)
+        const currentExisting = existingTextsRef.current || existingTexts;
+        const modifiedOnThisPage = currentExisting.filter(
+          (t) =>
+            (t.pageIndex === targetPageIdx || t.pageIndex === pageMeta.originalPageIndex) &&
+            (t.isModified || t.isDeleted)
         );
 
         if (modifiedOnThisPage.length > 0) {
           modifiedOnThisPage.forEach((item) => {
             let bgStyle = "#FFFFFF";
             try {
-              const sampleX = Math.max(0, Math.floor((item.x - 2) * renderScale * dpr));
-              const sampleY = Math.max(0, Math.floor((item.y - 2) * renderScale * dpr));
-              const pixelData = ctx.getImageData(sampleX, sampleY, 1, 1).data;
-              if (pixelData[3] > 0) {
-                bgStyle = `rgb(${pixelData[0]}, ${pixelData[1]}, ${pixelData[2]})`;
+              // Multi-point sampling away from text to identify genuine document paper color
+              const itemW = item.originalWidth || 20;
+              const itemH = item.height || 14;
+              const candidates = [
+                { x: Math.floor((item.x + itemW / 2) * renderScale * dpr), y: Math.floor((item.y - 5) * renderScale * dpr) },
+                { x: Math.floor((item.x + itemW / 2) * renderScale * dpr), y: Math.floor((item.y + itemH + 5) * renderScale * dpr) },
+                { x: Math.floor((item.x - 5) * renderScale * dpr), y: Math.floor((item.y + itemH / 2) * renderScale * dpr) },
+                { x: Math.floor((item.x + itemW + 5) * renderScale * dpr), y: Math.floor((item.y + itemH / 2) * renderScale * dpr) },
+                { x: Math.floor(20 * renderScale * dpr), y: Math.floor(20 * renderScale * dpr) },
+              ];
+
+              for (const pt of candidates) {
+                if (pt.x >= 0 && pt.x < canvas.width && pt.y >= 0 && pt.y < canvas.height) {
+                  const px = ctx.getImageData(pt.x, pt.y, 1, 1).data;
+                  if (px[3] > 128) {
+                    const lum = 0.299 * px[0] + 0.587 * px[1] + 0.114 * px[2];
+                    // STRICT CHECK: Luminance must be >= 180 and RGB components >= 170.
+                    // This 100% PREVENTS sampling dark ink, table lines, borders, or text shadows.
+                    if (lum >= 180 && px[0] >= 170 && px[1] >= 170 && px[2] >= 170) {
+                      bgStyle = `rgb(${px[0]}, ${px[1]}, ${px[2]})`;
+                      break;
+                    }
+                  }
+                }
               }
             } catch (e) {
               bgStyle = "#FFFFFF";
             }
 
+            // GUARANTEE: Never, under any circumstances, use a dark color to redact text!
             ctx.fillStyle = bgStyle;
             const rx = Math.max(0, (item.x - 1) * renderScale);
             const ry = Math.max(0, (item.y - 1) * renderScale);
-            const rw = (item.originalWidth + 2) * renderScale;
+            const rw = (Math.max(item.originalWidth, item.width) + 2) * renderScale;
             const rh = (item.height + 2) * renderScale;
             ctx.fillRect(rx, ry, rw, rh);
           });
@@ -1225,7 +1261,7 @@ export function PdfEditorClient() {
         }
       }
     },
-    [pdfDocProxy, pages, existingTexts]
+    [pdfDocProxy, pages, canvasRefreshKey]
   );
 
   // ── Controlled Progressive Thumbnail Generation Queue ───────────
@@ -1481,6 +1517,7 @@ export function PdfEditorClient() {
       const target = e.target as HTMLElement;
       if (!target.closest(`.${styles.existingTextItem}`)) {
         setSelectedExistingTextId(null);
+        setCanvasRefreshKey((k) => k + 1);
       }
       return;
     }
@@ -2754,6 +2791,13 @@ export function PdfEditorClient() {
                           const baseBy = (item.baselineY ?? (item.y + item.fontSize * 0.82)) * zoom;
                           const inputH = Math.max(16, item.fontSize * zoom * 1.15);
                           const inputTop = Math.max(0, baseBy - item.fontSize * zoom * 0.78);
+                          const boxTop = Math.min(vy, inputTop);
+                          const boxBottom = Math.max(vy + vh, inputTop + inputH);
+                          const boxH = Math.max(16, boxBottom - boxTop);
+
+                          let fam = "Helvetica, Arial, sans-serif";
+                          if (item.fontFamily === "TimesRoman") fam = "'Times New Roman', Times, serif";
+                          else if (item.fontFamily === "Courier") fam = "'Courier New', Courier, monospace";
 
                           return (
                             <div
@@ -2761,10 +2805,10 @@ export function PdfEditorClient() {
                               className={`${styles.existingTextItem} ${styles.existingTextSelected}`}
                               style={{
                                 left: `${vx}px`,
-                                top: `${inputTop}px`,
+                                top: `${boxTop}px`,
                                 width: `${vw}px`,
-                                height: `${inputH}px`,
-                                backgroundColor: item.isModified ? "transparent" : (item.bgColor || "#FFFFFF"),
+                                height: `${boxH}px`,
+                                backgroundColor: "#FFFFFF",
                                 boxShadow: "none",
                                 zIndex: 25,
                               }}
@@ -2774,21 +2818,25 @@ export function PdfEditorClient() {
                                 className={styles.inlineTextEditor}
                                 value={item.currentText}
                                 style={{
+                                  position: "absolute",
+                                  left: 0,
+                                  top: `${inputTop - boxTop}px`,
                                   width: "100%",
-                                  height: "100%",
+                                  height: `${inputH}px`,
                                   fontSize: `${item.fontSize * zoom}px`,
-                                  fontFamily: item.fontFamily,
-                                  color: item.color,
+                                  fontFamily: fam,
+                                  color: item.color || "#1E293B",
                                   fontWeight: item.bold ? "bold" : "normal",
                                   fontStyle: item.italic ? "italic" : "normal",
                                   textDecoration: item.underline ? "underline" : "none",
                                   textAlign: item.align,
-                                  background: item.isModified ? "transparent" : (item.bgColor || "#FFFFFF"),
+                                  background: "#FFFFFF",
                                   outline: "none",
                                   border: "none",
                                   padding: "0 2px",
                                   margin: "0",
                                   boxShadow: "none",
+                                  textShadow: "none",
                                   lineHeight: 1,
                                 }}
                                 onChange={(e) => updateExistingText(item.id, e.target.value)}
@@ -2839,6 +2887,7 @@ export function PdfEditorClient() {
                               e.stopPropagation();
                               setSelectedExistingTextId(item.id);
                               setSelectedId(null);
+                              setCanvasRefreshKey((k) => k + 1);
                             }}
                             title={
                               isEditable
