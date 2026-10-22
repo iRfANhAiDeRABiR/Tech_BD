@@ -173,7 +173,7 @@ function buildOrderConfirmationText({
 
   return `Hi ${customer.name},
 
-Thank you for your order from Tech Solutions BD.
+Thank you for your order.
 
 Order ID: ${order.orderNumber}
 Customer name: ${customer.name}
@@ -191,103 +191,172 @@ Total: ${formatCurrency(totals.total)}
 
 We have received your order and payment details. Our team will verify your payment and send your license key/product details to this email shortly.
 
-If you need faster support, please contact us on WhatsApp with your Order ID.
-
-Best regards,
-Tech Solutions BD Team`;
+Best regards`;
 }
 
-function buildOrderConfirmationHtml({
-  order,
-  customer,
-  items,
-  totals,
-  paymentLabel,
-  siteUrl,
-}: SendOrderConfirmationEmailInput, imageSources = new Map<number, string>()) {
+function buildOrderConfirmationHtml(
+  {
+    order,
+    customer,
+    items,
+    totals,
+    paymentLabel,
+    siteUrl,
+  }: SendOrderConfirmationEmailInput,
+  imageSources = new Map<number, string>(),
+) {
   const rows = items
     .map((item, index) => {
       const itemName = `${escapeHtml(item.productName)}${
-        item.optionName ? ` <span style="color:#64748b;">(${escapeHtml(item.optionName)})</span>` : ""
+        item.optionName
+          ? ` <span style="color:#64748b; font-size:12px; font-weight:normal;">(${escapeHtml(item.optionName)})</span>`
+          : ""
       }`;
       const imageUrl = imageSources.get(index) ?? resolveImageUrl(item.productImage, siteUrl);
       const imageMarkup = imageUrl
-        ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(item.productName)}" width="64" height="64" style="display:block;width:64px;height:64px;object-fit:contain;border-radius:8px;border:1px solid #e5e7eb;background:#ffffff;" />`
-        : `<div style="width:64px;height:64px;border-radius:8px;border:1px solid #e5e7eb;background:#f8fafc;color:#94a3b8;font-size:11px;line-height:64px;text-align:center;">No image</div>`;
+        ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(item.productName)}" width="48" height="48" style="display:block; width:48px; height:48px; max-width:48px; max-height:48px; object-fit:contain; border-radius:6px; border:1px solid #e2e8f0; background:#ffffff;" />`
+        : `<div style="width:48px; height:48px; border-radius:6px; border:1px solid #e2e8f0; background:#f8fafc; color:#94a3b8; font-size:10px; line-height:48px; text-align:center;">No img</div>`;
 
       return `<tr>
-        <td style="padding:12px;border:1px solid #e5e7eb;vertical-align:middle;width:88px;">${imageMarkup}</td>
-        <td style="padding:12px;border:1px solid #e5e7eb;vertical-align:middle;font-size:14px;font-weight:600;color:#111827;">${itemName}</td>
-        <td style="padding:12px;border:1px solid #e5e7eb;text-align:center;vertical-align:middle;color:#111827;">${item.quantity}</td>
-        <td style="padding:12px;border:1px solid #e5e7eb;text-align:right;vertical-align:middle;font-weight:700;color:#111827;">${formatCurrency(
-          item.unitPrice * item.quantity,
-        )}</td>
+        <td width="56" style="width:56px; padding:10px 8px 10px 0; vertical-align:middle;">
+          ${imageMarkup}
+        </td>
+        <td style="padding:10px 8px; vertical-align:middle;">
+          <div style="font-size:13px; font-weight:700; color:#0f172a; line-height:1.35; margin-bottom:3px; word-break:break-word;">
+            ${itemName}
+          </div>
+          <div style="font-size:12px; color:#64748b;">
+            Qty: <strong style="color:#0f172a;">${item.quantity}</strong>
+          </div>
+        </td>
+        <td width="90" style="width:90px; padding:10px 0 10px 8px; text-align:right; vertical-align:middle; white-space:nowrap;">
+          <span style="font-size:14px; font-weight:800; color:#0f172a;">${formatCurrency(
+            item.unitPrice * item.quantity,
+          )}</span>
+        </td>
       </tr>`;
     })
     .join("");
 
   return `<!doctype html>
-  <html>
-    <body style="margin:0;background:#f8fafc;font-family:Arial,Helvetica,sans-serif;color:#0f172a;">
-      <div style="max-width:640px;margin:0 auto;padding:32px 16px;">
-        <div style="background:#ffffff;border-radius:18px;overflow:hidden;border:1px solid #e2e8f0;">
-          <div style="background:linear-gradient(135deg,#2563eb,#7c3aed);padding:28px;color:#ffffff;">
-            <h1 style="margin:0;font-size:24px;">Order confirmation</h1>
-            <p style="margin:8px 0 0;opacity:.92;">Thank you for shopping with Tech Solutions BD.</p>
-          </div>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
+    <meta name="x-apple-disable-message-reformatting">
+    <title>Order Confirmation - #${escapeHtml(order.orderNumber)}</title>
+    <style>
+      @media only screen and (max-width: 600px) {
+        .outer-table { padding: 8px 4px !important; }
+        .inner-card { padding: 16px 12px !important; }
+        .header-pad { padding: 20px 14px !important; }
+      }
+    </style>
+  </head>
+  <body style="margin:0; padding:0; width:100% !important; background-color:#f1f5f9; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; color:#0f172a; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%;">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" class="outer-table" style="background-color:#f1f5f9; width:100%; margin:0; padding:20px 8px;">
+      <tr>
+        <td align="center" style="padding:0;">
+          <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:560px; width:100%; margin:0 auto; background-color:#ffffff; border-radius:16px; overflow:hidden; border:1px solid #e2e8f0; box-shadow:0 4px 14px rgba(0,0,0,0.04);">
+            <!-- Top Gradient Header -->
+            <tr>
+              <td class="header-pad" style="background:linear-gradient(135deg, #0d80e8 0%, #1e40af 100%); padding:24px 20px; color:#ffffff; text-align:left;">
+                <h1 style="margin:0; font-size:22px; font-weight:800; letter-spacing:-0.02em; color:#ffffff; line-height:1.25;">Order Confirmation</h1>
+                <p style="margin:6px 0 0; font-size:13px; color:#e0f2fe; opacity:0.95;">Thank you for your order. We are processing your software license.</p>
+              </td>
+            </tr>
 
-          <div style="padding:28px;">
-            <p style="font-size:16px;margin:0 0 18px;">Hi ${escapeHtml(customer.name)},</p>
-            <p style="line-height:1.6;margin:0 0 22px;">We have received your order and payment details. Our team will verify your payment and send your license key/product details to this email shortly.</p>
+            <!-- Card Content Body -->
+            <tr>
+              <td class="inner-card" style="padding:22px 18px;">
+                <p style="font-size:15px; font-weight:700; margin:0 0 8px; color:#0f172a;">Hi ${escapeHtml(customer.name)},</p>
+                <p style="font-size:13px; line-height:1.55; margin:0 0 16px; color:#475569;">
+                  We have received your payment details. Our verification team is checking your transaction and your license keys will be dispatched to this email address shortly.
+                </p>
 
-            <div style="background:#f1f5f9;border-radius:14px;padding:18px;margin-bottom:18px;border:1px solid #e2e8f0;">
-              <h2 style="margin:0 0 12px;font-size:16px;color:#0f172a;">Customer Details</h2>
-              <p style="margin:0 0 8px;"><strong>Name:</strong> ${escapeHtml(customer.name)}</p>
-              <p style="margin:0 0 8px;"><strong>Phone/WhatsApp:</strong> ${escapeHtml(customer.phone)}</p>
-              <p style="margin:0;"><strong>Email:</strong> ${escapeHtml(customer.email)}</p>
-            </div>
+                <!-- Order Summary Card -->
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; margin-bottom:14px;">
+                  <tr>
+                    <td style="padding:14px 14px;">
+                      <div style="font-size:11px; font-weight:750; text-transform:uppercase; letter-spacing:0.04em; color:#64748b; margin-bottom:10px;">Order Summary</div>
+                      
+                      <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                        <tr>
+                          <td style="font-size:12px; color:#64748b; padding:3px 0;" width="38%">Order Ref:</td>
+                          <td style="font-size:13px; font-family:monospace; font-weight:750; color:#0f172a; padding:3px 0; text-align:right;">#${escapeHtml(order.orderNumber)}</td>
+                        </tr>
+                        <tr>
+                          <td style="font-size:12px; color:#64748b; padding:3px 0;">Payment Method:</td>
+                          <td style="font-size:13px; font-weight:600; color:#0f172a; padding:3px 0; text-align:right;">${escapeHtml(paymentLabel)}</td>
+                        </tr>
+                        <tr>
+                          <td style="font-size:12px; color:#64748b; padding:3px 0;">Delivery Email:</td>
+                          <td style="font-size:13px; font-weight:600; color:#0f172a; padding:3px 0; text-align:right; word-break:break-all;">${escapeHtml(customer.email)}</td>
+                        </tr>
+                        <tr>
+                          <td style="font-size:12px; color:#64748b; padding:3px 0;">Phone:</td>
+                          <td style="font-size:13px; font-family:monospace; font-weight:600; color:#0f172a; padding:3px 0; text-align:right;">${escapeHtml(customer.phone)}</td>
+                        </tr>
+                        <tr>
+                          <td style="font-size:12px; color:#64748b; padding:5px 0 0;">Status:</td>
+                          <td style="padding:5px 0 0; text-align:right;">
+                            <span style="display:inline-block; padding:2px 8px; border-radius:99px; background:#fef3c7; border:1px solid rgba(245,158,11,0.4); color:#92400e; font-size:11px; font-weight:750;">Pending Verification</span>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
 
-            <div style="background:#f8fafc;border-radius:14px;padding:18px;margin-bottom:22px;border:1px solid #e2e8f0;">
-              <h2 style="margin:0 0 12px;font-size:16px;color:#0f172a;">Order Details</h2>
-              <p style="margin:0 0 8px;"><strong>Order ID:</strong> ${escapeHtml(order.orderNumber)}</p>
-              <p style="margin:0 0 8px;"><strong>Payment method:</strong> ${escapeHtml(paymentLabel)}</p>
-              <p style="margin:0;"><strong>Payment status:</strong> Submitted for verification</p>
-            </div>
+                <!-- Products Table -->
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse; margin-top:8px;">
+                  <thead>
+                    <tr style="border-bottom:2px solid #e2e8f0;">
+                      <th style="padding:8px 6px 8px 0; text-align:left; font-size:11px; font-weight:750; text-transform:uppercase; letter-spacing:0.04em; color:#64748b;" colspan="2">Product</th>
+                      <th style="padding:8px 0 8px 8px; text-align:right; font-size:11px; font-weight:750; text-transform:uppercase; letter-spacing:0.04em; color:#64748b;">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody style="border-bottom:1px solid #e2e8f0;">
+                    ${rows}
+                  </tbody>
+                </table>
 
-            <table style="width:100%;border-collapse:collapse;margin-bottom:18px;border:1px solid #e5e7eb;">
-              <thead>
-                <tr style="background:#f3f4f6;">
-                  <th style="padding:12px;border:1px solid #e5e7eb;text-align:left;font-size:13px;color:#374151;">Product image</th>
-                  <th style="padding:12px;border:1px solid #e5e7eb;text-align:left;font-size:13px;color:#374151;">Product Name</th>
-                  <th style="padding:12px;border:1px solid #e5e7eb;text-align:center;font-size:13px;color:#374151;">Quantity</th>
-                  <th style="padding:12px;border:1px solid #e5e7eb;text-align:right;font-size:13px;color:#374151;">Total</th>
-                </tr>
-              </thead>
-              <tbody>${rows}</tbody>
-            </table>
+                <!-- Totals Section (100% fluid, no fixed width) -->
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top:12px; border-collapse:collapse;">
+                  <tr>
+                    <td style="padding:5px 0; font-size:13px; color:#64748b;">Subtotal:</td>
+                    <td style="padding:5px 0; text-align:right; font-size:13px; font-weight:600; color:#0f172a; white-space:nowrap;">${formatCurrency(totals.subtotal)}</td>
+                  </tr>
+                  ${
+                    totals.discount > 0
+                      ? `<tr>
+                    <td style="padding:5px 0; font-size:13px; color:#10b981;">Discount:</td>
+                    <td style="padding:5px 0; text-align:right; font-size:13px; font-weight:600; color:#10b981; white-space:nowrap;">-${formatCurrency(totals.discount)}</td>
+                  </tr>`
+                      : ""
+                  }
+                  <tr>
+                    <td style="padding:10px 0 4px; font-size:15px; font-weight:800; color:#0f172a; border-top:1px solid #e2e8f0;">Total Payable:</td>
+                    <td style="padding:10px 0 4px; text-align:right; font-size:17px; font-weight:850; color:#0d80e8; border-top:1px solid #e2e8f0; white-space:nowrap;">${formatCurrency(totals.total)}</td>
+                  </tr>
+                </table>
 
-            <table style="width:280px;margin-left:auto;border-collapse:collapse;border:1px solid #e5e7eb;">
-              <tr>
-                <td style="padding:12px;border:1px solid #e5e7eb;background:#f9fafb;font-weight:700;">Sub-Total</td>
-                <td style="padding:12px;border:1px solid #e5e7eb;text-align:right;font-weight:700;">${formatCurrency(totals.subtotal)}</td>
-              </tr>
-              <tr>
-                <td style="padding:12px;border:1px solid #e5e7eb;background:#f9fafb;font-weight:700;">Discount</td>
-                <td style="padding:12px;border:1px solid #e5e7eb;text-align:right;font-weight:700;">${formatCurrency(totals.discount)}</td>
-              </tr>
-              <tr>
-                <td style="padding:12px;border:1px solid #e5e7eb;background:#f3f4f6;font-size:16px;font-weight:800;">Total</td>
-                <td style="padding:12px;border:1px solid #e5e7eb;text-align:right;font-size:16px;font-weight:800;">${formatCurrency(totals.total)}</td>
-              </tr>
-            </table>
-
-            <p style="line-height:1.6;margin:24px 0 0;color:#475569;">For faster support, contact us on WhatsApp and mention your Order ID.</p>
-            <p style="line-height:1.6;margin:18px 0 0;color:#0f172a;">Best regards,<br><strong>Tech Solutions BD Team</strong></p>
-          </div>
-        </div>
-      </div>
-    </body>
-  </html>`;
+                <!-- Bottom Footer Note -->
+                <div style="margin-top:24px; padding-top:16px; border-top:1px solid #f1f5f9; text-align:center;">
+                  <p style="font-size:12px; color:#94a3b8; margin:0; line-height:1.5;">
+                    If you have questions about your order, reply directly to this email with your Order Reference.
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
 }
 
 export async function sendOrderConfirmationEmail(input: SendOrderConfirmationEmailInput) {
