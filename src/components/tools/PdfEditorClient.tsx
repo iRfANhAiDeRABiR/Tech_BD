@@ -74,6 +74,7 @@ export interface ExistingTextItem {
   source: "pdf-native" | "ocr";
   subStrings?: string[];
   rotation?: number; // text orientation in degrees
+  bgColor?: string; // sampled local background color (e.g. #FFFFFF)
 }
 
 export interface PageMeta {
@@ -407,6 +408,144 @@ export function PdfEditorClient() {
     }
   }, [history, historyIndex]);
 
+  // ── Existing Text Operations ──────────────────────────────────────
+  const updateExistingText = (id: string, newText: string) => {
+    setExistingTexts((prev) =>
+      prev.map((item) => {
+        if (item.id !== id) return item;
+        const newWidth = calculateTextWidth(
+          newText,
+          item.fontSize,
+          item.fontFamily,
+          item.bold,
+          item.italic
+        );
+        return {
+          ...item,
+          currentText: newText,
+          width: Math.max(item.originalWidth, newWidth),
+          isModified: newText !== item.originalText,
+        };
+      })
+    );
+  };
+
+  const applyExistingTextEdit = (id: string, shouldDeselect: boolean = true) => {
+    setExistingTexts((prev) => {
+      const target = prev.find((t) => t.id === id);
+      if (!target) return prev;
+      const isActuallyModified =
+        target.currentText !== target.originalText ||
+        target.fontSize !== target.originalFontSize ||
+        target.bold ||
+        target.italic ||
+        target.underline ||
+        target.color !== "#1E293B" ||
+        target.align !== "left";
+      const updated = prev.map((t) => (t.id === id ? { ...t, isModified: isActuallyModified } : t));
+      if (isActuallyModified) {
+        pushHistory(annotations, pages, updated);
+        notify.success("Text changes saved");
+      }
+      return updated;
+    });
+    if (shouldDeselect) {
+      setSelectedExistingTextId(null);
+    }
+  };
+
+  const cancelExistingTextEdit = (id: string) => {
+    setExistingTexts((prev) =>
+      prev.map((item) => {
+        if (item.id !== id) return item;
+        return {
+          ...item,
+          currentText: item.originalText,
+          fontSize: item.originalFontSize,
+          fontFamily: item.fontFamily,
+          bold: false,
+          italic: false,
+          underline: false,
+          color: "#1E293B",
+          align: "left",
+          width: item.originalWidth,
+          isModified: false,
+        };
+      })
+    );
+    setSelectedExistingTextId(null);
+    notify.info("Canceled text change");
+  };
+
+  const deleteExistingText = (id: string) => {
+    const updated = existingTexts.map((item) => {
+      if (item.id !== id) return item;
+      return { ...item, isDeleted: true, isModified: true };
+    });
+    setExistingTexts(updated);
+    pushHistory(annotations, pages, updated);
+    setSelectedExistingTextId(null);
+    notify.info("Original text deleted from document");
+  };
+
+  const restoreExistingText = (id: string) => {
+    const updated = existingTexts.map((item) => {
+      if (item.id !== id) return item;
+      return {
+        ...item,
+        currentText: item.originalText,
+        fontSize: item.originalFontSize,
+        width: item.originalWidth,
+        isDeleted: false,
+        isModified: false,
+      };
+    });
+    setExistingTexts(updated);
+    pushHistory(annotations, pages, updated);
+    notify.success("Restored original text");
+  };
+
+  const getLineAvailableSpace = (item: ExistingTextItem): number => {
+    const pageMeta = pages[item.pageIndex] || { width: 595, height: 842 };
+    const pageItems = existingTexts.filter(
+      (t) => t.pageIndex === item.pageIndex && !t.isDeleted && t.id !== item.id
+    );
+    const rightNeighbor = pageItems
+      .filter((t) => Math.abs(t.ty - item.ty) < 4 && t.x > item.x)
+      .sort((a, b) => a.x - b.x)[0];
+
+    if (rightNeighbor) {
+      return Math.max(10, rightNeighbor.x - item.x - 4);
+    }
+    return Math.max(10, (pageMeta.width || 600) - item.x - 20);
+  };
+
+  const autoFitFontSize = (id: string) => {
+    setExistingTexts((prev) =>
+      prev.map((item) => {
+        if (item.id !== id) return item;
+        const available = getLineAvailableSpace(item);
+        if (item.width <= available) return item;
+        const ratio = available / item.width;
+        const newSize = Math.max(8, Math.floor(item.fontSize * ratio));
+        const newWidth = calculateTextWidth(
+          item.currentText,
+          newSize,
+          item.fontFamily,
+          item.bold,
+          item.italic
+        );
+        return {
+          ...item,
+          fontSize: newSize,
+          width: Math.max(item.originalWidth, newWidth),
+          isModified: true,
+        };
+      })
+    );
+    notify.info("Adjusted font size to fit column without overlap.");
+  };
+
   // Keyboard shortcut listener (Ctrl+Z, Ctrl+Y, Delete, Esc, Arrow nudge)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -571,57 +710,104 @@ export function PdfEditorClient() {
             continue;
           }
 
-          // Sort top-to-bottom, left-to-right using viewport points
+          // Sort items primarily by baseline (Y) top-to-bottom, and secondarily by X left-to-right
           sorted.sort((a: any, b: any) => {
             const ptA = viewport.convertToViewportPoint(a.transform[4], a.transform[5]);
             const ptB = viewport.convertToViewportPoint(b.transform[4], b.transform[5]);
             const dy = ptA[1] - ptB[1];
-            if (Math.abs(dy) > 4) return dy;
+            if (Math.abs(dy) > 3) return dy;
             return ptA[0] - ptB[0];
           });
 
-          // Group contiguous items on the same baseline into lines
-          const lines: any[][] = [];
-          let currentLine: any[] = [];
+          // Intelligent Text Grouping:
+          // Groups contiguous items that belong to the SAME word or phrase in reading order.
+          // STRICTLY PRESERVES column boundaries, table cells, and separate fields!
+          const groups: any[][] = [];
+          let currentGroup: any[] = [];
 
           sorted.forEach((item: any) => {
-            if (currentLine.length === 0) {
-              currentLine.push(item);
+            if (currentGroup.length === 0) {
+              currentGroup.push(item);
             } else {
-              const prev = currentLine[currentLine.length - 1];
-              const ptPrev = viewport.convertToViewportPoint(prev.transform[4], prev.transform[5]);
-              const ptItem = viewport.convertToViewportPoint(item.transform[4], item.transform[5]);
-              const sameBaseline = Math.abs(ptPrev[1] - ptItem[1]) <= 4;
-              const closeX = ptItem[0] >= ptPrev[0] - 4;
+              const prev = currentGroup[currentGroup.length - 1];
 
-              if (sameBaseline && closeX) {
-                currentLine.push(item);
+              // If previous item signaled end-of-line, start new group
+              if (prev.hasEOL) {
+                groups.push(currentGroup);
+                currentGroup = [item];
+                return;
+              }
+
+              const ptPrevStart = viewport.convertToViewportPoint(prev.transform[4], prev.transform[5]);
+              const ptPrevEnd = viewport.convertToViewportPoint(
+                prev.transform[4] + (prev.width || 0),
+                prev.transform[5]
+              );
+              const ptItemStart = viewport.convertToViewportPoint(item.transform[4], item.transform[5]);
+
+              const prevFs = Math.max(
+                8,
+                Math.hypot(prev.transform[0], prev.transform[1]) || Math.abs(prev.transform[3]) || 12
+              );
+              const itemFs = Math.max(
+                8,
+                Math.hypot(item.transform[0], item.transform[1]) || Math.abs(item.transform[3]) || 12
+              );
+
+              // 1. Same baseline check (vertical difference <= font size fraction)
+              const baselineDiff = Math.abs(ptPrevStart[1] - ptItemStart[1]);
+              const sameBaseline = baselineDiff <= Math.max(2.5, Math.min(prevFs, itemFs) * 0.25);
+
+              // 2. Font size compatibility
+              const compatibleSize = Math.abs(prevFs - itemFs) <= 2;
+
+              // 3. Horizontal continuity check (strictly preventing table column merging!)
+              const screenGap = ptItemStart[0] - ptPrevEnd[0];
+
+              // Normal space between words in typography is ~0.25-0.35 * fontSize
+              // Maximum gap allowed within a single phrase/word group:
+              const maxAllowedGap = Math.min(Math.max(prevFs * 0.65, 5), 12);
+
+              const isContiguousRun =
+                sameBaseline &&
+                compatibleSize &&
+                screenGap >= -prevFs * 0.35 &&
+                screenGap <= maxAllowedGap;
+
+              if (isContiguousRun) {
+                currentGroup.push(item);
               } else {
-                lines.push(currentLine);
-                currentLine = [item];
+                groups.push(currentGroup);
+                currentGroup = [item];
               }
             }
           });
-          if (currentLine.length > 0) lines.push(currentLine);
+          if (currentGroup.length > 0) groups.push(currentGroup);
 
-          // Convert lines into ExistingTextItem
-          lines.forEach((lineItems, lineIdx) => {
-            const first = lineItems[0];
-            const last = lineItems[lineItems.length - 1];
+          // Convert groups into ExistingTextItem
+          groups.forEach((groupItems, groupIdx) => {
+            const first = groupItems[0];
+            const last = groupItems[groupItems.length - 1];
 
-            // Build combined text with smart spacing: preserve existing token spaces, avoid double spaces
+            // Build combined text
             let combinedText = "";
-            lineItems.forEach((it: any, idx: number) => {
+            groupItems.forEach((it: any, idx: number) => {
               if (idx === 0) {
                 combinedText += it.str;
               } else {
-                const prev = lineItems[idx - 1];
-                const hasSpace = prev.str.endsWith(" ") || it.str.startsWith(" ");
-                if (hasSpace) {
+                const prev = groupItems[idx - 1];
+                const prevEndsSpace = prev.str.endsWith(" ");
+                const itStartsSpace = it.str.startsWith(" ");
+                if (prevEndsSpace || itStartsSpace) {
                   combinedText += it.str;
                 } else {
-                  const gap = it.transform[4] - (prev.transform[4] + (prev.width || 0));
-                  if (gap > (it.transform[0] || 12) * 0.15) {
+                  const ptPrevEnd = viewport.convertToViewportPoint(
+                    prev.transform[4] + (prev.width || 0),
+                    prev.transform[5]
+                  );
+                  const ptCurrStart = viewport.convertToViewportPoint(it.transform[4], it.transform[5]);
+                  const gap = ptCurrStart[0] - ptPrevEnd[0];
+                  if (gap >= (it.transform[0] || 12) * 0.18) {
                     combinedText += " " + it.str;
                   } else {
                     combinedText += it.str;
@@ -632,19 +818,21 @@ export function PdfEditorClient() {
             combinedText = combinedText.trim();
             if (!combinedText) return;
 
-            const fontSize = Math.max(8, Math.round(Math.hypot(first.transform[0], first.transform[1]) || Math.abs(first.transform[3]) || 14));
+            const fontSize = Math.max(
+              8,
+              Math.round(Math.hypot(first.transform[0], first.transform[1]) || Math.abs(first.transform[3]) || 14)
+            );
             const tx = first.transform[4];
-            const ty = first.transform[5]; // exact baseline from bottom of page in PDF points
+            const ty = first.transform[5]; // exact PDF baseline
 
-            // Calculate advance width and line height in PDF coordinates
-            const linePdfWidth = Math.max(20, (last.transform[4] + (last.width || 0)) - tx);
-            const linePdfHeight = Math.max(8, Math.hypot(first.transform[2], first.transform[3]) || fontSize);
+            const advanceWidth = Math.max(4, (last.transform[4] + (last.width || 0)) - tx);
+            const ascent = fontSize * 0.85;
+            const descent = fontSize * 0.2;
 
-            // Convert all 4 corners into viewport screen coordinates
-            const p1 = viewport.convertToViewportPoint(tx, ty);
-            const p2 = viewport.convertToViewportPoint(tx, ty + linePdfHeight);
-            const p3 = viewport.convertToViewportPoint(tx + linePdfWidth, ty);
-            const p4 = viewport.convertToViewportPoint(tx + linePdfWidth, ty + linePdfHeight);
+            const p1 = viewport.convertToViewportPoint(tx, ty - descent);
+            const p2 = viewport.convertToViewportPoint(tx, ty + ascent);
+            const p3 = viewport.convertToViewportPoint(tx + advanceWidth, ty - descent);
+            const p4 = viewport.convertToViewportPoint(tx + advanceWidth, ty + ascent);
 
             const minX = Math.min(p1[0], p2[0], p3[0], p4[0]);
             const maxX = Math.max(p1[0], p2[0], p3[0], p4[0]);
@@ -653,8 +841,8 @@ export function PdfEditorClient() {
 
             const screenX = Math.round(minX);
             const screenY = Math.round(minY);
-            const screenW = Math.max(20, Math.round(maxX - minX));
-            const screenH = Math.max(12, Math.round(maxY - minY));
+            const screenW = Math.max(6, Math.round(maxX - minX));
+            const screenH = Math.max(10, Math.round(maxY - minY));
 
             const textAngle = Math.round(Math.atan2(first.transform[1], first.transform[0]) * (180 / Math.PI));
             const rotation = (textAngle + totalRotation) % 360;
@@ -678,7 +866,7 @@ export function PdfEditorClient() {
             const canNativeEdit = hasHexInStream || hasLitInStream || hasTmInStream;
 
             allExtracted.push({
-              id: `ext_${pIdx}_${lineIdx}_${Date.now()}`,
+              id: `ext_${pIdx}_${groupIdx}_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
               pageIndex: pIdx,
               originalText: combinedText,
               currentText: combinedText,
@@ -702,7 +890,7 @@ export function PdfEditorClient() {
               isModified: false,
               canNativeEdit,
               source: "pdf-native",
-              subStrings: lineItems.map((i: any) => i.str),
+              subStrings: groupItems.map((i: any) => i.str),
               rotation,
             });
           });
@@ -717,49 +905,6 @@ export function PdfEditorClient() {
     },
     []
   );
-
-  // ── Calculate available space on the current line to detect overlap ─
-  const getLineAvailableSpace = (item: ExistingTextItem): number => {
-    const pageMeta = pages[item.pageIndex] || { width: 595, height: 842 };
-    const pageItems = existingTexts.filter(
-      (t) => t.pageIndex === item.pageIndex && !t.isDeleted && t.id !== item.id
-    );
-    const rightNeighbor = pageItems
-      .filter((t) => Math.abs(t.ty - item.ty) < 4 && t.x > item.x)
-      .sort((a, b) => a.x - b.x)[0];
-
-    if (rightNeighbor) {
-      return rightNeighbor.x - item.x - 4;
-    }
-    return pageMeta.width - item.x - 20;
-  };
-
-  // ── Auto-fit Font Size to prevent overlapping ───────────────────────
-  const autoFitFontSize = (id: string) => {
-    setExistingTexts((prev) =>
-      prev.map((item) => {
-        if (item.id !== id) return item;
-        const available = getLineAvailableSpace(item);
-        if (item.width <= available) return item;
-        const ratio = available / item.width;
-        const newSize = Math.max(8, Math.floor(item.fontSize * ratio));
-        const newWidth = calculateTextWidth(
-          item.currentText,
-          newSize,
-          item.fontFamily,
-          item.bold,
-          item.italic
-        );
-        return {
-          ...item,
-          fontSize: newSize,
-          width: Math.max(item.originalWidth, newWidth),
-          isModified: true,
-        };
-      })
-    );
-    notify.info("Adjusted font size to fit line without overlap.");
-  };
 
   // ── Run OCR on a Scanned Page (Controlled, Safe, No Duplicates) ────
   const runOcrOnPage = async (pageIdx: number) => {
@@ -861,81 +1006,6 @@ export function PdfEditorClient() {
       setIsOcrRunning(false);
       setOcrProgressText("");
     }
-  };
-
-  // ── Existing Text Modification Operations (Auto-sizing & non-truncating) ─
-  const updateExistingText = (id: string, newText: string) => {
-    setExistingTexts((prev) =>
-      prev.map((item) => {
-        if (item.id !== id) return item;
-        // Dynamically compute width for replacement text using character metrics!
-        const newWidth = calculateTextWidth(
-          newText,
-          item.fontSize,
-          item.fontFamily,
-          item.bold,
-          item.italic
-        );
-        return {
-          ...item,
-          currentText: newText,
-          // Expand bounding box so replacement text is never clipped!
-          width: Math.max(item.originalWidth, newWidth),
-          isModified: newText !== item.originalText,
-        };
-      })
-    );
-  };
-
-  const applyExistingTextEdit = (id: string) => {
-    pushHistory(annotations, pages, existingTexts);
-    setSelectedExistingTextId(null);
-    notify.success("Text changes saved");
-  };
-
-  const cancelExistingTextEdit = (id: string) => {
-    setExistingTexts((prev) =>
-      prev.map((item) => {
-        if (item.id !== id) return item;
-        return {
-          ...item,
-          currentText: item.originalText,
-          fontSize: item.originalFontSize,
-          width: item.originalWidth,
-          isModified: false,
-        };
-      })
-    );
-    setSelectedExistingTextId(null);
-    notify.info("Canceled text change");
-  };
-
-  const deleteExistingText = (id: string) => {
-    const updated = existingTexts.map((item) => {
-      if (item.id !== id) return item;
-      return { ...item, isDeleted: true, isModified: true };
-    });
-    setExistingTexts(updated);
-    pushHistory(annotations, pages, updated);
-    setSelectedExistingTextId(null);
-    notify.info("Original text deleted from document");
-  };
-
-  const restoreExistingText = (id: string) => {
-    const updated = existingTexts.map((item) => {
-      if (item.id !== id) return item;
-      return {
-        ...item,
-        currentText: item.originalText,
-        fontSize: item.originalFontSize,
-        width: item.originalWidth,
-        isDeleted: false,
-        isModified: false,
-      };
-    });
-    setExistingTexts(updated);
-    pushHistory(annotations, pages, updated);
-    notify.success("Restored original text");
   };
 
   // ── PDF Loading & Initialization ─────────────────────────────────
@@ -2616,10 +2686,9 @@ export function PdfEditorClient() {
                               style={{
                                 left: `${vx}px`,
                                 top: `${vy}px`,
-                                minWidth: `${vw}px`,
-                                width: `${Math.max(vw, 140)}px`,
+                                width: `${vw}px`,
                                 height: `${vh}px`,
-                                backgroundColor: "transparent",
+                                backgroundColor: item.isModified ? "transparent" : (item.bgColor || "#FFFFFF"),
                                 boxShadow: "none",
                               }}
                             >
@@ -2637,19 +2706,32 @@ export function PdfEditorClient() {
                                   fontStyle: item.italic ? "italic" : "normal",
                                   textDecoration: item.underline ? "underline" : "none",
                                   textAlign: item.align,
-                                  background: "transparent",
+                                  background: item.isModified ? "transparent" : (item.bgColor || "#FFFFFF"),
                                   outline: "none",
                                   border: "none",
-                                  padding: "0",
+                                  padding: "0 2px",
                                   margin: "0",
                                   boxShadow: "none",
                                   lineHeight: 1.15,
                                 }}
                                 onChange={(e) => updateExistingText(item.id, e.target.value)}
-                                onBlur={() => applyExistingTextEdit(item.id)}
+                                onBlur={(e) => {
+                                  const related = e.relatedTarget as HTMLElement | null;
+                                  if (
+                                    related &&
+                                    (related.closest(`.${styles.propsSection}`) ||
+                                      related.closest(`.${styles.toolbar}`) ||
+                                      related.closest(`.${styles.toolbox}`))
+                                  ) {
+                                    return;
+                                  }
+                                  if (item.currentText !== item.originalText) {
+                                    applyExistingTextEdit(item.id, false);
+                                  }
+                                }}
                                 onKeyDown={(e) => {
                                   if (e.key === "Enter") {
-                                    applyExistingTextEdit(item.id);
+                                    applyExistingTextEdit(item.id, true);
                                   } else if (e.key === "Escape") {
                                     cancelExistingTextEdit(item.id);
                                   }
@@ -2669,8 +2751,7 @@ export function PdfEditorClient() {
                             style={{
                               left: `${vx}px`,
                               top: `${vy}px`,
-                              minWidth: `${vw}px`,
-                              width: "max-content",
+                              width: `${vw}px`,
                               height: `${vh}px`,
                               backgroundColor: "transparent",
                               boxShadow: "none",
@@ -2684,9 +2765,9 @@ export function PdfEditorClient() {
                             }}
                             title={
                               isEditable
-                                ? (item.isModified
-                                    ? `Modified: "${item.currentText}" (click to edit)`
-                                    : `Original: "${item.originalText}" (click to edit)`)
+                                ? item.isModified
+                                  ? `Modified: "${item.currentText}" (click to edit)`
+                                  : `Original: "${item.originalText}" (click to edit)`
                                 : undefined
                             }
                           >
@@ -2694,6 +2775,7 @@ export function PdfEditorClient() {
                               <span
                                 style={{
                                   fontSize: `${item.fontSize * zoom}px`,
+                                  fontFamily: item.fontFamily,
                                   color: item.color,
                                   fontWeight: item.bold ? "bold" : "normal",
                                   fontStyle: item.italic ? "italic" : "normal",
@@ -2703,6 +2785,9 @@ export function PdfEditorClient() {
                                   display: "inline-block",
                                   whiteSpace: "pre",
                                   background: "transparent",
+                                  width: "100%",
+                                  height: "100%",
+                                  overflow: "visible",
                                 }}
                               >
                                 {item.currentText}

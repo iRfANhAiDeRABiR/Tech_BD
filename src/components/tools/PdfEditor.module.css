@@ -1198,11 +1198,11 @@
 }
 
 .existingTextSelected {
-  outline: 1px dashed #2563EB !important;
+  outline: 1.5px solid #2563EB !important;
   outline-offset: 1px;
   border: 1px solid transparent !important;
-  background: transparent !important;
-  box-shadow: none !important;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.15) !important;
   z-index: 25;
 }
 
