@@ -553,7 +553,7 @@ export function CartPageClient({ products }: CartPageClientProps) {
         <div className={styles.header}>
           <span className={styles.headerBadge}>Secure Digital Checkout</span>
           <h1 className={styles.title}>
-            Tech Solutions BD <span className={styles.titleGradient}>Checkout</span>
+            <span className={styles.titleGradient}>Checkout</span>
           </h1>
           <p className={styles.subtitle}>
             Complete your customer details and mobile banking payment to receive genuine software licenses.
