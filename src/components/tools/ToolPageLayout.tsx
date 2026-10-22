@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { TOOLS, type ToolConfig } from "@/data/tools";
+import { TOOLS } from "@/data/tools";
 import { ToolIcon, ArrowLeftIcon } from "./ToolIcons";
 import styles from "./ToolPageLayout.module.css";
 
@@ -25,8 +25,10 @@ export function ToolPageLayout({ toolId, children }: ToolPageLayoutProps) {
     );
   }
 
+  const isWide = toolId === "pdf-editor";
+
   return (
-    <div className={styles.container}>
+    <div className={isWide ? `${styles.container} ${styles.containerWide}` : styles.container}>
       <Link href="/tools" className={styles.backLink}>
         <ArrowLeftIcon size={18} />
         Back to Tools
@@ -43,7 +45,7 @@ export function ToolPageLayout({ toolId, children }: ToolPageLayoutProps) {
           >
             <ToolIcon name={tool.icon} size={32} color={tool.accentColor} />
           </div>
-          
+
           <div className={styles.titleGroup}>
             <h1 className={styles.title}>{tool.name}</h1>
             <p className={styles.description}>{tool.description}</p>
@@ -64,7 +66,7 @@ export function ToolPageLayout({ toolId, children }: ToolPageLayoutProps) {
         </div>
       </header>
 
-      <main className={styles.content}>
+      <main className={isWide ? `${styles.content} ${styles.contentWide}` : styles.content}>
         {children}
       </main>
     </div>

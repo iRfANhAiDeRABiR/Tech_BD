@@ -419,6 +419,29 @@ export function SmileIcon({ size = 24, color = "currentColor", className }: Icon
   );
 }
 
+export function PenToolIcon({ size = 24, color = "currentColor", className }: IconProps) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M12 19l7-7 3 3-7 7-3-3z" />
+      <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
+      <path d="M2 2l7.586 7.586" />
+      <circle cx="11" cy="11" r="2" />
+    </svg>
+  );
+}
+
 export function FilmIcon({ size = 24, color = "currentColor", className }: IconProps) {
   return (
     <svg
@@ -446,7 +469,7 @@ export function FilmIcon({ size = 24, color = "currentColor", className }: IconP
   );
 }
 
-export type ToolIconName = 'Shield' | 'Type' | 'Clock' | 'DollarSign' | 'Link' | 'FileText' | 'QrCode' | 'Hash' | 'Image' | 'Maximize' | 'Refresh' | 'Scissors' | 'Droplet' | 'Stamp' | 'Smile' | 'Film';
+export type ToolIconName = 'Shield' | 'Type' | 'Clock' | 'DollarSign' | 'Link' | 'FileText' | 'QrCode' | 'Hash' | 'Image' | 'Maximize' | 'Refresh' | 'Scissors' | 'Droplet' | 'Stamp' | 'Smile' | 'Film' | 'PenTool';
 
 const iconMap: Record<ToolIconName, React.FC<IconProps>> = {
 Shield: ShieldIcon,
@@ -465,6 +488,7 @@ Droplet: DropletIcon,
 Stamp: StampIcon,
 Smile: SmileIcon,
 Film: FilmIcon,
+PenTool: PenToolIcon,
 };
 
 export function ToolIcon({ name, ...props }: { name: ToolIconName } & IconProps) {

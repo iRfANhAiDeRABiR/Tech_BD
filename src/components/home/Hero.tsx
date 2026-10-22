@@ -32,7 +32,7 @@ export function Hero({ categories = [], totalProducts }: HeroProps) {
             Premium<br />
             <span className="gradient-text">Digital Software</span><br />
             at<br />
-            competitive prices
+            Competitive Prices
           </h1>
 
           <p className="hero__description">

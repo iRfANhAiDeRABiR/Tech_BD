@@ -15,6 +15,7 @@ const CATEGORIES: Array<"All" | ToolCategory> = [
   "Generator",
   "Marketing",
   "Image",
+  "PDF",
 ];
 
 export function ToolsHubClient() {
@@ -54,7 +55,7 @@ export function ToolsHubClient() {
           <Search size={18} className={styles.searchIcon} />
           <input
             type="text"
-            placeholder="Search 16+ free utilities (e.g. QR code, image, password)..."
+            placeholder="Search 17+ free utilities (e.g. QR code, image, PDF editor)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className={styles.searchInput}

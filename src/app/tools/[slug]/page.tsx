@@ -18,6 +18,7 @@ import { QrCodeGeneratorClient } from "@/components/tools/QrCodeGeneratorClient"
 import { ThumbnailMakerClient } from "@/components/tools/ThumbnailMakerClient";
 import { UrlEncoderDecoderClient } from "@/components/tools/UrlEncoderDecoderClient";
 import { WatermarkClient } from "@/components/tools/WatermarkClient";
+import { PdfEditorClient } from "@/components/tools/PdfEditorClient";
 
 interface ToolPageProps {
   params: Promise<{ slug: string }>;
@@ -97,6 +98,9 @@ export default async function ToolPage({ params }: ToolPageProps) {
       break;
     case "watermark":
       ToolComponent = <WatermarkClient />;
+      break;
+    case "pdf-editor":
+      ToolComponent = <PdfEditorClient />;
       break;
     default:
       notFound();

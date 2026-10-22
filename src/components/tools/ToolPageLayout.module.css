@@ -116,3 +116,12 @@
     border-radius: 18px;
   }
 }
+.containerWide {
+  max-width: 1480px;
+}
+
+.contentWide {
+  padding: 0;
+  background: transparent;
+  border: none;
+}

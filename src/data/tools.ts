@@ -1,11 +1,11 @@
-export type ToolCategory = 'Security' | 'Text' | 'Calculator' | 'Developer' | 'Generator' | 'Marketing' | 'Image';
+export type ToolCategory = 'Security' | 'Text' | 'Calculator' | 'Developer' | 'Generator' | 'Marketing' | 'Image' | 'PDF';
 
 export interface ToolConfig {
   id: string;
   name: string;
   description: string;
   category: ToolCategory;
-  icon: 'Shield' | 'Type' | 'Clock' | 'DollarSign' | 'Link' | 'FileText' | 'QrCode' | 'Hash' | 'Image' | 'Maximize' | 'Refresh' | 'Scissors' | 'Droplet' | 'Stamp' | 'Smile' | 'Film';
+  icon: 'Shield' | 'Type' | 'Clock' | 'DollarSign' | 'Link' | 'FileText' | 'QrCode' | 'Hash' | 'Image' | 'Maximize' | 'Refresh' | 'Scissors' | 'Droplet' | 'Stamp' | 'Smile' | 'Film' | 'PenTool';
   accentColor: string;
   borderColor: string;
   backgroundColor: string;
@@ -200,5 +200,17 @@ export const TOOLS: ToolConfig[] = [
     backgroundColor: 'rgba(239, 68, 68, 0.08)',
     badge: 'New',
     href: '/tools/image-to-pdf',
+  },
+  {
+    id: 'pdf-editor',
+    name: 'PDF Editor',
+    description: 'Edit PDFs, add text, images, signatures and annotations online.',
+    category: 'PDF',
+    icon: 'PenTool',
+    accentColor: '#DC2626',
+    borderColor: 'rgba(220, 38, 38, 0.3)',
+    backgroundColor: 'rgba(220, 38, 38, 0.08)',
+    badge: 'New',
+    href: '/tools/pdf-editor',
   },
 ];
