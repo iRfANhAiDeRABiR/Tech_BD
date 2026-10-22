@@ -14,9 +14,7 @@ import {
   Box,
   DownloadCloud,
   ChevronRight,
-  ChevronDown,
   ArrowUpRight,
-  Activity,
 } from "lucide-react";
 
 // --- Types ---
@@ -28,18 +26,6 @@ type DashboardStats = {
   activeProducts: number;
   categories: number;
   options: number;
-};
-
-type DatabaseHealth = {
-  ok: boolean;
-  condition: string;
-  responseTimeMs: number | null;
-  databaseName: string;
-  schemaName: string;
-  serverTime: string;
-  version: string;
-  host: string;
-  error?: string;
 };
 
 type RecentOrder = {
@@ -90,66 +76,7 @@ function formatCurrency(amount: number) {
   }).format(amount);
 }
 
-function getDatabaseHost() {
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) return "Not configured";
-  try {
-    const url = new URL(connectionString);
-    return url.host;
-  } catch {
-    return "Configured";
-  }
-}
-
 // --- Data Fetching ---
-
-async function getDatabaseHealth(): Promise<DatabaseHealth> {
-  const startedAt = performance.now();
-  const host = getDatabaseHost();
-
-  try {
-    const detailsPromise = prisma.$queryRaw<
-      {
-        database_name: string;
-        schema_name: string;
-        server_time: Date;
-        version: string;
-      }[]
-    >`
-      SELECT
-        current_database() AS database_name,
-        current_schema() AS schema_name,
-        now() AS server_time,
-        version() AS version
-    `;
-
-    const [row] = await detailsPromise;
-    const responseTimeMs = Math.round(performance.now() - startedAt);
-
-    return {
-      ok: true,
-      condition: responseTimeMs < 500 ? "Healthy" : "Slow response",
-      responseTimeMs,
-      databaseName: row?.database_name ?? "Unknown",
-      schemaName: row?.schema_name ?? "Unknown",
-      serverTime: row?.server_time ? formatDateTime(row.server_time) : "Unknown",
-      version: row?.version ?? "PostgreSQL",
-      host,
-    };
-  } catch (error) {
-    return {
-      ok: false,
-      condition: "Connection error",
-      responseTimeMs: null,
-      databaseName: "Unavailable",
-      schemaName: "Unavailable",
-      serverTime: "Unavailable",
-      version: "Unavailable",
-      host,
-      error: error instanceof Error ? error.message : "Unknown database error",
-    };
-  }
-}
 
 async function getDashboardStats(): Promise<DashboardStats> {
   try {
@@ -235,15 +162,13 @@ async function getOrderChartData(): Promise<ChartDataPoint[]> {
 // --- Component ---
 
 export default async function AdminDashboard() {
-  const [databaseHealth, statsResult, recentOrders, chartData] =
+  const [stats, recentOrders, chartData] =
     await Promise.all([
-      getDatabaseHealth(),
       getDashboardStats().catch(() => emptyStats),
       getRecentOrders().catch(() => []),
       getOrderChartData().catch(() => []),
     ]);
 
-  const stats = databaseHealth.ok ? statsResult : emptyStats;
   const total7DayOrders = chartData.reduce((acc, curr) => acc + curr.orders, 0);
 
   return (
@@ -399,65 +324,6 @@ export default async function AdminDashboard() {
                 <ChevronRight size={14} className={styles.quickActionChevron} />
               </Link>
             </nav>
-          </section>
-
-          {/* System Health Card */}
-          <section className={styles.dashSection}>
-            <div className={styles.dashSectionHeader}>
-              <div className={styles.healthTitleRow}>
-                <Activity size={16} className={styles.healthIcon} />
-                <h2 className={styles.dashSectionTitle}>System Health</h2>
-              </div>
-              <StatusBadge status={databaseHealth.ok ? "ONLINE" : "ERROR"} />
-            </div>
-
-            <div className={styles.healthCompact}>
-              <div className={styles.healthRow}>
-                <span className={styles.healthLabel}>Database Engine</span>
-                <span className={styles.healthValue}>
-                  {databaseHealth.ok ? "PostgreSQL (Connected)" : "Offline"}
-                </span>
-              </div>
-              <div className={styles.healthRow}>
-                <span className={styles.healthLabel}>Query Latency</span>
-                <span className={styles.healthValue}>
-                  {databaseHealth.responseTimeMs !== null ? (
-                    <span className={styles.latencyGood}>
-                      <span className={styles.latencyDot} />
-                      {databaseHealth.responseTimeMs} ms
-                    </span>
-                  ) : (
-                    "Failed"
-                  )}
-                </span>
-              </div>
-              <div className={styles.healthRow}>
-                <span className={styles.healthLabel}>Timezone</span>
-                <span className={styles.healthValue}>Asia/Dhaka</span>
-              </div>
-
-              <Link
-                href="/admin/system"
-                className={styles.quickActionLink}
-                style={{
-                  marginTop: 10,
-                  padding: "10px 14px",
-                  borderRadius: 10,
-                  background: "rgba(99, 102, 241, 0.08)",
-                  border: "1px solid rgba(99, 102, 241, 0.2)",
-                  color: "#818cf8",
-                  fontSize: 12,
-                  fontWeight: 600,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  textDecoration: "none",
-                }}
-              >
-                <span>Open System Diagnostics</span>
-                <ChevronRight size={14} />
-              </Link>
-            </div>
           </section>
         </div>
       </div>
