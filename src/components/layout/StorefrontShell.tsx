@@ -18,12 +18,33 @@ interface StorefrontShellProps {
 export function StorefrontShell({ children, categories }: StorefrontShellProps) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin");
+  const isPaymentPage = pathname?.startsWith("/checkout/payment");
+  const isCheckout = pathname === "/checkout" || pathname?.startsWith("/checkout");
 
   if (isAdmin) {
     return (
       <div className="admin-root-shell">
         {children}
         <GlobalToaster />
+      </div>
+    );
+  }
+
+  if (isPaymentPage) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          backgroundColor: "#0B0F19",
+          width: "100%",
+          position: "relative",
+          zIndex: 10,
+        }}
+      >
+        <CartProvider>
+          {children}
+          <GlobalToaster />
+        </CartProvider>
       </div>
     );
   }
@@ -37,7 +58,7 @@ export function StorefrontShell({ children, categories }: StorefrontShellProps) 
           {children}
           <Footer />
         </div>
-        <WhatsAppButton />
+        {!isCheckout && <WhatsAppButton />}
         <AuthModal />
         <GlobalToaster />
       </CartProvider>
