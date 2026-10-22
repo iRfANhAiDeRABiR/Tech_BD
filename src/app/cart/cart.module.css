@@ -564,6 +564,36 @@
   margin: 0;
 }
 
+.trustBadgeBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: rgba(37, 211, 102, 0.12);
+  color: #16a34a;
+  border: 1px solid rgba(37, 211, 102, 0.35);
+  text-decoration: none;
+  margin-top: 3px;
+  transition: all 0.2s ease;
+  width: fit-content;
+}
+
+[data-theme="dark"] .trustBadgeBtn {
+  background: rgba(37, 211, 102, 0.2);
+  color: #4ade80;
+  border-color: rgba(37, 211, 102, 0.4);
+}
+
+.trustBadgeBtn:hover {
+  background: #25d366;
+  color: #ffffff;
+  border-color: #25d366;
+  transform: translateY(-1px);
+}
+
 /* ── Place Order Action Button ─────────────────────────────────────────── */
 .placeOrderWrapper {
   margin-top: 4px;
@@ -697,9 +727,9 @@
 }
 
 .productThumbnail {
-  width: 56px;
-  height: 56px;
-  border-radius: 8px;
+  width: 65px;
+  height: 65px;
+  border-radius: 10px;
   background: rgba(255, 255, 255, 0.04);
   padding: 4px;
   display: flex;

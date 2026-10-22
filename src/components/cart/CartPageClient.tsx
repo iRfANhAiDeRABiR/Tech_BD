@@ -751,7 +751,16 @@ export function CartPageClient({ products }: CartPageClientProps) {
                 <Headphones className={styles.trustBadgeIcon} style={{ color: "#6C63FF" }} />
                 <div>
                   <h4 className={styles.trustBadgeTitle}>Live Support</h4>
-                  <p className={styles.trustBadgeDesc}>WhatsApp: 01641699879</p>
+                  <a
+                    href="https://wa.me/8801641699879?text=Hello%20Tech%20Solutions%20BD,%20I%20need%20assistance%20with%20my%20software%20order."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.trustBadgeBtn}
+                    aria-label="Chat with Tech Solutions BD on WhatsApp"
+                  >
+                    <span>Chat on WhatsApp</span>
+                    <ArrowRight size={11} />
+                  </a>
                 </div>
               </div>
             </div>
@@ -784,8 +793,8 @@ export function CartPageClient({ products }: CartPageClientProps) {
                         <Image
                           src={product.image}
                           alt={name}
-                          width={56}
-                          height={56}
+                          width={65}
+                          height={65}
                           className="object-contain"
                         />
                       </div>
