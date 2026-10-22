@@ -217,6 +217,75 @@ export function CartPageClient({ products }: CartPageClientProps) {
   // Form submission state
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [submittedOrder, setSubmittedOrder] = useState<SubmittedOrderData | null>(null);
+  const [orderVerificationStatus, setOrderVerificationStatus] = useState<"PENDING" | "CONFIRMED" | "INVALID">("PENDING");
+
+  // Restore submitted order from session/local storage
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem("techbd_submitted_order") || localStorage.getItem("techbd_submitted_order");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed && (parsed.orderNumber || parsed.id)) {
+          setSubmittedOrder(parsed);
+          if (parsed.status === "CONFIRMED" || parsed.status === "INVALID" || parsed.status === "PENDING") {
+            setOrderVerificationStatus(parsed.status);
+          }
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  // Live polling for submitted order status
+  useEffect(() => {
+    const orderNumber = submittedOrder?.orderNumber || submittedOrder?.id;
+    if (!orderNumber) return;
+
+    let isCancelled = false;
+    let interval: NodeJS.Timeout | null = null;
+
+    const checkStatus = async () => {
+      try {
+        const res = await fetch(`/api/order/verify?ref=${encodeURIComponent(orderNumber)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (isCancelled) return;
+
+        if (data.status === "CONFIRMED") {
+          setOrderVerificationStatus("CONFIRMED");
+          try {
+            const current = sessionStorage.getItem("techbd_submitted_order");
+            if (current) {
+              const updated = { ...JSON.parse(current), status: "CONFIRMED" };
+              sessionStorage.setItem("techbd_submitted_order", JSON.stringify(updated));
+              localStorage.setItem("techbd_submitted_order", JSON.stringify(updated));
+            }
+          } catch {}
+        } else if (data.status === "INVALID") {
+          setOrderVerificationStatus("INVALID");
+          try {
+            const current = sessionStorage.getItem("techbd_submitted_order");
+            if (current) {
+              const updated = { ...JSON.parse(current), status: "INVALID" };
+              sessionStorage.setItem("techbd_submitted_order", JSON.stringify(updated));
+              localStorage.setItem("techbd_submitted_order", JSON.stringify(updated));
+            }
+          } catch {}
+        }
+      } catch {
+        // silent fallback
+      }
+    };
+
+    checkStatus();
+    interval = setInterval(checkStatus, 2500);
+
+    return () => {
+      isCancelled = true;
+      if (interval) clearInterval(interval);
+    };
+  }, [submittedOrder?.orderNumber, submittedOrder?.id]);
 
   // Products map
   const productsById = useMemo(
@@ -417,35 +486,120 @@ export function CartPageClient({ products }: CartPageClientProps) {
     router.push("/checkout/payment");
   };
 
-  // ── 1. Order Placed Confirmation View ──────────────────────────────────
+  // ── 1. Order Placed / Verification Status View ─────────────────────────
   if (submittedOrder) {
+    const isConfirmed = orderVerificationStatus === "CONFIRMED";
+    const isInvalid = orderVerificationStatus === "INVALID";
+    const isPending = orderVerificationStatus === "PENDING";
+
     return (
       <main className={styles.page}>
         <div className={styles.container}>
           <div className={styles.confirmationCard}>
-            <div className={styles.successCheckWrap} aria-hidden="true">
-              ✓
+            {/* Dynamic Status Icon */}
+            <div
+              className={styles.successCheckWrap}
+              style={{
+                background: isConfirmed
+                  ? "linear-gradient(135deg, #10B981 0%, #059669 100%)"
+                  : isInvalid
+                  ? "linear-gradient(135deg, #EF4444 0%, #DC2626 100%)"
+                  : "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)",
+              }}
+              aria-hidden="true"
+            >
+              {isConfirmed ? "✓" : isInvalid ? "✕" : "⏳"}
             </div>
 
-            <h1 className={styles.confirmationTitle}>Order Placed Successfully!</h1>
+            {/* Dynamic Title */}
+            <h1 className={styles.confirmationTitle}>
+              {isConfirmed && "Payment Verified & Order Confirmed!"}
+              {isInvalid && "TrxID Verification Failed!"}
+              {isPending && "Order Placed — Verification In Progress"}
+            </h1>
 
-            <div className={styles.confirmationBadge}>
-              <span aria-hidden="true">⏳</span>
-              <span>Payment Submitted — Pending Verification</span>
+            {/* Dynamic Status Pill */}
+            <div
+              className={styles.confirmationBadge}
+              style={{
+                background: isConfirmed
+                  ? "rgba(16, 185, 129, 0.12)"
+                  : isInvalid
+                  ? "rgba(239, 68, 68, 0.12)"
+                  : "rgba(245, 158, 11, 0.12)",
+                borderColor: isConfirmed
+                  ? "rgba(16, 185, 129, 0.4)"
+                  : isInvalid
+                  ? "rgba(239, 68, 68, 0.4)"
+                  : "rgba(245, 158, 11, 0.4)",
+                color: isConfirmed ? "#10B981" : isInvalid ? "#EF4444" : "#F59E0B",
+              }}
+            >
+              <span aria-hidden="true">
+                {isConfirmed ? "✅" : isInvalid ? "❌" : "⏳"}
+              </span>
+              <span>
+                {isConfirmed && "Payment Verified & Confirmed (অনুমোদিত)"}
+                {isInvalid && "ভুল TrxID (Verification Failed - বাতিল)"}
+                {isPending && "Payment Submitted — Pending Verification (ভেরিফিকেশন চলছে)"}
+              </span>
             </div>
 
+            {/* Subtitle Description */}
             <p className={styles.subtitle} style={{ marginBottom: "24px" }}>
-              Thank you for ordering. We have received your payment submission and our team is verifying your Transaction ID.
+              {isConfirmed &&
+                `আপনার পেমেন্ট সফলভাবে অনুমোদিত হয়েছে। কিছুক্ষণের মধ্যে আপনার ইমেইলে (${submittedOrder.customerEmail}) লাইসেন্স কি ও সেটআপ নির্দেশনা পৌঁছে যাবে।`}
+              {isInvalid &&
+                `আপনার প্রদত্ত Transaction ID (${submittedOrder.transactionId}) যাচাই করা সম্ভব হয়নি। অনুগ্রহ করে নিচের বাটনে ক্লিক করে পেমেন্ট গেটওয়েতে সঠিক TrxID লিখুন।`}
+              {isPending &&
+                "আপনার পেমেন্ট তথ্য সফলভাবে গ্রহণ করা হয়েছে এবং ভেরিফিকেশন চলছে। অ্যাডমিন কনফার্ম করা মাত্রই এই স্ক্রিন স্বয়ংক্রিয়ভাবে আপডেট হবে।"}
             </p>
 
+            {/* If Invalid, direct button to return to Payment Gateway */}
+            {isInvalid && (
+              <div style={{ marginBottom: "24px" }}>
+                <Link
+                  href="/checkout/payment"
+                  className={styles.submitOrderButton}
+                  style={{
+                    background: "linear-gradient(135deg, #EF4444 0%, #DC2626 100%)",
+                    maxWidth: "340px",
+                    margin: "0 auto",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                    textDecoration: "none",
+                  }}
+                >
+                  🔄 পুনরায় TrxID দিন (Re-enter TrxID in Gateway)
+                </Link>
+              </div>
+            )}
+
+            {/* Complete Order Details Grid */}
             <div className={styles.orderDetailsGrid}>
               <div className={styles.orderDetailItem}>
                 <span className={styles.orderDetailLabel}>Order Reference</span>
-                <span className={styles.orderDetailValue}>#{submittedOrder.orderNumber}</span>
+                <span className={styles.orderDetailValue}>#{submittedOrder.orderNumber || submittedOrder.id}</span>
+              </div>
+              <div className={styles.orderDetailItem}>
+                <span className={styles.orderDetailLabel}>Verification Status</span>
+                <span
+                  className={styles.orderDetailValue}
+                  style={{
+                    color: isConfirmed ? "#10B981" : isInvalid ? "#EF4444" : "#F59E0B",
+                    fontWeight: 750,
+                  }}
+                >
+                  {isConfirmed && "✅ Confirmed (অনুমোদিত)"}
+                  {isInvalid && "❌ Verification Failed (ভুল TrxID)"}
+                  {isPending && "⏳ Pending Verification (চলছে)"}
+                </span>
               </div>
               <div className={styles.orderDetailItem}>
                 <span className={styles.orderDetailLabel}>Total Amount</span>
-                <span className={styles.orderDetailValue} style={{ color: "var(--accent-secondary, #00D4AA)" }}>
+                <span className={styles.orderDetailValue} style={{ color: "var(--accent-secondary, #00D4AA)", fontWeight: 800 }}>
                   {formatPrice(submittedOrder.total)}
                 </span>
               </div>
@@ -454,16 +608,61 @@ export function CartPageClient({ products }: CartPageClientProps) {
                 <span className={styles.orderDetailValue}>{submittedOrder.customerEmail}</span>
               </div>
               <div className={styles.orderDetailItem}>
-                <span className={styles.orderDetailLabel}>Payment via</span>
-                <span className={styles.orderDetailValue}>
-                  {submittedOrder.paymentMethod} (TrxID: {submittedOrder.transactionId})
-                </span>
+                <span className={styles.orderDetailLabel}>Customer Name</span>
+                <span className={styles.orderDetailValue}>{submittedOrder.customerName || "N/A"}</span>
               </div>
+              <div className={styles.orderDetailItem}>
+                <span className={styles.orderDetailLabel}>Customer Phone</span>
+                <span className={styles.orderDetailValue}>{submittedOrder.customerPhone || "N/A"}</span>
+              </div>
+              <div className={styles.orderDetailItem}>
+                <span className={styles.orderDetailLabel}>Payment Method</span>
+                <span className={styles.orderDetailValue}>{submittedOrder.paymentMethod || "Mobile Banking"}</span>
+              </div>
+              {submittedOrder.senderNumber && (
+                <div className={styles.orderDetailItem}>
+                  <span className={styles.orderDetailLabel}>Sender Number</span>
+                  <span className={styles.orderDetailValue} style={{ fontFamily: "var(--font-mono, monospace)" }}>
+                    {submittedOrder.senderNumber}
+                  </span>
+                </div>
+              )}
+              {submittedOrder.transactionId && (
+                <div className={styles.orderDetailItem}>
+                  <span className={styles.orderDetailLabel}>Transaction ID (TrxID)</span>
+                  <span
+                    className={styles.orderDetailValue}
+                    style={{
+                      fontFamily: "var(--font-mono, monospace)",
+                      fontWeight: 750,
+                      color: isInvalid ? "#EF4444" : "#10B981",
+                    }}
+                  >
+                    {submittedOrder.transactionId}
+                  </span>
+                </div>
+              )}
             </div>
 
+            {/* Bottom Actions */}
             <div className={styles.confirmationActions}>
+              <button
+                type="button"
+                onClick={() => {
+                  try {
+                    sessionStorage.removeItem("techbd_submitted_order");
+                    localStorage.removeItem("techbd_submitted_order");
+                    sessionStorage.removeItem("techbd_pending_payment");
+                  } catch {}
+                  setSubmittedOrder(null);
+                }}
+                className={styles.continueButton}
+                style={{ cursor: "pointer", background: "none", border: "1px solid rgba(255, 255, 255, 0.15)" }}
+              >
+                + Start New Order / নতুন অর্ডার
+              </button>
               <Link href="/products#products-by-category" className={styles.continueButton}>
-                ← Continue Shopping
+                ← Browse Software Catalog
               </Link>
               <Link href="/account/orders" className={styles.continueButton}>
                 View My Account Orders

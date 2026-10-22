@@ -75,7 +75,9 @@ export default function CheckoutPaymentPage() {
     clearCart();
     try {
       sessionStorage.removeItem("techbd_pending_payment");
-      sessionStorage.setItem("techbd_confirmed_order", JSON.stringify(confirmed));
+      const record = { ...confirmed, status: "PENDING" };
+      sessionStorage.setItem("techbd_submitted_order", JSON.stringify(record));
+      localStorage.setItem("techbd_submitted_order", JSON.stringify(record));
     } catch {
       // ignore
     }

@@ -128,9 +128,25 @@ export default function PaymentGatewayPage({
 
         if (data.status === "CONFIRMED") {
           setVerificationStatus("CONFIRMED");
+          try {
+            const current = sessionStorage.getItem("techbd_submitted_order");
+            if (current) {
+              const updated = { ...JSON.parse(current), status: "CONFIRMED" };
+              sessionStorage.setItem("techbd_submitted_order", JSON.stringify(updated));
+              localStorage.setItem("techbd_submitted_order", JSON.stringify(updated));
+            }
+          } catch {}
           if (interval) clearInterval(interval);
         } else if (data.status === "INVALID") {
           setVerificationStatus("INVALID");
+          try {
+            const current = sessionStorage.getItem("techbd_submitted_order");
+            if (current) {
+              const updated = { ...JSON.parse(current), status: "INVALID" };
+              sessionStorage.setItem("techbd_submitted_order", JSON.stringify(updated));
+              localStorage.setItem("techbd_submitted_order", JSON.stringify(updated));
+            }
+          } catch {}
           if (interval) clearInterval(interval);
         }
       } catch {
@@ -249,6 +265,11 @@ export default function PaymentGatewayPage({
       };
 
       setSubmittedOrder(confirmedData);
+      try {
+        const orderRecord = { ...confirmedData, status: "PENDING" };
+        sessionStorage.setItem("techbd_submitted_order", JSON.stringify(orderRecord));
+        localStorage.setItem("techbd_submitted_order", JSON.stringify(orderRecord));
+      } catch {}
       onSuccess(confirmedData);
       setStep(3);
     } catch (err: any) {
@@ -698,8 +719,11 @@ export default function PaymentGatewayPage({
                   </button>
                 )}
 
-                <Link href="/products#products-by-category" className={styles.btnReturnHome}>
-                  Return to Homepage / মূল পেজে ফিরুন
+                <Link
+                  href={`/checkout?order=${encodeURIComponent(submittedOrder?.orderNumber || order.refId)}`}
+                  className={styles.btnReturnHome}
+                >
+                  Return to Checkout & View Status / অর্ডারে ফিরুন
                 </Link>
               </div>
             </div>
