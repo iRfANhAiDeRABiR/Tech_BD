@@ -472,6 +472,11 @@
 .adminMainContent {
   flex: 1;
   width: 100%;
+  min-width: 0;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: clamp(24px, 3vw, 36px) clamp(20px, 3vw, 40px) 80px;
+  box-sizing: border-box;
 }
 
 /* --------------------------------------------------------------------------
@@ -480,9 +485,6 @@
 
 .dashboardContainer {
   width: 100%;
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: clamp(24px, 3vw, 36px) clamp(20px, 3vw, 40px);
   display: flex;
   flex-direction: column;
   gap: 28px;
@@ -1925,8 +1927,11 @@
 }
 
 @media (max-width: 768px) {
+  .adminMainContent {
+    padding: 20px 16px 60px;
+  }
+
   .dashboardContainer {
-    padding: 20px 16px;
     gap: 20px;
   }
 
