@@ -302,10 +302,15 @@ export const categorySummaries: StoreCategory[] = [
   },
   {
     slug: "adobe",
-    name: "Adobe Creative Cloud",
-    description: "Creative Cloud subscriptions",
-    count: products.filter((product) => product.category === "adobe").length,
-    image: "/img_content/acc.png",
+    name: "Creativity & Design",
+    description: "Creative Cloud & design subscriptions",
+    count: products.filter(
+      (product) =>
+        product.category === "adobe" ||
+        product.category === "creativity-&-design" ||
+        product.category === "creativity-and-design"
+    ).length,
+    image: "/img_content/adobe.png",
     accent: "#FF0000",
   },
 ];

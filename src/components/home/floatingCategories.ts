@@ -31,9 +31,17 @@ const floatingCategoryConfig: FloatingCategoryConfig[] = [
     matches: ["vpn"],
   },
   {
-    name: "Adobe",
-    image: "/img_content/acc.png",
-    matches: ["adobe", "adobe creative cloud"],
+    name: "Creativity & Design",
+    image: "/img_content/adobe.png",
+    matches: [
+      "creativity-&-design",
+      "creativity & design",
+      "creativity and design",
+      "creativity",
+      "design",
+      "adobe",
+      "adobe creative cloud",
+    ],
   },
   {
     name: "Productivity",
@@ -62,9 +70,14 @@ export function getFloatingCategoryCards(
       );
     });
 
+    const categoryImage =
+      matchedCategory?.image && matchedCategory.image !== "/img_content/acc.png"
+        ? matchedCategory.image
+        : config.image;
+
     return {
       name: config.name,
-      image: matchedCategory?.image || config.image,
+      image: categoryImage,
     };
   });
 }
