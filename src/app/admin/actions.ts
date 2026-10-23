@@ -734,3 +734,73 @@ export async function saveSoftwareDownloadOrderAction(formData: FormData) {
   revalidatePath("/admin");
   redirect("/admin/downloads?ordered=1");
 }
+
+export async function createBanAction(formData: FormData) {
+  const session = await requireAdmin();
+
+  const type = String(formData.get("type") || "IP") as "IP" | "USER";
+  const target = String(formData.get("target") || "").trim();
+  const reason = String(formData.get("reason") || "").trim() || "Policy violation";
+  const notes = String(formData.get("notes") || "").trim() || null;
+  const duration = String(formData.get("duration") || "PERMANENT");
+  const customExpiresAt = String(formData.get("customExpiresAt") || "");
+
+  const targetEmail = String(formData.get("targetEmail") || "").trim() || null;
+  const targetPhone = String(formData.get("targetPhone") || "").trim() || null;
+  const targetUserId = String(formData.get("targetUserId") || "").trim() || null;
+  const targetUsername = String(formData.get("targetUsername") || "").trim() || null;
+
+  if (!target) {
+    throw new Error("Target IP address or user identifier is required.");
+  }
+
+  let expiresAt: string | null = null;
+  const now = Date.now();
+  if (duration === "24H") {
+    expiresAt = new Date(now + 24 * 60 * 60 * 1000).toISOString();
+  } else if (duration === "7D") {
+    expiresAt = new Date(now + 7 * 24 * 60 * 60 * 1000).toISOString();
+  } else if (duration === "30D") {
+    expiresAt = new Date(now + 30 * 24 * 60 * 60 * 1000).toISOString();
+  } else if (duration === "CUSTOM" && customExpiresAt) {
+    expiresAt = new Date(customExpiresAt).toISOString();
+  }
+
+  const { createBan } = await import("@/lib/bans-store");
+  await createBan({
+    type,
+    target,
+    targetEmail,
+    targetPhone,
+    targetUserId,
+    targetUsername,
+    reason,
+    notes,
+    bannedBy: session?.user?.email || "Admin",
+    expiresAt,
+  });
+
+  revalidatePath("/admin/bans");
+  redirect("/admin/bans?saved=1");
+}
+
+export async function revokeBanAction(banId: string) {
+  await requireAdmin();
+  const { revokeBan } = await import("@/lib/bans-store");
+  await revokeBan(banId);
+  revalidatePath("/admin/bans");
+}
+
+export async function reactivateBanAction(banId: string) {
+  await requireAdmin();
+  const { reactivateBan } = await import("@/lib/bans-store");
+  await reactivateBan(banId);
+  revalidatePath("/admin/bans");
+}
+
+export async function deleteBanAction(banId: string) {
+  await requireAdmin();
+  const { deleteBan } = await import("@/lib/bans-store");
+  await deleteBan(banId);
+  revalidatePath("/admin/bans");
+}

@@ -11,6 +11,19 @@ const AUTH_PATHS = ["/admin/login"];
 // Paths that require customer authentication (Supabase)
 const CUSTOMER_AUTH_PATHS = ["/account"];
 
+function getClientIp(request: NextRequest): string {
+  const cf = request.headers.get("cf-connecting-ip");
+  if (cf) return cf.trim();
+  const real = request.headers.get("x-real-ip");
+  if (real) return real.trim();
+  const fwd = request.headers.get("x-forwarded-for");
+  if (fwd) {
+    const first = fwd.split(",")[0]?.trim();
+    if (first) return first;
+  }
+  return "127.0.0.1";
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -20,7 +33,6 @@ export async function proxy(request: NextRequest) {
   const supabaseResponse = await updateSession(request);
 
   // Security Headers for all responses
-  // Apply headers to the supabaseResponse instead of creating a new one
   const response = supabaseResponse;
   
   // Prevent MIME sniffing
@@ -43,6 +55,17 @@ export async function proxy(request: NextRequest) {
     );
   }
 
+  // Skip proxy for static assets, api routes (except auth), banned page, etc.
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api/auth") ||
+    pathname === "/banned" ||
+    pathname.startsWith("/banned/") ||
+    pathname.includes(".")
+  ) {
+    return response;
+  }
+
   // Check if path requires admin auth
   const isAuthPath = AUTH_PATHS.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`)
@@ -52,15 +75,6 @@ export async function proxy(request: NextRequest) {
   const isCustomerAuthPath = CUSTOMER_AUTH_PATHS.some((p) =>
     pathname.startsWith(p)
   );
-
-  // Skip proxy for static assets, api routes (except auth), etc.
-  if (
-    pathname.startsWith("/_next") ||
-    pathname.startsWith("/api/auth") ||
-    pathname.includes(".")
-  ) {
-    return response;
-  }
 
   // --- ADMIN AUTHENTICATION (NextAuth) ---
   const isSecure = request.nextUrl.protocol === "https:";
@@ -83,6 +97,98 @@ export async function proxy(request: NextRequest) {
   if (isAuthPath && adminToken) {
     // Redirect authenticated admins away from login page
     return NextResponse.redirect(new URL("/admin", request.url));
+  }
+
+  // --- ACCESS BAN ENFORCEMENT (IP & USER) ---
+  // Authenticated admins accessing /admin are exempt to prevent admin lockout
+  const isAdminSession = Boolean(adminToken && pathname.startsWith("/admin"));
+  if (!isAdminSession) {
+    try {
+      const clientIp = getClientIp(request);
+      const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+          cookies: {
+            getAll() {
+              return request.cookies.getAll();
+            },
+            setAll() {},
+          },
+        }
+      );
+
+      // Check for active IP ban
+      const { data: ipBans } = await supabase
+        .from("AccessBan")
+        .select("id, type, target, reason, expiresAt")
+        .eq("isActive", true)
+        .eq("type", "IP")
+        .eq("target", clientIp)
+        .limit(1);
+
+      let activeBan = ipBans && ipBans.length > 0 ? ipBans[0] : null;
+
+      // If not IP banned, check if customer user session is banned
+      if (!activeBan) {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (user) {
+          const userFilters: string[] = [];
+          if (user.id) {
+            userFilters.push(`target.eq.${user.id}`, `targetUserId.eq.${user.id}`);
+          }
+          if (user.email) {
+            userFilters.push(`target.eq.${user.email}`, `targetEmail.eq.${user.email}`);
+          }
+
+          if (userFilters.length > 0) {
+            const { data: userBans } = await supabase
+              .from("AccessBan")
+              .select("id, type, target, reason, expiresAt")
+              .eq("isActive", true)
+              .eq("type", "USER")
+              .or(userFilters.join(","))
+              .limit(1);
+
+            if (userBans && userBans.length > 0) {
+              activeBan = userBans[0];
+            }
+          }
+        }
+      }
+
+      if (activeBan) {
+        const isExpired =
+          activeBan.expiresAt && new Date(activeBan.expiresAt) <= new Date();
+
+        if (!isExpired) {
+          // If API route, return 403 JSON
+          if (pathname.startsWith("/api/")) {
+            return NextResponse.json(
+              {
+                error: "Access Denied",
+                message: "Your IP address or user account has been suspended.",
+                reason: activeBan.reason,
+                banId: activeBan.id,
+              },
+              { status: 403 }
+            );
+          }
+
+          // If Page route, redirect to /banned
+          const bannedUrl = new URL("/banned", request.url);
+          bannedUrl.searchParams.set("reason", activeBan.reason);
+          bannedUrl.searchParams.set("id", activeBan.id);
+          return NextResponse.redirect(bannedUrl);
+        }
+      }
+    } catch (banErr) {
+      // Failsafe: Never block normal traffic if ban check encounters an error
+      console.warn("Proxy ban enforcement check error:", banErr);
+    }
   }
 
   // --- CUSTOMER AUTHENTICATION (Supabase) ---

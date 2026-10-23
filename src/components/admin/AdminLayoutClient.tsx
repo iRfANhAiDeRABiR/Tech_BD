@@ -16,6 +16,7 @@ import {
   ChevronRight,
   Plus,
   ShieldCheck,
+  ShieldAlert,
   Activity,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
@@ -58,6 +59,12 @@ const navItems = [
     icon: DownloadCloud,
     exact: false,
   },
+  {
+    label: "Access Bans",
+    href: "/admin/bans",
+    icon: ShieldAlert,
+    exact: false,
+  },
 ];
 
 function getBreadcrumb(pathname: string): { title: string; subtitle?: string } {
@@ -84,6 +91,9 @@ function getBreadcrumb(pathname: string): { title: string; subtitle?: string } {
   }
   if (pathname.startsWith("/admin/downloads")) {
     return { title: "Software Downloads", subtitle: "Downloads" };
+  }
+  if (pathname.startsWith("/admin/bans")) {
+    return { title: "Access Control & Bans", subtitle: "Security" };
   }
   if (pathname.startsWith("/admin/system")) {
     return { title: "System Health & Diagnostics", subtitle: "System" };
