@@ -42,14 +42,19 @@ export default async function HomePage({
   const initialCategory =
     typeof query.category === "string" ? query.category : "all";
   const initialSearch = typeof query.search === "string" ? query.search : "";
+  const isSearchActive = Boolean(initialSearch.trim());
 
   return (
     <main>
-      <Hero
-        categories={storeCategories}
-        totalProducts={storeProducts.length}
-      />
-      <Marquee />
+      {!isSearchActive && (
+        <>
+          <Hero
+            categories={storeCategories}
+            totalProducts={storeProducts.length}
+          />
+          <Marquee />
+        </>
+      )}
 
       <HomeCategoryProducts
         products={productSummaries}

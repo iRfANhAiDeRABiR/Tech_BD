@@ -150,7 +150,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     <main className={styles.page}>
       <h1 className={styles.srOnly}>Products by Category - Tech Solutions BD</h1>
 
-      <Marquee />
+      {!initialSearch.trim() && <Marquee />}
 
       <div className={`container ${styles.categoryNavWrap}`} id="products-by-category">
         {initialSearch && (
