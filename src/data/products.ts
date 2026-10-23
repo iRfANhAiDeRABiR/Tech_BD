@@ -15,7 +15,112 @@ export const products: Product[] = [
         "price": 500,
         "originalPrice": 13500,
         "desc": "💠Original Retail License KEY.<br>\n\n💠1 PC 1 Key Lifetime Activation.<br>\n\n💠Digital License & Online Activation.<br>\n\n\n💠License Will Be Linked With Your Microsoft Account.<br>\n\n💠Have to Activate by 24 hrs after Delivery.<br>\n\n",
-        "longDesc": "<h1>Windows 11 Pro Genuine License Key</h1>\n        <p>Activate your Windows 11 Pro for life with a <strong>100% original and genuine</strong> license key. Choose between a <em>Retail Key</em> (transferable and reusable) or an <em>OEM/BIND Key</em> (hardware-locked but auto-reactivates after reinstall).</p>\n        <p>Perfect for students, professionals, and businesses who want the full power of Windows 11 Pro at the best price in Bangladesh.</p>\n    </header>\n\n    <hr>\n\n    <section id=\"key-features\">\n        <h2>Key Features</h2>\n        <ul>\n            <li><strong>Lifetime Validity:</strong> One-time activation</li>\n            <li><strong>Retail Key:</strong> Transferable, reusable, and supports upgrade from Home to Pro</li>\n            <li><strong>OEM/BIND Key:</strong> Locked to device hardware, but auto-reactivates after format</li>\n            <li><strong>Global License:</strong> Works worldwide, multilingual</li>\n            <li><strong>Instant Delivery:</strong> Sent via Email</li>\n            <li><strong>100% Genuine:</strong> Verified Microsoft Reseller</li>\n            <li><strong>24/7 Support:</strong> Live Chat and WhatsApp</li>\n            <li><strong>Guarantee:</strong> Money-back Guarantee</li>\n        </ul>\n    </section>\n\n    <section id=\"comparison\">\n        <h2>Key Comparison: Retail vs. OEM/BIND</h2>\n        <table border=\"1\" cellpadding=\"10\" cellspacing=\"0\" style=\"width:100%; border-collapse: collapse;\">\n            <thead>\n                <tr style=\"background-color: #f2f2f2;\">\n                    <th>Feature</th>\n                    <th>Retail Key</th>\n                    <th>OEM/BIND Key</th>\n                </tr>\n            </thead>\n            <tbody>\n                <tr>\n                    <td><strong>Transferable</strong></td>\n                    <td>Yes – Can be used on new devices</td>\n                    <td>No – Locked to a single PC</td>\n                </tr>\n                <tr>\n                    <td><strong>Reusability</strong></td>\n                    <td>Manual reactivation possible</td>\n                    <td>Auto-reactivates on same PC</td>\n                </tr>\n                <tr>\n                    <td><strong>Upgrade Support</strong></td>\n                    <td>Can upgrade from Home to Pro</td>\n                    <td>Only for clean install</td>\n                </tr>\n                <tr>\n                    <td><strong>Price</strong></td>\n                    <td>Slightly higher</td>\n                    <td>More affordable</td>\n                </tr>\n                <tr>\n                    <td><strong>Best For</strong></td>\n                    <td>Users who may upgrade their PC later</td>\n                    <td>Fixed device or single-PC users</td>\n                </tr>\n            </tbody>\n        </table>\n    </section>\n\n    <section id=\"activation-steps\">\n        <h2>Activation Steps</h2>\n        <ol>\n            <li>Go to <strong>Settings</strong> > <strong>Update & Security</strong> > <strong>Activation</strong></li>\n            <li>Click <strong>Change Product Key</strong></li>\n            <li>Enter the key you received via email</li>\n            <li>Click <strong>Next</strong>, then <strong>Activate</strong></li>\n        </ol>\n        <p><em>Your Windows 11 Pro is now permanently activated!</em></p>\n    </section>",
+        "longDesc": `<h1>Windows 11 Pro Genuine License Key Price in BD</h1>
+
+<h3>📦 Product Overview</h3>
+<p>Windows 11 Pro হচ্ছে Microsoft-এর সর্বাধুনিক অপারেটিং সিস্টেম, যা উন্নত নিরাপত্তা, উৎপাদনশীলতা এবং গেমিং অভিজ্ঞতা প্রদান করে। Tech Solutions BD আপনাকে সাশ্রয়ী মূল্যে Windows 11 Pro-এর জেনুইন লাইসেন্স কি কেনার সুযোগ দিচ্ছে। এটি আপনার পিসিকে আরও সুরক্ষিত ও কার্যকরী করতে সাহায্য করবে।</p>
+<p>Activate your Windows 11 Pro for life with a <strong>100% original and genuine</strong> license key. Choose between a <em>Retail Key</em> (transferable and reusable, upgrades from Home to Pro) or an <em>OEM/BIND Key</em> (locked to hardware, auto-reactivates after reinstall). Perfect for professionals, businesses, gamers, and students across Bangladesh.</p>
+
+<hr>
+
+<h3>✅ Key Features</h3>
+<ul>
+  <li><strong>আধুনিক ইউজার ইন্টারফেস:</strong> নতুন ফ্লুয়েন্ট ডিজাইন, আধুনিক স্টার্ট মেনু এবং স্ন্যাপ লেআউট।</li>
+  <li><strong>উন্নত নিরাপত্তা:</strong> Windows Hello, BitLocker এবং Device Encryption সহ হার্ডওয়্যার-লেভেল সুরক্ষা।</li>
+  <li><strong>ভার্চুয়ালাইজেশন:</strong> Hyper-V এবং Windows Sandbox ফিচার যা নিরাপদে ভার্চুয়াল মেশিন তৈরি করতে সাহায্য করে।</li>
+  <li><strong>রিমোট ডেস্কটপ:</strong> যেকোনো স্থান থেকে দূরবর্তীভাবে আপনার পিসি নিরবচ্ছিন্নভাবে অ্যাক্সেস করার সুবিধা।</li>
+  <li><strong>বিজনেস ম্যানেজমেন্ট:</strong> গ্রুপ পলিসি (Group Policy), অ্যাসাইন্ড অ্যাক্সেস এবং ডাইনামিক প্রভিশনিং।</li>
+  <li><strong>মাইক্রোসফট টিম ইন্টিগ্রেশন:</strong> টাস্কবার থেকে দ্রুত যোগাযোগ, মিটিং এবং টিম সহযোগিতা।</li>
+  <li><strong>Lifetime Validity:</strong> একবার অ্যাক্টিভেশনেই আজীবনের মেয়াদ (One-time permanent activation)।</li>
+  <li><strong>Global License:</strong> বিশ্বব্যাপী গ্রহণযোগ্য এবং মাল্টি-ল্যাঙ্গুয়েজ (Multilingual) সাপোর্ট।</li>
+  <li><strong>100% Genuine & Verified:</strong> অনুমোদিত Microsoft পার্টনার সোর্স থেকে নিশ্চিত আসল লাইসেন্স।</li>
+  <li><strong>Instant Delivery & 24/7 Support:</strong> ইমেইল এবং হোয়াটসঅ্যাপে অতি দ্রুত ডেলিভারি ও সার্বক্ষণিক সাপোর্ট।</li>
+</ul>
+
+<h3>💡 Benefits</h3>
+<ul>
+  <li><strong>স্থায়ী লাইসেন্স:</strong> একবার কিনলে আজীবনের জন্য নিরাপদে ব্যবহার করতে পারবেন।</li>
+  <li><strong>জেনুইন সফটওয়্যার:</strong> নিরাপদ, ভাইরাসমুক্ত এবং অফিসিয়াল অপারেটিং সিস্টেম।</li>
+  <li><strong>উন্নত পারফরম্যান্স:</strong> দ্রুত বুট টাইম, DirectStorage গেমিং এবং স্মুথ মাল্টিটাস্কিং রেসপন্স।</li>
+  <li><strong>নিয়মিত আপডেট:</strong> Microsoft থেকে সরাসরি নিয়মিত নিরাপত্তা প্যাচ এবং নতুন ফিচার আপডেট।</li>
+  <li><strong>সহজ ইনস্টলেশন:</strong> মাত্র কয়েক মিনিটে দ্রুত এবং ঝামেলামুক্ত অ্যাক্টিভেশন প্রক্রিয়া।</li>
+</ul>
+
+<h3>💰 Pricing & Plans</h3>
+<ul>
+  <li><strong>Retail Key:</strong> ৳599 (আসল মূল্য: ৳10,999)</li>
+  <li><strong>OEM Key:</strong> ৳599 (আসল মূল্য: ৳10,997)</li>
+</ul>
+
+<section id="comparison">
+  <h3>Key Comparison: Retail vs. OEM/BIND</h3>
+  <table border="1" cellpadding="10" cellspacing="0" style="width:100%; border-collapse: collapse;">
+    <thead>
+      <tr style="background-color: #f2f2f2;">
+        <th>Feature</th>
+        <th>Retail Key</th>
+        <th>OEM/BIND Key</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Transferable</strong></td>
+        <td>Yes – Can be used on new devices</td>
+        <td>No – Locked to a single PC</td>
+      </tr>
+      <tr>
+        <td><strong>Reusability</strong></td>
+        <td>Manual reactivation possible</td>
+        <td>Auto-reactivates on same PC</td>
+      </tr>
+      <tr>
+        <td><strong>Upgrade Support</strong></td>
+        <td>Can upgrade from Home to Pro</td>
+        <td>Only for clean install</td>
+      </tr>
+      <tr>
+        <td><strong>Price</strong></td>
+        <td>Slightly higher</td>
+        <td>More affordable</td>
+      </tr>
+      <tr>
+        <td><strong>Best For</strong></td>
+        <td>Users who may upgrade their PC later</td>
+        <td>Fixed device or single-PC users</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="activation-steps">
+  <h3>Activation Steps</h3>
+  <ol>
+    <li>Go to <strong>Settings</strong> &gt; <strong>System</strong> &gt; <strong>Activation</strong></li>
+    <li>Click <strong>Change Product Key</strong></li>
+    <li>Enter the 25-character key you received via email or WhatsApp</li>
+    <li>Click <strong>Next</strong>, then <strong>Activate</strong></li>
+  </ol>
+  <p><em>Your Windows 11 Pro is now permanently activated!</em></p>
+</section>
+
+<h3>🏪 কেন আমাদের বেছে নেবেন? (Why Choose Us?)</h3>
+<ul>
+  <li><strong>নির্ভরযোগ্য প্ল্যাটফর্ম:</strong> আমরা একটি প্রত্যয়িত বাংলাদেশী ডিজিটাল ই-কমার্স প্ল্যাটফর্ম।</li>
+  <li><strong>সেরা মূল্য:</strong> আমরা বাজারে সবচেয়ে প্রতিযোগিতামূলক ও সাশ্রয়ী মূল্যে পণ্য সরবরাহ করি।</li>
+  <li><strong>জেনুইন পণ্য:</strong> সকল পণ্য 100% আসল এবং বৈধ লাইসেন্স সহ আসে।</li>
+  <li><strong>দ্রুত ডেলিভারি:</strong> অর্ডার করার সাথে সাথে দ্রুত আপনার লাইসেন্স কি ডেলিভারি করা হয়।</li>
+  <li><strong>চমৎকার গ্রাহক সেবা:</strong> যেকোনো প্রয়োজনে আমাদের ডেডিকেটেড সাপোর্ট টিম সবসময় প্রস্তুত।</li>
+</ul>
+
+<h3>🚀 এখনই অর্ডার করুন</h3>
+<p>আপনার পিসিকে আপগ্রেড করতে আজই Tech Solutions BD থেকে আপনার Windows 11 Pro লাইসেন্স কি কিনুন!</p>
+
+<h3>⚠️ Important Notes</h3>
+<ul>
+  <li>❌ Sold Products Are Not Returnable.</li>
+  <li>🛒 The product will be delivered instantly or within 1 hours (Rare cases: up to 24 hours).</li>
+  <li>❌ Any of our products are requested to be activated within two days maximum. Otherwise the warranty will be void.</li>
+</ul>`,
         "image": "/img_content/win11pro.png",
         "icon": "🪟",
         "color": "#0078D4",
@@ -43,7 +148,104 @@ export const products: Product[] = [
         "price": 400,
         "originalPrice": 12500,
         "desc": "\n\n💠Original Retail License KEY.<br>\n\n💠1 PC 1 Key Lifetime Activation.<br>\n\n💠Digital License & Online Activation.<br>\n\n💠License Will Be Linked With Your Microsoft Account.<br>\n\n💠Have to Activate by 24 hrs after Delivery.<br>\n",
-        "longDesc": "<h1>Windows 10 Pro Genuine License Key</h1>\n        <p>Activate your Windows 10 Pro for life with a <strong>100% original and genuine</strong> license key. Choose between a <em>Retail Key</em> (transferable and reusable) or an <em>OEM/BIND Key</em> (hardware-locked but auto-reactivates after reinstall).</p>\n        <p>Perfect for students, professionals, and businesses who want the full power of Windows 10 Pro at the best price in Bangladesh.</p>\n    </header>\n\n    <hr>\n\n    <section id=\"key-features\">\n        <h2>Key Features</h2>\n        <ul>\n            <li><strong>Lifetime Validity:</strong> One-time activation</li>\n            <li><strong>Retail Key:</strong> Transferable, reusable, and supports upgrade from Home to Pro</li>\n            <li><strong>OEM/BIND Key:</strong> Locked to device hardware, but auto-reactivates after format</li>\n            <li><strong>Global License:</strong> Works worldwide, multilingual</li>\n            <li><strong>Instant Delivery:</strong> Sent via Email</li>\n            <li><strong>100% Genuine:</strong> Verified Microsoft Reseller</li>\n            <li><strong>24/7 Support:</strong> Live Chat and WhatsApp</li>\n            <li><strong>Guarantee:</strong> Money-back Guarantee</li>\n        </ul>\n    </section>\n\n    <section id=\"comparison\">\n        <h2>Key Comparison: Retail vs. OEM/BIND</h2>\n        <table border=\"1\" cellpadding=\"10\" cellspacing=\"0\" style=\"width:100%; border-collapse: collapse;\">\n            <thead>\n                <tr style=\"background-color: #f2f2f2;\">\n                    <th>Feature</th>\n                    <th>Retail Key</th>\n                    <th>OEM/BIND Key</th>\n                </tr>\n            </thead>\n            <tbody>\n                <tr>\n                    <td><strong>Transferable</strong></td>\n                    <td>Yes – Can be used on new devices</td>\n                    <td>No – Locked to a single PC</td>\n                </tr>\n                <tr>\n                    <td><strong>Reusability</strong></td>\n                    <td>Manual reactivation possible</td>\n                    <td>Auto-reactivates on same PC</td>\n                </tr>\n                <tr>\n                    <td><strong>Upgrade Support</strong></td>\n                    <td>Can upgrade from Home to Pro</td>\n                    <td>Only for clean install</td>\n                </tr>\n                <tr>\n                    <td><strong>Price</strong></td>\n                    <td>Slightly higher</td>\n                    <td>More affordable</td>\n                </tr>\n                <tr>\n                    <td><strong>Best For</strong></td>\n                    <td>Users who may upgrade their PC later</td>\n                    <td>Fixed device or single-PC users</td>\n                </tr>\n            </tbody>\n        </table>\n    </section>\n\n    <section id=\"activation-steps\">\n        <h2>Activation Steps</h2>\n        <ol>\n            <li>Go to <strong>Settings</strong> > <strong>Update & Security</strong> > <strong>Activation</strong></li>\n            <li>Click <strong>Change Product Key</strong></li>\n            <li>Enter the key you received via email</li>\n            <li>Click <strong>Next</strong>, then <strong>Activate</strong></li>\n        </ol>\n        <p><em>Your Windows 10 Pro is now permanently activated!</em></p>\n    </section>",
+        "longDesc": `<h1>Windows 10 Pro Genuine License Key Price in BD</h1>
+
+<h3>📦 Product Overview</h3>
+<p>আপনার পিসি-এর জন্য একটি আসল Windows 10 Pro লাইসেন্স কী খুঁজছেন? Tech Solutions BD আপনার জন্য নিয়ে এসেছে সাশ্রয়ী মূল্যে জেনুইন Windows 10 Pro লাইসেন্স কী, যা আপনার ডিভাইসকে দিবে সর্বোচ্চ সুরক্ষা ও ফিচার্স। এটি আপনার অপারেটিং সিস্টেমকে আপগ্রেড করবে এবং আরও দক্ষ করে তুলবে।</p>
+<p>Activate your Windows 10 Pro for life with a <strong>100% original and genuine</strong> license key. Choose between a <em>Retail Key</em> (transferable and reusable) or an <em>OEM/BIND Key</em> (hardware-locked, auto-reactivates after reinstall). Perfect for students, professionals, and businesses who want the full power of Windows 10 Pro at the best price in Bangladesh.</p>
+
+<hr>
+
+<h3>✅ Key Features</h3>
+<ul>
+  <li><strong>Original & Genuine:</strong> 100% আসল ও অথেন্টিক Windows 10 Pro লাইসেন্স কী (Verified Reseller)।</li>
+  <li><strong>Lifetime Validity:</strong> একবার অ্যাক্টিভেট করলে আজীবনের মেয়াদ (One-time permanent activation)।</li>
+  <li><strong>Full Feature Unlock:</strong> BitLocker এনক্রিপশন, Windows Sandbox ও প্রফেশনাল সকল ফিচার আনলক করে।</li>
+  <li><strong>উন্নত সুরক্ষা ও ডেটা এনক্রিপশন:</strong> ভাইরাস, ম্যালওয়্যার ও র‍্যানসমওয়্যার থেকে সর্বোচ্চ ডেটা নিরাপত্তা।</li>
+  <li><strong>রিমোট ডেস্কটপ ও ডোমেইন:</strong> Remote Desktop এবং Domain Joining / Azure AD ফিচার অন্তর্ভুক্ত।</li>
+  <li><strong>Retail & OEM Option:</strong> রিটেইল কি (ট্রান্সফারেবল ও আপগ্রেডযোগ্য) এবং ওআইএম কি (স্বয়ংক্রিয় রি-অ্যাক্টিভেশন)।</li>
+  <li><strong>Global License:</strong> বিশ্বব্যাপী কার্যকর এবং যেকোনো ভাষায় (Multilingual) ব্যবহারযোগ্য।</li>
+  <li><strong>Instant Delivery:</strong> অর্ডার কনফার্মেশনের পর দ্রুত ইমেইল ও হোয়াটসঅ্যাপের মাধ্যমে ডেলিভারি।</li>
+  <li><strong>24/7 Dedicated Support:</strong> লাইভ চ্যাট ও হোয়াটসঅ্যাপে সার্বক্ষণিক সহায়তা এবং মানি-ব্যাক গ্যারান্টি।</li>
+</ul>
+
+<h3>💡 Benefits</h3>
+<ul>
+  <li>আপনার পিসি-এর পারফরম্যান্স এবং স্থিতিশীলতা বৃদ্ধি করে।</li>
+  <li>ভাইরাস এবং ম্যালওয়্যার থেকে আপনার ডেটা সুরক্ষিত রাখে।</li>
+  <li>Microsoft থেকে সরাসরি সর্বশেষ আপডেট এবং সুরক্ষা প্যাচ অ্যাক্সেস করতে পারবেন।</li>
+  <li>প্রফেশনাল ও অফিশিয়াল কাজের জন্য প্রয়োজনীয় সকল ফিচার্স ব্যবহার করতে পারবেন।</li>
+  <li>সহজ অ্যাক্টিভেশন প্রক্রিয়া।</li>
+</ul>
+
+<h3>💰 Pricing & Plans</h3>
+<ul>
+  <li><strong>Single License Key:</strong> ৳449 (অফার মূল্য)</li>
+</ul>
+
+<section id="comparison">
+  <h3>Key Comparison: Retail vs. OEM/BIND</h3>
+  <table border="1" cellpadding="10" cellspacing="0" style="width:100%; border-collapse: collapse;">
+    <thead>
+      <tr style="background-color: #f2f2f2;">
+        <th>Feature</th>
+        <th>Retail Key</th>
+        <th>OEM/BIND Key</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Transferable</strong></td>
+        <td>Yes – Can be used on new devices</td>
+        <td>No – Locked to a single PC</td>
+      </tr>
+      <tr>
+        <td><strong>Reusability</strong></td>
+        <td>Manual reactivation possible</td>
+        <td>Auto-reactivates on same PC</td>
+      </tr>
+      <tr>
+        <td><strong>Upgrade Support</strong></td>
+        <td>Can upgrade from Home to Pro</td>
+        <td>Only for clean install</td>
+      </tr>
+      <tr>
+        <td><strong>Price</strong></td>
+        <td>Slightly higher</td>
+        <td>More affordable</td>
+      </tr>
+      <tr>
+        <td><strong>Best For</strong></td>
+        <td>Users who may upgrade their PC later</td>
+        <td>Fixed device or single-PC users</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="activation-steps">
+  <h3>Activation Steps</h3>
+  <ol>
+    <li>Go to <strong>Settings</strong> &gt; <strong>Update & Security</strong> &gt; <strong>Activation</strong></li>
+    <li>Click <strong>Change Product Key</strong></li>
+    <li>Enter the key you received via email or WhatsApp</li>
+    <li>Click <strong>Next</strong>, then <strong>Activate</strong></li>
+  </ol>
+  <p><em>Your Windows 10 Pro is now permanently activated!</em></p>
+</section>
+
+<h3>🏪 কেন আমাদের বেছে নেবেন? (Why Choose Us?)</h3>
+<p>Tech Solutions BD একটি বিশ্বস্ত ডিজিটাল ই-কমার্স প্ল্যাটফর্ম। আমরা আমাদের গ্রাহকদের 100% আসল এবং কার্যকর পণ্য সরবরাহ করতে প্রতিশ্রুতিবদ্ধ। দ্রুত ডেলিভারি, সেরা দাম এবং নির্ভরযোগ্য গ্রাহক পরিষেবা আমাদের প্রধান বৈশিষ্ট্য। আমাদের কাছ থেকে কেনাকাটা করে আপনি শুধুমাত্র একটি পণ্যই নয়, একটি নির্ভরযোগ্য অভিজ্ঞতাও পাবেন।</p>
+
+<h3>🚀 এখনই অর্ডার করুন</h3>
+<p>আজই আপনার Windows 10 Pro License Key অর্ডার করুন এবং আপনার পিসি-কে নতুন জীবন দিন!</p>
+
+<h3>⚠️ Important Notes</h3>
+<ul>
+  <li>❌ Sold Products Are Not Returnable.</li>
+  <li>🛒 The product will be delivered instantly or within 1 hours (Rare cases: up to 24 hours).</li>
+  <li>❌ Any of our products are requested to be activated within two days maximum. Otherwise the warranty will be void.</li>
+</ul>`,
         "image": "/img_content/win10pro.png",
         "icon": "🪟",
         "color": "#0078D4",
