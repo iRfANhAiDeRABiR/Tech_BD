@@ -35,6 +35,11 @@ function createPrismaClient(): PrismaClient {
     globalForPrisma.pool = pool;
   }
 
+  // Pre-warm a single database connection asynchronously on boot to eliminate 1st-query latency
+  if (typeof window === "undefined") {
+    pool.query("SELECT 1").catch(() => {});
+  }
+
   const adapter = new PrismaPg(pool);
 
   return new PrismaClient({
