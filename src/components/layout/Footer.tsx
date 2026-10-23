@@ -274,10 +274,6 @@ export function Footer() {
             </span>
           </div>
 
-          <div className={styles.deliveryNote}>
-            <span aria-hidden="true">●</span>
-            100% digital delivery
-          </div>
         </div>
 
         <div className={styles.bottomBar}>
