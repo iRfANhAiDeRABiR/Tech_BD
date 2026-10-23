@@ -1377,6 +1377,19 @@
   transform: translateY(-1px);
 }
 
+.spinner {
+  animation: adminSpin 0.8s linear infinite;
+}
+
+@keyframes adminSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .buttonSecondary {
   color: var(--text-primary);
   background: rgba(255, 255, 255, 0.05);

@@ -2,27 +2,58 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { ProductForm } from "@/components/admin/ProductForm";
+import { getAdminCategoryOptions } from "@/lib/admin-categories";
 import styles from "../../../../admin.module.css";
 
-export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
-  const rawId = (await params).id.trim();
-  if (!rawId) notFound();
-  let id = rawId;
+async function getProductForEdit(idParam: string) {
+  const rawId = idParam.trim();
+  let decodedId = rawId;
   try {
-    id = decodeURIComponent(rawId);
+    decodedId = decodeURIComponent(rawId);
   } catch {
     // fallback
   }
 
-  const [product, categories] = await Promise.all([
-    prisma.product.findFirst({
-      where: { OR: [{ id }, { slug: id }, { id: rawId }, { slug: rawId }] },
+  // 1. Direct primary key index seek (fastest, ~1ms)
+  let product = await prisma.product.findUnique({
+    where: { id: decodedId },
+    include: { options: { orderBy: { sortOrder: "asc" } } },
+  });
+  if (product) return product;
+
+  // 2. If raw differs from decoded, try raw id
+  if (rawId !== decodedId) {
+    product = await prisma.product.findUnique({
+      where: { id: rawId },
       include: { options: { orderBy: { sortOrder: "asc" } } },
-    }),
-    prisma.category.findMany({
-      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }, { name: "asc" }],
-      select: { id: true, name: true },
-    }),
+    });
+    if (product) return product;
+  }
+
+  // 3. Fallback to unique slug index seek
+  product = await prisma.product.findUnique({
+    where: { slug: decodedId },
+    include: { options: { orderBy: { sortOrder: "asc" } } },
+  });
+  if (product) return product;
+
+  if (rawId !== decodedId) {
+    product = await prisma.product.findUnique({
+      where: { slug: rawId },
+      include: { options: { orderBy: { sortOrder: "asc" } } },
+    });
+  }
+
+  return product;
+}
+
+export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
+  const rawId = (await params).id?.trim();
+  if (!rawId) notFound();
+
+  const [product, categories] = await Promise.all([
+    getProductForEdit(rawId),
+    getAdminCategoryOptions(),
   ]);
 
   if (!product) notFound();

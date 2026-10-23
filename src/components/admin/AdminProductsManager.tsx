@@ -474,6 +474,7 @@ export function AdminProductsManager({
                             <Link
                               href={`/admin/products/${product.id}/edit`}
                               className={styles.productNameLink}
+                              prefetch={false}
                             >
                               {product.name}
                             </Link>
@@ -564,6 +565,7 @@ export function AdminProductsManager({
                             href={`/admin/products/${product.id}/edit`}
                             className={styles.btnActionEdit}
                             title="Edit product details"
+                            prefetch={false}
                           >
                             <Edit2 size={12} />
                             <span>Edit</span>
@@ -635,6 +637,7 @@ export function AdminProductsManager({
                     <Link
                       href={`/admin/products/${product.id}/edit`}
                       className={styles.cardTitle}
+                      prefetch={false}
                     >
                       {product.name}
                     </Link>
@@ -677,6 +680,7 @@ export function AdminProductsManager({
                     <Link
                       href={`/admin/products/${product.id}/edit`}
                       className={styles.btnActionEdit}
+                      prefetch={false}
                     >
                       <Edit2 size={12} />
                       <span>Edit</span>

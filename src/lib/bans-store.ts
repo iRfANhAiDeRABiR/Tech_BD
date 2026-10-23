@@ -47,10 +47,12 @@ export interface RegisteredUserSummary {
 let cachedBans: AccessBanItem[] | null = null;
 let lastCacheTime = 0;
 const CACHE_TTL_MS = 20_000; // 20 seconds
-let isTableInitialized = false;
+const globalForBans = globalThis as unknown as {
+  __isBansTableInitialized?: boolean;
+};
 
 export async function ensureBanTable(): Promise<boolean> {
-  if (isTableInitialized) return true;
+  if (globalForBans.__isBansTableInitialized) return true;
   try {
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "AccessBan" (
@@ -77,7 +79,7 @@ export async function ensureBanTable(): Promise<boolean> {
       CREATE INDEX IF NOT EXISTS "idx_access_ban_target_email" ON "AccessBan" ("targetEmail");
       CREATE INDEX IF NOT EXISTS "idx_access_ban_target_user_id" ON "AccessBan" ("targetUserId");
     `);
-    isTableInitialized = true;
+    globalForBans.__isBansTableInitialized = true;
     return true;
   } catch (err) {
     console.error("Failed to ensure AccessBan table:", err);

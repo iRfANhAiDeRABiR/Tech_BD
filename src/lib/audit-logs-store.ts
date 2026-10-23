@@ -38,10 +38,12 @@ export interface CreateEventLogInput {
   severity?: EventSeverity;
 }
 
-let isTableInitialized = false;
+const globalForAudit = globalThis as unknown as {
+  __isAuditLogTableInitialized?: boolean;
+};
 
 export async function ensureEventLogTable(): Promise<boolean> {
-  if (isTableInitialized) return true;
+  if (globalForAudit.__isAuditLogTableInitialized) return true;
   try {
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "AdminEventLog" (
@@ -64,7 +66,7 @@ export async function ensureEventLogTable(): Promise<boolean> {
       CREATE INDEX IF NOT EXISTS "idx_admin_event_log_admin_email" ON "AdminEventLog" ("adminEmail");
       CREATE INDEX IF NOT EXISTS "idx_admin_event_log_entity_id" ON "AdminEventLog" ("entityId");
     `);
-    isTableInitialized = true;
+    globalForAudit.__isAuditLogTableInitialized = true;
     return true;
   } catch (err) {
     console.error("Failed to ensure AdminEventLog table:", err);
@@ -73,7 +75,9 @@ export async function ensureEventLogTable(): Promise<boolean> {
 }
 
 export async function logAdminEvent(input: CreateEventLogInput): Promise<AdminEventLogItem | null> {
-  await ensureEventLogTable();
+  if (!globalForAudit.__isAuditLogTableInitialized) {
+    await ensureEventLogTable();
+  }
 
   try {
     const id = `evt_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;

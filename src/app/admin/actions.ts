@@ -8,6 +8,7 @@ import prisma from "@/lib/prisma";
 import { deleteProductImage, uploadCategoryImage, uploadProductImage } from "@/lib/cloudinary";
 import { parseProductForm } from "@/lib/admin-products";
 import { invalidateStoreCatalogCache } from "@/data/products";
+import { invalidateCategoryOptionsCache } from "@/lib/admin-categories";
 import {
   deleteSoftwareDownloadById,
   getSoftwareDownloadById,
@@ -27,15 +28,10 @@ function isCloudinaryConfigured() {
 
 function revalidateStoreCatalog(productId?: string) {
   invalidateStoreCatalogCache();
+  revalidatePath("/products");
+  revalidatePath("/admin/products");
   revalidatePath("/");
   revalidatePath("/home");
-  revalidatePath("/products");
-  revalidatePath("/products/[id]", "page");
-  revalidatePath("/cart");
-  revalidatePath("/checkout");
-  revalidatePath("/admin");
-  revalidatePath("/admin/products");
-  revalidatePath("/admin/categories");
   if (productId) {
     revalidatePath(`/products/${productId}`);
     revalidatePath(`/admin/products/${productId}/edit`);
@@ -144,7 +140,10 @@ export async function saveProductAction(formData: FormData) {
   const data = parseProductForm(formData);
   const productId = parseOptionalProductId(formData.get("productId"));
   const existing = productId
-    ? await prisma.product.findUnique({ where: { id: productId } })
+    ? await prisma.product.findUnique({
+        where: { id: productId },
+        select: { id: true, image: true, imagePublicId: true },
+      })
     : null;
 
   const image = formData.get("image");
@@ -187,10 +186,40 @@ export async function saveProductAction(formData: FormData) {
   };
 
   if (existing) {
-    await prisma.$transaction(async (tx) => {
-      const nextProductId = data.id ?? existing.id;
+    const nextProductId = data.id ?? existing.id;
 
-      if (nextProductId !== existing.id) {
+    if (nextProductId === existing.id) {
+      // Fast path: batch transaction executes in a single round-trip!
+      const operations: any[] = [
+        prisma.productOption.deleteMany({ where: { productId: existing.id } }),
+        prisma.product.update({
+          where: { id: existing.id },
+          data: productData,
+        }),
+      ];
+
+      if (data.options.length) {
+        operations.push(
+          prisma.productOption.createMany({
+            data: data.options.map((option, index) => ({
+              productId: existing.id,
+              name: option.name,
+              type: option.type,
+              sku: option.sku || null,
+              price: option.price,
+              originalPrice: option.originalPrice ?? null,
+              description: option.description || null,
+              isDefault: option.isDefault || (!data.options.some((item) => item.isDefault) && index === 0),
+              isActive: option.isActive,
+              sortOrder: option.sortOrder,
+            })),
+          }),
+        );
+      }
+
+      await prisma.$transaction(operations);
+    } else {
+      await prisma.$transaction(async (tx) => {
         const conflictingProduct = await tx.product.findUnique({
           where: { id: nextProductId },
           select: { id: true },
@@ -199,31 +228,31 @@ export async function saveProductAction(formData: FormData) {
         if (conflictingProduct) {
           throw new Error("Product ID is already in use.");
         }
-      }
 
-      await tx.productOption.deleteMany({ where: { productId: existing.id } });
-      await tx.product.update({
-        where: { id: existing.id },
-        data: { id: nextProductId, ...productData },
-      });
-
-      if (data.options.length) {
-        await tx.productOption.createMany({
-          data: data.options.map((option, index) => ({
-            productId: nextProductId,
-            name: option.name,
-            type: option.type,
-            sku: option.sku || null,
-            price: option.price,
-            originalPrice: option.originalPrice ?? null,
-            description: option.description || null,
-            isDefault: option.isDefault || (!data.options.some((item) => item.isDefault) && index === 0),
-            isActive: option.isActive,
-            sortOrder: option.sortOrder,
-          })),
+        await tx.productOption.deleteMany({ where: { productId: existing.id } });
+        await tx.product.update({
+          where: { id: existing.id },
+          data: { id: nextProductId, ...productData },
         });
-      }
-    });
+
+        if (data.options.length) {
+          await tx.productOption.createMany({
+            data: data.options.map((option, index) => ({
+              productId: nextProductId,
+              name: option.name,
+              type: option.type,
+              sku: option.sku || null,
+              price: option.price,
+              originalPrice: option.originalPrice ?? null,
+              description: option.description || null,
+              isDefault: option.isDefault || (!data.options.some((item) => item.isDefault) && index === 0),
+              isActive: option.isActive,
+              sortOrder: option.sortOrder,
+            })),
+          });
+        }
+      });
+    }
   } else {
     await prisma.product.create({
       data: {
@@ -247,7 +276,7 @@ export async function saveProductAction(formData: FormData) {
   }
 
   const savedId = (data.id ?? existing?.id ?? data.slug);
-  await logAdminEvent({
+  void logAdminEvent({
     action: productId ? "PRODUCT_UPDATED" : "PRODUCT_CREATED",
     category: "CATALOG",
     entityType: "Product",
@@ -261,7 +290,7 @@ export async function saveProductAction(formData: FormData) {
     },
     adminEmail: session?.user?.email || "Admin",
     severity: "SUCCESS",
-  });
+  }).catch((err) => console.error("Admin event logging failed:", err));
 
   revalidateStoreCatalog(savedId);
   if (existing && existing.id !== savedId) {
@@ -551,6 +580,7 @@ export async function saveCategoryAction(formData: FormData) {
   });
 
   revalidateStoreCatalog();
+  invalidateCategoryOptionsCache();
   redirect("/admin/categories?saved=1");
 }
 
@@ -582,6 +612,7 @@ export async function saveCategoryOrderAction(formData: FormData) {
   );
 
   revalidateStoreCatalog();
+  invalidateCategoryOptionsCache();
   redirect("/admin/categories?saved=1");
 }
 
@@ -772,6 +803,7 @@ export async function deleteCategoryAction(formData: FormData) {
   });
 
   revalidateStoreCatalog();
+  invalidateCategoryOptionsCache();
   redirect("/admin/categories?deleted=1");
 }
 
