@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { RefreshCw, Download, ArrowRight, RotateCcw } from "lucide-react";
+import { useState, useCallback, useEffect } from "react";
+import { RefreshCw, Download, ArrowRight, RotateCcw, Sparkles } from "lucide-react";
 import { ImageUploader, type ImageFileData } from "./ImageUploader";
 import { notify } from "@/lib/toast";
 import { getUserFriendlyError } from "@/lib/errorSanitizer";
@@ -19,7 +19,132 @@ import styles from "./ImageTool.module.css";
 
 export type ExtendedImageFormat = ImageFormat | "image/svg+xml";
 
+export interface ConversionPreset {
+  id: string;
+  name: string;
+  shortLabel: string;
+  fromDesc: string;
+  toDesc: string;
+  targetFormat: ExtendedImageFormat;
+  mode: "standard" | "heic" | "svg-raster" | "png-to-svg";
+  accept?: string;
+  defaultQuality?: number;
+  badge?: string;
+  hint: string;
+}
+
+export const CONVERSION_PRESETS: ConversionPreset[] = [
+  {
+    id: "auto",
+    name: "Any to Any Format",
+    shortLabel: "Any Format",
+    fromDesc: "Any Image",
+    toDesc: "Any Format",
+    targetFormat: "image/png",
+    mode: "standard",
+    accept: undefined,
+    hint: "Upload any image (PNG, JPG, WebP, SVG, HEIC, GIF) and choose any target format.",
+  },
+  {
+    id: "png-to-jpg",
+    name: "PNG to JPG",
+    shortLabel: "PNG → JPG",
+    fromDesc: "PNG",
+    toDesc: "JPG",
+    targetFormat: "image/jpeg",
+    mode: "standard",
+    accept: "image/png,.png",
+    defaultQuality: 90,
+    badge: "Popular",
+    hint: "Convert transparent PNG files to compact, universal JPG images with clean background.",
+  },
+  {
+    id: "jpg-to-png",
+    name: "JPG to PNG",
+    shortLabel: "JPG → PNG",
+    fromDesc: "JPG",
+    toDesc: "PNG",
+    targetFormat: "image/png",
+    mode: "standard",
+    accept: "image/jpeg,.jpg,.jpeg",
+    badge: "Lossless",
+    hint: "Convert JPG photos into lossless PNG format with transparency support.",
+  },
+  {
+    id: "heic-to-jpg",
+    name: "HEIC to JPG",
+    shortLabel: "HEIC → JPG",
+    fromDesc: "Apple HEIC",
+    toDesc: "JPG",
+    targetFormat: "image/jpeg",
+    mode: "heic",
+    accept: ".heic,.heif,image/heic,image/heif",
+    defaultQuality: 92,
+    badge: "iPhone",
+    hint: "Convert Apple iPhone HEIC / HEIF live photos into universal high-quality JPG.",
+  },
+  {
+    id: "webp-to-png",
+    name: "WebP to PNG",
+    shortLabel: "WebP → PNG",
+    fromDesc: "WebP",
+    toDesc: "PNG",
+    targetFormat: "image/png",
+    mode: "standard",
+    accept: "image/webp,.webp",
+    badge: "Alpha",
+    hint: "Convert WebP images into lossless PNG preserving transparent channels.",
+  },
+  {
+    id: "webp-to-jpg",
+    name: "WebP to JPG",
+    shortLabel: "WebP → JPG",
+    fromDesc: "WebP",
+    toDesc: "JPG",
+    targetFormat: "image/jpeg",
+    mode: "standard",
+    accept: "image/webp,.webp",
+    defaultQuality: 90,
+    hint: "Convert modern WebP images into standard JPG format for older software and social sharing.",
+  },
+  {
+    id: "png-to-svg",
+    name: "PNG to SVG",
+    shortLabel: "PNG → SVG",
+    fromDesc: "Raster PNG",
+    toDesc: "Vector SVG",
+    targetFormat: "image/svg+xml",
+    mode: "png-to-svg",
+    accept: "image/png,.png,image/jpeg,.jpg",
+    badge: "Vector",
+    hint: "Vectorize raster PNG pixels into infinitely scalable SVG vector shapes.",
+  },
+  {
+    id: "svg-to-png",
+    name: "SVG to PNG",
+    shortLabel: "SVG → PNG",
+    fromDesc: "Vector SVG",
+    toDesc: "PNG",
+    targetFormat: "image/png",
+    mode: "svg-raster",
+    accept: "image/svg+xml,.svg",
+    hint: "Render vector SVG graphics into crisp, high-resolution PNG images.",
+  },
+  {
+    id: "gif-converter",
+    name: "GIF to PNG/JPG",
+    shortLabel: "GIF Converter",
+    fromDesc: "GIF",
+    toDesc: "PNG",
+    targetFormat: "image/png",
+    mode: "standard",
+    accept: "image/gif,.gif",
+    hint: "Extract and convert GIF animations or images into static PNG or JPG format.",
+  },
+];
+
 export interface ImageConverterClientProps {
+  initialPreset?: string;
   initialTargetFormat?: ExtendedImageFormat;
   lockTargetFormat?: boolean;
   toolTitle?: string;
@@ -36,6 +161,7 @@ const OUTPUT_FORMATS: { label: string; value: ExtendedImageFormat }[] = [
 ];
 
 export function ImageConverterClient({
+  initialPreset,
   initialTargetFormat = "image/png",
   lockTargetFormat = false,
   toolTitle,
@@ -43,19 +169,63 @@ export function ImageConverterClient({
   mode = "standard",
   allowedAccept,
 }: ImageConverterClientProps = {}) {
+  // Determine starting preset
+  const getStartingPreset = (): ConversionPreset => {
+    if (initialPreset) {
+      const match = CONVERSION_PRESETS.find((p) => p.id === initialPreset);
+      if (match) return match;
+    }
+    if (mode === "heic") return CONVERSION_PRESETS.find((p) => p.id === "heic-to-jpg")!;
+    if (mode === "png-to-svg") return CONVERSION_PRESETS.find((p) => p.id === "png-to-svg")!;
+    if (mode === "svg-raster") return CONVERSION_PRESETS.find((p) => p.id === "svg-to-png")!;
+    if (initialTargetFormat === "image/jpeg") return CONVERSION_PRESETS.find((p) => p.id === "png-to-jpg")!;
+    return CONVERSION_PRESETS[0];
+  };
+
+  const [activePreset, setActivePreset] = useState<ConversionPreset>(getStartingPreset);
+  const [currentMode, setCurrentMode] = useState<"standard" | "heic" | "svg-raster" | "png-to-svg">(
+    activePreset.mode
+  );
   const [imageData, setImageData] = useState<ImageFileData | null>(null);
-  const [outputFormat, setOutputFormat] = useState<ExtendedImageFormat>(initialTargetFormat);
-  const [quality, setQuality] = useState(90);
+  const [outputFormat, setOutputFormat] = useState<ExtendedImageFormat>(activePreset.targetFormat);
+  const [quality, setQuality] = useState(activePreset.defaultQuality || 90);
   const [processing, setProcessing] = useState(false);
   const [result, setResult] = useState<{ blob: Blob; url: string; isSvgText?: boolean } | null>(null);
+
+  // Sync client-side URL params if present (e.g. ?preset=heic-to-jpg)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const presetParam = params.get("preset");
+    if (presetParam) {
+      const match = CONVERSION_PRESETS.find((p) => p.id === presetParam);
+      if (match) {
+        setActivePreset(match);
+        setOutputFormat(match.targetFormat);
+        setCurrentMode(match.mode);
+        if (match.defaultQuality) setQuality(match.defaultQuality);
+      }
+    }
+  }, []);
+
+  const handleSelectPreset = useCallback((preset: ConversionPreset) => {
+    setActivePreset(preset);
+    setOutputFormat(preset.targetFormat);
+    setCurrentMode(preset.mode);
+    if (preset.defaultQuality) {
+      setQuality(preset.defaultQuality);
+    }
+    setResult(null);
+  }, []);
 
   const handleImageSelect = useCallback(
     (data: ImageFileData) => {
       setImageData(data);
       setResult(null);
 
-      if (initialTargetFormat) {
-        setOutputFormat(initialTargetFormat);
+      // If active preset has a specific target, preserve it; otherwise pick complementary format
+      if (activePreset.id !== "auto") {
+        setOutputFormat(activePreset.targetFormat);
       } else if (data.format === "PNG") {
         setOutputFormat("image/jpeg");
       } else if (data.format === "JPG") {
@@ -64,7 +234,7 @@ export function ImageConverterClient({
         setOutputFormat("image/png");
       }
     },
-    [initialTargetFormat]
+    [activePreset]
   );
 
   const handleClear = useCallback(() => {
@@ -81,7 +251,7 @@ export function ImageConverterClient({
       let finalBlob: Blob;
 
       const isHeicInput =
-        mode === "heic" ||
+        currentMode === "heic" ||
         imageData.format === "HEIC" ||
         imageData.file.name.toLowerCase().endsWith(".heic") ||
         imageData.file.name.toLowerCase().endsWith(".heif");
@@ -96,7 +266,7 @@ export function ImageConverterClient({
         finalBlob = await heicToJpg(imageData.file, {
           quality: quality / 100,
         });
-      } else if (outputFormat === "image/svg+xml" || mode === "png-to-svg") {
+      } else if (outputFormat === "image/svg+xml" || currentMode === "png-to-svg") {
         // 2. Vectorize / Convert to SVG
         const svgString = await rasterToSvg(imageData.url, {
           mode: "vector",
@@ -139,7 +309,7 @@ export function ImageConverterClient({
     } finally {
       setProcessing(false);
     }
-  }, [imageData, mode, outputFormat, quality, result]);
+  }, [imageData, currentMode, outputFormat, quality, result]);
 
   const handleDownload = useCallback(() => {
     if (!result || !imageData) return;
@@ -162,22 +332,69 @@ export function ImageConverterClient({
     setResult(null);
   }, [result]);
 
+  const targetExt =
+    outputFormat === "image/svg+xml"
+      ? "SVG"
+      : getExtensionFromMime(outputFormat as ImageFormat).toUpperCase();
+
+  // Presets Bar Component
+  const renderPresetsBar = () => (
+    <div className={styles.formatPresetBar}>
+      <div className={styles.formatPresetHeader}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Sparkles size={15} style={{ color: "#6366f1" }} />
+          <h4 className={styles.formatPresetTitle}>Conversion Formats</h4>
+        </div>
+        <p className={styles.presetHint}>{activePreset.hint}</p>
+      </div>
+      <div className={styles.formatPresetGrid}>
+        {CONVERSION_PRESETS.map((preset) => {
+          const isActive = activePreset.id === preset.id;
+          return (
+            <button
+              key={preset.id}
+              type="button"
+              className={`${styles.presetChip} ${isActive ? styles.presetChipActive : ""}`}
+              onClick={() => handleSelectPreset(preset)}
+            >
+              <span>{preset.shortLabel}</span>
+              {preset.badge && <span className={styles.presetChipBadge}>{preset.badge}</span>}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+
   if (!imageData) {
+    const uploadLabel =
+      activePreset.id === "auto"
+        ? "Upload Image to Convert"
+        : `Upload ${activePreset.fromDesc} (Converts to ${activePreset.toDesc})`;
+
+    const uploadAccept = activePreset.accept || allowedAccept;
+
     return (
       <div className={styles.toolContainer}>
         {toolTitle && (
           <div style={{ textAlign: "center", marginBottom: 20 }}>
             <h2 style={{ fontSize: 22, fontWeight: 800, margin: 0 }}>{toolTitle}</h2>
             {toolSubtitle && (
-              <p style={{ fontSize: 13, color: "#94a3b8", margin: "6px 0 0" }}>{toolSubtitle}</p>
+              <p style={{ fontSize: 13, color: "var(--text-secondary, #94a3b8)", margin: "6px 0 0" }}>
+                {toolSubtitle}
+              </p>
             )}
           </div>
         )}
+
+        {/* Format Selector Pills Bar */}
+        {renderPresetsBar()}
+
         <ImageUploader
           onImageSelect={handleImageSelect}
           onClear={handleClear}
-          accept={allowedAccept}
-          label="Upload Image to Convert"
+          accept={uploadAccept}
+          label={uploadLabel}
         />
         <p className={styles.privacyNote}>
           Your images are processed 100% locally in your browser. Complete privacy guaranteed.
@@ -186,13 +403,11 @@ export function ImageConverterClient({
     );
   }
 
-  const targetExt =
-    outputFormat === "image/svg+xml"
-      ? "SVG"
-      : getExtensionFromMime(outputFormat as ImageFormat).toUpperCase();
-
   return (
     <div className={styles.toolContainer}>
+      {/* Format Selector Pills Bar */}
+      {renderPresetsBar()}
+
       <div className={styles.editorLayout}>
         {/* Preview Section */}
         <div className={styles.previewSection}>
@@ -220,7 +435,9 @@ export function ImageConverterClient({
             ) : imageData.format === "HEIC" ? (
               <div style={{ textAlign: "center", padding: 30, color: "#94a3b8" }}>
                 <div style={{ fontSize: 40, marginBottom: 8 }}>📷</div>
-                <div style={{ fontWeight: 700, color: "var(--text-primary, #1e293b)" }}>Apple HEIC Image Selected</div>
+                <div style={{ fontWeight: 700, color: "var(--text-primary, #1e293b)" }}>
+                  Apple HEIC Image Selected
+                </div>
                 <div style={{ fontSize: 12, marginTop: 4 }}>
                   Ready to convert to high-compatibility {targetExt}
                 </div>
@@ -265,6 +482,11 @@ export function ImageConverterClient({
                     className={`${styles.formatButton} ${outputFormat === f.value ? styles.formatButtonActive : ""}`}
                     onClick={() => {
                       setOutputFormat(f.value);
+                      if (f.value === "image/svg+xml") {
+                        setCurrentMode("png-to-svg");
+                      } else if (currentMode === "png-to-svg") {
+                        setCurrentMode("standard");
+                      }
                       setResult(null);
                     }}
                   >

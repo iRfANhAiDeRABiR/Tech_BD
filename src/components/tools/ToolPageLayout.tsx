@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { TOOLS } from "@/data/tools";
+import { ALL_TOOLS } from "@/data/tools";
 import { ToolIcon, ArrowLeftIcon } from "./ToolIcons";
 import styles from "./ToolPageLayout.module.css";
 
@@ -9,7 +9,7 @@ interface ToolPageLayoutProps {
 }
 
 export function ToolPageLayout({ toolId, children }: ToolPageLayoutProps) {
-  const tool = TOOLS.find((t) => t.id === toolId);
+  const tool = ALL_TOOLS.find((t) => t.id === toolId);
 
   if (!tool) {
     return (

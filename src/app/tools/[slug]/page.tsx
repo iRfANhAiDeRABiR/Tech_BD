@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import { TOOLS } from "@/data/tools";
+import { ALL_TOOLS } from "@/data/tools";
 import { ToolPageLayout } from "@/components/tools/ToolPageLayout";
 import { AgeCalculatorClient } from "@/components/tools/AgeCalculatorClient";
 import { Base64EncoderClient } from "@/components/tools/Base64EncoderClient";
@@ -26,12 +26,12 @@ interface ToolPageProps {
 }
 
 export function generateStaticParams() {
-  return TOOLS.map((t) => ({ slug: t.id }));
+  return ALL_TOOLS.map((t) => ({ slug: t.id }));
 }
 
 export async function generateMetadata({ params }: ToolPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const tool = TOOLS.find((t) => t.id === slug);
+  const tool = ALL_TOOLS.find((t) => t.id === slug);
   if (!tool) {
     return { title: "Tool Not Found | Tech BD" };
   }
@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: ToolPageProps): Promise<Metad
 
 export default async function ToolPage({ params }: ToolPageProps) {
   const { slug } = await params;
-  const tool = TOOLS.find((t) => t.id === slug);
+  const tool = ALL_TOOLS.find((t) => t.id === slug);
 
   if (!tool) {
     notFound();
@@ -152,6 +152,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
     case "svg-converter":
       ToolComponent = (
         <ImageConverterClient
+          initialPreset="svg-to-png"
           initialTargetFormat="image/png"
           toolTitle="SVG Converter"
           toolSubtitle="Convert SVG vectors to high-resolution PNG, JPG, WebP or vectorize photos into SVG."
@@ -162,6 +163,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
     case "png-converter":
       ToolComponent = (
         <ImageConverterClient
+          initialPreset="png-to-jpg"
           initialTargetFormat="image/jpeg"
           toolTitle="PNG Converter"
           toolSubtitle="Convert PNG images to JPG, WebP, SVG, or GIF format instantly."
@@ -172,6 +174,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
     case "jpg-converter":
       ToolComponent = (
         <ImageConverterClient
+          initialPreset="jpg-to-png"
           initialTargetFormat="image/png"
           toolTitle="JPG Converter"
           toolSubtitle="Convert JPG / JPEG photos to transparent PNG, WebP or SVG format."
@@ -182,6 +185,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
     case "gif-converter":
       ToolComponent = (
         <ImageConverterClient
+          initialPreset="gif-converter"
           initialTargetFormat="image/png"
           toolTitle="GIF Converter"
           toolSubtitle="Convert GIF animations and images into high-quality PNG, JPG or WebP."
@@ -192,6 +196,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
     case "heic-to-jpg":
       ToolComponent = (
         <ImageConverterClient
+          initialPreset="heic-to-jpg"
           mode="heic"
           initialTargetFormat="image/jpeg"
           lockTargetFormat={true}
@@ -204,6 +209,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
     case "webp-to-png":
       ToolComponent = (
         <ImageConverterClient
+          initialPreset="webp-to-png"
           initialTargetFormat="image/png"
           lockTargetFormat={true}
           toolTitle="WebP to PNG Converter"
@@ -215,6 +221,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
     case "webp-to-jpg":
       ToolComponent = (
         <ImageConverterClient
+          initialPreset="webp-to-jpg"
           initialTargetFormat="image/jpeg"
           lockTargetFormat={true}
           toolTitle="WebP to JPG Converter"
@@ -226,6 +233,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
     case "png-to-jpg":
       ToolComponent = (
         <ImageConverterClient
+          initialPreset="png-to-jpg"
           initialTargetFormat="image/jpeg"
           lockTargetFormat={true}
           toolTitle="PNG to JPG Converter"
@@ -237,6 +245,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
     case "png-to-svg":
       ToolComponent = (
         <ImageConverterClient
+          initialPreset="png-to-svg"
           mode="png-to-svg"
           initialTargetFormat="image/svg+xml"
           lockTargetFormat={true}
