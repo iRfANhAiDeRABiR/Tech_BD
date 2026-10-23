@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { User, Package, KeyRound, Download, ShieldCheck, ChevronRight, ShoppingBag } from "lucide-react";
+import { PriceDisplay } from "@/components/currency/PriceDisplay";
 
 export const dynamic = "force-dynamic";
 
@@ -256,9 +257,12 @@ export default async function AccountPage() {
                     }}>
                       {order.status}
                     </span>
-                    <span style={{ fontSize: 14, fontWeight: 700, color: "var(--account-text, #242a3a)", minWidth: 60, textAlign: "right" }}>
-                      ৳{order.total.toLocaleString()}
-                    </span>
+                    <PriceDisplay
+                      inline
+                      price={order.total}
+                      showDiscount={false}
+                      style={{ fontSize: 14, fontWeight: 700, color: "var(--account-text, #242a3a)", minWidth: 60, textAlign: "right" }}
+                    />
                   </div>
                 </div>
               );

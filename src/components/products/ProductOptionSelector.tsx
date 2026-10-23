@@ -4,6 +4,7 @@ import { type ReactNode, useMemo, useState } from "react";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { BuyNowButton } from "@/components/cart/BuyNowButton";
 import type { ProductOption } from "@/types/product";
+import { useCurrency } from "@/context/CurrencyContext";
 import styles from "@/app/products/[id]/product.module.css";
 
 interface ProductOptionSelectorProps {
@@ -40,6 +41,7 @@ export function ProductOptionSelector({
   children,
   outOfStock = false,
 }: ProductOptionSelectorProps) {
+  const { formatPrice } = useCurrency();
   const activeOptions = useMemo(
     () => options.filter((option) => option.price >= 0),
     [options],
@@ -77,13 +79,13 @@ export function ProductOptionSelector({
   return (
     <>
       <div className={styles.priceBox}>
-        <span className={styles.currentPrice}>
-          ৳{currentPrice.toLocaleString("en-BD")}
+        <span className={styles.currentPrice} suppressHydrationWarning>
+          {formatPrice(currentPrice)}
         </span>
 
         {originalPrice !== null && (
-          <span className={styles.originalPrice}>
-            ৳{originalPrice.toLocaleString("en-BD")}
+          <span className={styles.originalPrice} suppressHydrationWarning>
+            {formatPrice(originalPrice)}
           </span>
         )}
 

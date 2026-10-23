@@ -7,6 +7,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { CartLink } from "@/components/cart/CartLink";
 import { AuthButton } from "./AuthButton";
 import { ThemeToggle } from "./ThemeToggle";
+import { CurrencySelector } from "@/components/currency/CurrencySelector";
 
 export function Header() {
   const router = useRouter();
@@ -344,6 +345,7 @@ export function Header() {
         </div>
 
         <div className="header-mobile-actions">
+          <CurrencySelector compact />
           <ThemeToggle />
           <AuthButton />
           <CartLink />
@@ -398,6 +400,7 @@ export function Header() {
           </div>
 
           <div className="header-actions">
+            <CurrencySelector />
             <AuthButton />
             <CartLink />
 

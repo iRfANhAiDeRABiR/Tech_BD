@@ -7,6 +7,7 @@ import { CategorySidebar } from "@/components/layout/CategorySidebar";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { AuthModal } from "@/components/layout/AuthModal";
 import { CartProvider } from "@/components/cart/CartProvider";
+import { CurrencyProvider } from "@/context/CurrencyContext";
 import { GlobalToaster } from "@/components/toast/GlobalToaster";
 import type { StoreCategory } from "@/types/product";
 
@@ -23,10 +24,12 @@ export function StorefrontShell({ children, categories }: StorefrontShellProps) 
 
   if (isAdmin) {
     return (
-      <div className="admin-root-shell">
-        {children}
-        <GlobalToaster />
-      </div>
+      <CurrencyProvider>
+        <div className="admin-root-shell">
+          {children}
+          <GlobalToaster />
+        </div>
+      </CurrencyProvider>
     );
   }
 
@@ -41,27 +44,31 @@ export function StorefrontShell({ children, categories }: StorefrontShellProps) 
           zIndex: 10,
         }}
       >
-        <CartProvider>
-          {children}
-          <GlobalToaster />
-        </CartProvider>
+        <CurrencyProvider>
+          <CartProvider>
+            {children}
+            <GlobalToaster />
+          </CartProvider>
+        </CurrencyProvider>
       </div>
     );
   }
 
   return (
     <div className="app-shell">
-      <CartProvider>
-        <CategorySidebar categories={categories} />
-        <Header />
-        <div className="main-content">
-          {children}
-          <Footer />
-        </div>
-        {!isCheckout && <WhatsAppButton />}
-        <AuthModal />
-        <GlobalToaster />
-      </CartProvider>
+      <CurrencyProvider>
+        <CartProvider>
+          <CategorySidebar categories={categories} />
+          <Header />
+          <div className="main-content">
+            {children}
+            <Footer />
+          </div>
+          {!isCheckout && <WhatsAppButton />}
+          <AuthModal />
+          <GlobalToaster />
+        </CartProvider>
+      </CurrencyProvider>
     </div>
   );
 }

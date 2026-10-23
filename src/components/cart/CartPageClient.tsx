@@ -22,6 +22,7 @@ import { createClient } from "@/lib/supabase/client";
 import { notify } from "@/lib/toast";
 import { getUserFriendlyError } from "@/lib/errorSanitizer";
 import { BkashLogo, NagadLogo, RocketLogo } from "@/components/common/PaymentLogos";
+import { useCurrency } from "@/context/CurrencyContext";
 import type {
   PaymentGatewayOrder,
   SubmittedOrderData,
@@ -171,9 +172,7 @@ function isCouponCode(value: string): value is CouponCode {
   return Object.prototype.hasOwnProperty.call(COUPONS, value);
 }
 
-function formatPrice(value: number): string {
-  return `৳${Math.max(0, Math.round(value)).toLocaleString("en-BD")}`;
-}
+
 
 function isValidBdPhone(phone: string): boolean {
   const clean = phone.replace(/[\s\-\(\)]/g, "");
@@ -189,6 +188,7 @@ function normalizeBdPhone(phone: string): string {
 
 export function CartPageClient({ products }: CartPageClientProps) {
   const router = useRouter();
+  const { formatPrice } = useCurrency();
 
   // Cart state
   const {

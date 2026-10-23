@@ -1,8 +1,11 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { BuyNowButton } from "@/components/cart/BuyNowButton";
 import { toPlainText } from "@/lib/text";
+import { useCurrency } from "@/context/CurrencyContext";
 import type { ProductSummary } from "@/types/product";
 
 interface ProductCardProps {
@@ -11,6 +14,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, showBuyNow = false }: ProductCardProps) {
+  const { formatPrice } = useCurrency();
   const name = toPlainText(product.name);
   const badge = product.badge?.trim().toLowerCase();
   const badgeLabel = badge ? badge.charAt(0).toUpperCase() + badge.slice(1) : "";
@@ -56,12 +60,12 @@ export function ProductCard({ product, showBuyNow = false }: ProductCardProps) {
           <div className="product-card__footer">
             <div className="product-card__price">
               <span className="price-current">
-                ৳{product.price.toLocaleString("en-BD")}
+                {formatPrice(product.price)}
               </span>
 
               {product.originalPrice !== null && (
                 <span className="price-original">
-                  ৳{product.originalPrice.toLocaleString("en-BD")}
+                  {formatPrice(product.originalPrice)}
                 </span>
               )}
             </div>

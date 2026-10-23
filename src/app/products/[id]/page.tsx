@@ -10,6 +10,7 @@ import styles from "./product.module.css";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { BuyNowButton } from "@/components/cart/BuyNowButton";
 import { ProductOptionSelector } from "@/components/products/ProductOptionSelector";
+import { PriceDisplay } from "@/components/currency/PriceDisplay";
 
 interface ProductPageProps {
   params: Promise<{
@@ -195,23 +196,14 @@ export default async function ProductPage({
 
             {!product.options || product.options.length === 0 ? (
               <>
-                <div className={styles.priceBox}>
-                  <span className={styles.currentPrice}>
-                    ৳{product.price.toLocaleString("en-BD")}
-                  </span>
-
-                  {originalPrice !== null && (
-                    <span className={styles.originalPrice}>
-                      ৳{originalPrice.toLocaleString("en-BD")}
-                    </span>
-                  )}
-
-                  {discount !== null && (
-                    <span className={styles.discount}>
-                      Save {discount}%
-                    </span>
-                  )}
-                </div>
+                <PriceDisplay
+                  price={product.price}
+                  originalPrice={originalPrice}
+                  className={styles.priceBox}
+                  currentPriceClassName={styles.currentPrice}
+                  originalPriceClassName={styles.originalPrice}
+                  discountClassName={styles.discount}
+                />
 
                 {productHighlights}
 

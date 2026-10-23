@@ -1,12 +1,16 @@
+"use client";
+
 import Image from "next/image";
 import { toPlainText } from "@/lib/text";
 import type { ProductSummary } from "@/types/product";
+import { useCurrency } from "@/context/CurrencyContext";
 
 interface ProductCardProps {
   product: ProductSummary;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { formatPrice } = useCurrency();
   const name = toPlainText(product.name);
   const description = toPlainText(product.desc);
 
@@ -46,13 +50,13 @@ export function ProductCard({ product }: ProductCardProps) {
 
         <div className="product-card__footer">
           <div className="product-card__price">
-            <span className="price-current">
-              ৳{product.price.toLocaleString()}
+            <span className="price-current" suppressHydrationWarning>
+              {formatPrice(product.price)}
             </span>
 
             {product.originalPrice && (
-              <span className="price-original">
-                ৳{product.originalPrice.toLocaleString()}
+              <span className="price-original" suppressHydrationWarning>
+                {formatPrice(product.originalPrice)}
               </span>
             )}
           </div>

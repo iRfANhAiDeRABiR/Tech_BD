@@ -17,6 +17,7 @@ import {
   User,
 } from "lucide-react";
 import styles from "./OrdersList.module.css";
+import { useCurrency } from "@/context/CurrencyContext";
 
 export interface OrderItemView {
   id: string;
@@ -78,6 +79,7 @@ function formatPaymentMethod(method: string | null | undefined): string {
 }
 
 export default function OrdersListClient({ orders }: OrdersListClientProps) {
+  const { formatPrice } = useCurrency();
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
@@ -202,8 +204,8 @@ export default function OrdersListClient({ orders }: OrdersListClientProps) {
                   {statusBadge.label}
                 </span>
 
-                <span className={styles.orderPrice}>
-                  ৳{order.total.toLocaleString()}
+                <span className={styles.orderPrice} suppressHydrationWarning>
+                  {formatPrice(order.total)}
                 </span>
 
                 {/* Animated Chevron Arrow button */}
@@ -290,14 +292,14 @@ export default function OrdersListClient({ orders }: OrdersListClientProps) {
                               </span>
                             )}
                             <span className={styles.itemQty}>
-                              Qty: <strong>{item.quantity}</strong> × ৳{item.unitPrice.toLocaleString()}
+                              Qty: <strong>{item.quantity}</strong> × {formatPrice(item.unitPrice)}
                             </span>
                           </div>
                         </div>
                       </div>
 
-                      <div className={styles.itemPrice}>
-                        ৳{item.lineTotal.toLocaleString()}
+                      <div className={styles.itemPrice} suppressHydrationWarning>
+                        {formatPrice(item.lineTotal)}
                       </div>
                     </div>
                   ))}
@@ -365,21 +367,21 @@ export default function OrdersListClient({ orders }: OrdersListClientProps) {
                     )}
                     <div className={styles.kvRow}>
                       <span className={styles.kvKey}>Subtotal:</span>
-                      <span className={styles.kvVal}>৳{order.subtotal.toLocaleString()}</span>
+                      <span className={styles.kvVal} suppressHydrationWarning>{formatPrice(order.subtotal)}</span>
                     </div>
                     {order.discount > 0 && (
                       <div className={styles.kvRow} style={{ color: "#10b981" }}>
                         <span className={styles.kvKey} style={{ color: "#10b981" }}>
                           Discount{order.couponCode ? ` (${order.couponCode})` : ""}:
                         </span>
-                        <span className={styles.kvVal} style={{ color: "#10b981" }}>
-                          -৳{order.discount.toLocaleString()}
+                        <span className={styles.kvVal} style={{ color: "#10b981" }} suppressHydrationWarning>
+                          -{formatPrice(order.discount)}
                         </span>
                       </div>
                     )}
                     <div className={`${styles.kvRow} ${styles.totalRow}`}>
                       <span className={styles.kvKey} style={{ fontWeight: 700 }}>Total Paid:</span>
-                      <span className={styles.totalVal}>৳{order.total.toLocaleString()}</span>
+                      <span className={styles.totalVal} suppressHydrationWarning>{formatPrice(order.total)}</span>
                     </div>
                   </div>
                 </div>
