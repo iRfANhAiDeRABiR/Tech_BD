@@ -16,8 +16,10 @@ interface ProductCardProps {
 export function ProductCard({ product, showBuyNow = false }: ProductCardProps) {
   const { formatPrice } = useCurrency();
   const name = toPlainText(product.name);
-  const badge = product.badge?.trim().toLowerCase();
-  const badgeLabel = badge ? badge.charAt(0).toUpperCase() + badge.slice(1) : "";
+  const rawBadge = product.badge?.trim();
+  const badgeClass = rawBadge ? rawBadge.toLowerCase().replace(/[^a-z0-9]+/g, "-") : "";
+  const badgeLabel = rawBadge ? rawBadge.charAt(0).toUpperCase() + rawBadge.slice(1) : "";
+  const hasEmoji = Boolean(rawBadge && /^\p{Extended_Pictographic}/u.test(rawBadge));
   const productHref = `/products/${encodeURIComponent(product.slug ?? product.id)}`;
 
   return (
@@ -27,31 +29,30 @@ export function ProductCard({ product, showBuyNow = false }: ProductCardProps) {
         className="product-card__details"
         aria-label={`View ${name} details`}
       >
-        {badge && (
-          <span
-            className={`product-card__badge product-card__badge--${badge}`}
-          >
-            <span className="product-card__badge-dot" aria-hidden="true" />
-            {badgeLabel}
-          </span>
-        )}
+        <div className="product-card__image-container">
+          {rawBadge && (
+            <span
+              className={`product-card__badge product-card__badge--${badgeClass}`}
+            >
+              {!hasEmoji && <span className="product-card__badge-dot" aria-hidden="true" />}
+              {badgeLabel}
+            </span>
+          )}
 
-        <div
-          className="product-card__image"
-          style={{ background: "var(--bg-glass)" }}
-        >
-          <Image
-            src={product.image}
-            alt={name}
-            width={300}
-            height={220}
-            sizes="(max-width: 768px) 50vw, 300px"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "contain",
-            }}
-          />
+          <div className="product-card__image">
+            <Image
+              src={product.image}
+              alt={name}
+              width={320}
+              height={320}
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 280px"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
+            />
+          </div>
         </div>
 
         <div className="product-card__content">

@@ -14,31 +14,35 @@ export function ProductCard({ product }: ProductCardProps) {
   const name = toPlainText(product.name);
   const description = toPlainText(product.desc);
 
+  const rawBadge = product.badge?.trim();
+  const badgeClass = rawBadge ? rawBadge.toLowerCase().replace(/[^a-z0-9]+/g, "-") : "";
+  const hasEmoji = Boolean(rawBadge && /^\p{Extended_Pictographic}/u.test(rawBadge));
+
   return (
     <article className="product-card">
-      {product.badge && (
-        <span
-          className={`product-card__badge product-card__badge--${product.badge}`}
-        >
-          {product.badge}
-        </span>
-      )}
+      <div className="product-card__image-container">
+        {rawBadge && (
+          <span
+            className={`product-card__badge product-card__badge--${badgeClass}`}
+          >
+            {!hasEmoji && <span className="product-card__badge-dot" aria-hidden="true" />}
+            {rawBadge}
+          </span>
+        )}
 
-      <div
-        className="product-card__image"
-        style={{ background: "var(--bg-glass)" }}
-      >
-        <Image
-          src={product.image}
-          alt={name}
-          width={300}
-          height={220}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "contain",
-          }}
-        />
+        <div className="product-card__image">
+          <Image
+            src={product.image}
+            alt={name}
+            width={320}
+            height={320}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
+          />
+        </div>
       </div>
 
       <div className="product-card__content">
