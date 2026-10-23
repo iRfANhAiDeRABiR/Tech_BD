@@ -97,7 +97,7 @@ export function CurrencySelector({ compact = false }: CurrencySelectorProps) {
               <span className={styles.optionFlag}>🇺🇸</span>
               <div className={styles.optionInfo}>
                 <span className={styles.optionName}>USD ($)</span>
-                <span className={styles.optionSub}>1 USD = 125 BDT</span>
+                <span className={styles.optionSub}>US Dollar</span>
               </div>
             </div>
             {currency === "USD" && <Check size={14} className={styles.checkIcon} />}
@@ -107,4 +107,3 @@ export function CurrencySelector({ compact = false }: CurrencySelectorProps) {
     </div>
   );
 }
-
