@@ -24,6 +24,23 @@ function isCloudinaryConfigured() {
   );
 }
 
+function revalidateStoreCatalog(productId?: string) {
+  invalidateStoreCatalogCache();
+  revalidatePath("/");
+  revalidatePath("/home");
+  revalidatePath("/products");
+  revalidatePath("/products/[id]", "page");
+  revalidatePath("/cart");
+  revalidatePath("/checkout");
+  revalidatePath("/admin");
+  revalidatePath("/admin/products");
+  revalidatePath("/admin/categories");
+  if (productId) {
+    revalidatePath(`/products/${productId}`);
+    revalidatePath(`/admin/products/${productId}/edit`);
+  }
+}
+
 async function requireAdmin() {
   const { auth } = await import("@/auth");
   const session = await auth();
@@ -228,9 +245,11 @@ export async function saveProductAction(formData: FormData) {
     });
   }
 
-  revalidatePath("/");
-  revalidatePath("/cart");
-  revalidatePath("/admin");
+  const savedId = (data.id ?? existing?.id ?? data.slug);
+  revalidateStoreCatalog(savedId);
+  if (existing && existing.id !== savedId) {
+    revalidateStoreCatalog(existing.id);
+  }
   redirect("/admin/products?saved=1");
 }
 
@@ -248,8 +267,7 @@ export async function deleteProductAction(formData: FormData) {
     await deleteProductImage(product.imagePublicId);
   }
 
-  revalidatePath("/");
-  revalidatePath("/admin");
+  revalidateStoreCatalog(id);
   redirect("/admin/products?deleted=1");
 }
 
@@ -269,9 +287,7 @@ export async function toggleProductStockAction(formData: FormData) {
     data: { outOfStock: !product.outOfStock },
   });
 
-  revalidatePath("/");
-  revalidatePath("/products");
-  revalidatePath("/admin/products");
+  revalidateStoreCatalog(id);
 }
 
 export async function toggleProductStatusAction(formData: FormData) {
@@ -292,9 +308,7 @@ export async function toggleProductStatusAction(formData: FormData) {
     data: { status: nextStatus },
   });
 
-  revalidatePath("/");
-  revalidatePath("/products");
-  revalidatePath("/admin/products");
+  revalidateStoreCatalog(id);
 }
 
 const editableOrderStatuses = ["PENDING_PAYMENT", "COMPLETED", "CANCELLED", "REFUNDED"] as const;
@@ -319,9 +333,19 @@ export async function updateOrderStatusAction(formData: FormData) {
     data: { status },
   });
 
+  if (status === "COMPLETED") {
+    await prisma.paymentSubmission.updateMany({
+      where: { orderId, status: "PENDING" },
+      data: { status: "VERIFIED" },
+    }).catch(() => {});
+  }
+
   revalidatePath("/admin");
   revalidatePath("/admin/orders");
   revalidatePath(`/admin/orders/${orderId}`);
+  revalidatePath("/account");
+  revalidatePath("/account/orders");
+  revalidatePath("/account/licenses");
   redirect(returnTo.startsWith("/admin/orders") ? `${returnTo}${returnTo.includes("?") ? "&" : "?"}updated=1` : "/admin/orders?updated=1");
 }
 
@@ -349,8 +373,8 @@ export async function saveCategoryAction(formData: FormData) {
 
   if (data.id) await prisma.category.update({ where: { id: data.id }, data: values });
   else await prisma.category.create({ data: values });
-  invalidateStoreCatalogCache();
-  revalidatePath("/"); revalidatePath("/admin/categories"); redirect("/admin/categories?saved=1");
+  revalidateStoreCatalog();
+  redirect("/admin/categories?saved=1");
 }
 
 export async function saveCategoryOrderAction(formData: FormData) {
@@ -380,10 +404,7 @@ export async function saveCategoryOrderAction(formData: FormData) {
     ),
   );
 
-  invalidateStoreCatalogCache();
-  revalidatePath("/");
-  revalidatePath("/admin");
-  revalidatePath("/admin/categories");
+  revalidateStoreCatalog();
   redirect("/admin/categories?saved=1");
 }
 
@@ -496,12 +517,7 @@ export async function copyProductsToCategoryAction(formData: FormData) {
     });
   }
 
-  invalidateStoreCatalogCache();
-  revalidatePath("/");
-  revalidatePath("/cart");
-  revalidatePath("/admin");
-  revalidatePath("/admin/categories");
-  revalidatePath("/admin/products");
+  revalidateStoreCatalog();
   redirect(`/admin/categories/${categoryId}/products?added=1`);
 }
 
@@ -533,10 +549,7 @@ export async function saveCategoryProductOrderAction(formData: FormData) {
     ),
   );
 
-  revalidatePath("/");
-  revalidatePath("/admin");
-  revalidatePath("/admin/categories");
-  revalidatePath("/admin/products");
+  revalidateStoreCatalog();
   redirect(`/admin/categories/${categoryId}/products?ordered=1`);
 }
 
@@ -559,11 +572,7 @@ export async function removeProductFromCategoryAction(formData: FormData) {
 
   await prisma.product.delete({ where: { id: product.id } });
 
-  revalidatePath("/");
-  revalidatePath("/cart");
-  revalidatePath("/admin");
-  revalidatePath("/admin/categories");
-  revalidatePath("/admin/products");
+  revalidateStoreCatalog(product.id);
   redirect(`/admin/categories/${categoryId}/products?removed=1`);
 }
 
@@ -574,8 +583,8 @@ export async function deleteCategoryAction(formData: FormData) {
   if (!category) return;
   if (category._count.products > 0) await prisma.category.update({ where: { id }, data: { isActive: false } });
   else await prisma.category.delete({ where: { id } });
-  invalidateStoreCatalogCache();
-  revalidatePath("/"); revalidatePath("/admin/categories"); redirect("/admin/categories?deleted=1");
+  revalidateStoreCatalog();
+  redirect("/admin/categories?deleted=1");
 }
 
 export async function saveSoftwareDownloadAction(formData: FormData) {

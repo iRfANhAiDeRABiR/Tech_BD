@@ -5,13 +5,40 @@ import { ProductForm } from "@/components/admin/ProductForm";
 import styles from "../../../../admin.module.css";
 
 export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
-  const id = (await params).id.trim();
-  if (!id) notFound();
+  const rawId = (await params).id.trim();
+  if (!rawId) notFound();
+  let id = rawId;
+  try {
+    id = decodeURIComponent(rawId);
+  } catch {
+    // fallback
+  }
 
   const [product, categories] = await Promise.all([
-    prisma.product.findUnique({ where: { id }, include: { options: { orderBy: { sortOrder: "asc" } } } }),
-    prisma.category.findMany({ orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }, { name: "asc" }], select: { id: true, name: true } }),
+    prisma.product.findFirst({
+      where: { OR: [{ id }, { slug: id }, { id: rawId }, { slug: rawId }] },
+      include: { options: { orderBy: { sortOrder: "asc" } } },
+    }),
+    prisma.category.findMany({
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }, { name: "asc" }],
+      select: { id: true, name: true },
+    }),
   ]);
+
   if (!product) notFound();
-  return <><div className={styles.header}><div><h1>Edit product</h1><p className={styles.muted}>{product.name}</p></div><Link className={styles.buttonSecondary} href="/admin/products">Back</Link></div><ProductForm categories={categories} product={product} /></>;
+
+  return (
+    <>
+      <div className={styles.header}>
+        <div>
+          <h1>Edit product</h1>
+          <p className={styles.muted}>{product.name}</p>
+        </div>
+        <Link className={styles.buttonSecondary} href="/admin/products">
+          Back
+        </Link>
+      </div>
+      <ProductForm categories={categories} product={product} />
+    </>
+  );
 }

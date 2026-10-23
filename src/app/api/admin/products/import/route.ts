@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
+import { invalidateStoreCatalogCache } from "@/data/products";
 import type { ProductStatus, ProductOptionType } from "@/generated/prisma/client";
 
 function parseCsv(text: string): string[][] {
@@ -375,8 +376,13 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    invalidateStoreCatalogCache();
     revalidatePath("/");
+    revalidatePath("/home");
+    revalidatePath("/products");
+    revalidatePath("/products/[id]", "page");
     revalidatePath("/cart");
+    revalidatePath("/checkout");
     revalidatePath("/admin");
     revalidatePath("/admin/products");
 
