@@ -1,8 +1,5 @@
-/**
- * Complete list of all static image URLs available in public/img_content/
- * Used for admin image autocompletion, datalists, and image pickers.
- */
-export const AVAILABLE_IMG_CONTENT = [
+// Automatically generated list of all available images in public/img_content
+export const AVAILABLE_IMG_CONTENT: string[] = [
   "/img_content/acad.png",
   "/img_content/acc.png",
   "/img_content/Adobe Acrobat Tech Solutions Banner.png",
@@ -23,8 +20,10 @@ export const AVAILABLE_IMG_CONTENT = [
   "/img_content/bkash.png",
   "/img_content/canva.png",
   "/img_content/capcut.png",
+  "/img_content/CCleaner Pro Tech Solutions Banner.png",
   "/img_content/cds.png",
   "/img_content/Claude.png",
+  "/img_content/CorelDRAW Graphics Suite Promotional Banner.png",
   "/img_content/cursor.svg",
   "/img_content/dropbox.png",
   "/img_content/Duolingo Super Language Learning Poster (1).png",
@@ -49,6 +48,7 @@ export const AVAILABLE_IMG_CONTENT = [
   "/img_content/LinkedIn Premium Tech Solutions Banner.png",
   "/img_content/m365.png",
   "/img_content/McAfee Antivirus Protection Banner.png",
+  "/img_content/Microsoft Office 365 Family Showcase.png",
   "/img_content/Microsoft Outlook Tech Solutions Banner.png",
   "/img_content/Microsoft SQL Server Tech Solutions Banner.png",
   "/img_content/monedrive.png",
@@ -114,8 +114,5 @@ export const AVAILABLE_IMG_CONTENT = [
   "/img_content/Windows Server 2022 Tech Solutions Banner.png",
   "/img_content/Windows Server 2025 Data Centre Poster.png",
   "/img_content/windows.png",
-  "/img_content/zoom.png",
-] as const;
-
-export type AvailableImgPath = (typeof AVAILABLE_IMG_CONTENT)[number];
-
+  "/img_content/zoom.png"
+];
