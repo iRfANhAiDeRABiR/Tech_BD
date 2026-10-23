@@ -5,6 +5,7 @@ import { PaymentMethod } from "@/generated/prisma/enums";
 import { sendOrderConfirmationEmail } from "@/lib/orderConfirmationEmail";
 import { sendTelegramOrderNotification } from "@/lib/telegram";
 import { rateLimit } from "@/lib/rateLimit";
+import { logAdminEvent } from "@/lib/audit-logs-store";
 
 export const runtime = "nodejs";
 
@@ -68,9 +69,10 @@ async function getUniqueOrderNumber() {
 export async function POST(request: Request) {
   // Basic abuse protection on this public endpoint.
   const ip =
+    request.headers.get("cf-connecting-ip")?.trim() ||
+    request.headers.get("x-real-ip")?.trim() ||
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    request.headers.get("x-real-ip") ||
-    "unknown";
+    "127.0.0.1";
   if (!rateLimit(`orders:${ip}`, 10, 60_000)) {
     return NextResponse.json(
       { message: "Too many requests. Please try again shortly." },
@@ -194,9 +196,11 @@ export async function POST(request: Request) {
     const total = Math.max(0, subtotal - discount);
 
     const orderNumber = await getUniqueOrderNumber();
-    const orderNotes = data.notes
-      ? `Payment: ${data.payment.label} | Requirements: ${data.notes}`
-      : `Payment method: ${data.payment.label}`;
+    const orderNotes = `[IP: ${ip}] ${
+      data.notes
+        ? `Payment: ${data.payment.label} | Requirements: ${data.notes}`
+        : `Payment method: ${data.payment.label}`
+    }`;
 
     const order = await prisma.order.create({
       data: {
@@ -243,6 +247,26 @@ export async function POST(request: Request) {
     });
 
     // Dispatch background notifications asynchronously without blocking the client response
+    void logAdminEvent({
+      action: "ORDER_PLACED",
+      category: "ORDERS",
+      entityType: "Order",
+      entityId: order.id,
+      entityName: order.orderNumber,
+      ipAddress: ip,
+      adminEmail: data.customer.email,
+      details: {
+        customerName: data.customer.name,
+        customerPhone: data.customer.phone,
+        total,
+        orderNumber: order.orderNumber,
+        paymentMethod: data.payment.label,
+        transactionId: data.payment.transactionId,
+        ip,
+      },
+      severity: "INFO",
+    });
+
     void sendOrderConfirmationEmail({
       order,
       customer: data.customer,

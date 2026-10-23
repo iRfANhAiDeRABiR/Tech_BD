@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
+import { logAdminEvent } from "@/lib/audit-logs-store";
 
 export const runtime = "nodejs";
 
@@ -31,7 +32,23 @@ export async function POST(request: Request) {
         },
       });
 
+      const clientIp =
+        request.headers.get("cf-connecting-ip")?.trim() ||
+        request.headers.get("x-real-ip")?.trim() ||
+        request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+        "127.0.0.1";
+
       if (!order) {
+        void logAdminEvent({
+          action: "DOWNLOAD_VERIFY_FAILED",
+          category: "SECURITY",
+          entityType: "SoftwareDownload",
+          entityName: rawOrderId,
+          ipAddress: clientIp,
+          details: { attemptedId: rawOrderId, reason: "NOT_FOUND" },
+          severity: "WARNING",
+        });
+
         return NextResponse.json(
           {
             success: false,

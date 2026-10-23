@@ -65,6 +65,9 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Adm
 
   if (!order) notFound();
 
+  const ipMatch = order.notes?.match(/\[IP:\s*([^\]]+)\]/i);
+  const customerIp = ipMatch ? ipMatch[1].trim() : null;
+
   return <>
     <div className={styles.header}>
       <div>
@@ -108,6 +111,39 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Adm
           <div><dt>Phone</dt><dd><a href={`tel:${order.customerPhone}`}>{order.customerPhone}</a></dd></div>
           <div><dt>WhatsApp</dt><dd>{order.customerWhatsApp ? <a href={`https://wa.me/${order.customerWhatsApp.replace(/\D/g, "")}`} target="_blank">{order.customerWhatsApp}</a> : "Not provided"}</dd></div>
           <div><dt>Email</dt><dd>{order.customerEmail ? <a href={`mailto:${order.customerEmail}`}>{order.customerEmail}</a> : "Not provided"}</dd></div>
+          {customerIp && (
+            <div>
+              <dt>IP Address (গ্রাহকের আইপি)</dt>
+              <dd style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                <code style={{ fontSize: "0.88rem", fontWeight: 700, padding: "3px 8px", borderRadius: 6, background: "var(--bg-primary)" }}>
+                  {customerIp}
+                </code>
+                <Link
+                  href={`/admin/bans?target=${encodeURIComponent(customerIp)}&type=IP&reason=${encodeURIComponent(`Fraudulent order #${order.orderNumber}`)}`}
+                  className={styles.buttonSecondary}
+                  style={{ color: "#ef4444", borderColor: "rgba(239, 68, 68, 0.35)", padding: "3px 10px", fontSize: "0.78rem" }}
+                  title="এই আইপিকে অবিলম্বে ব্যান করুন"
+                >
+                  🚫 Ban This IP
+                </Link>
+              </dd>
+            </div>
+          )}
+          {order.customerEmail && (
+            <div>
+              <dt>Account Ban (ইউজার ব্যান)</dt>
+              <dd>
+                <Link
+                  href={`/admin/bans?target=${encodeURIComponent(order.customerEmail)}&type=USER&reason=${encodeURIComponent(`Order #${order.orderNumber} violation`)}`}
+                  className={styles.buttonSecondary}
+                  style={{ color: "#f59e0b", borderColor: "rgba(245, 158, 11, 0.35)", padding: "3px 10px", fontSize: "0.78rem" }}
+                  title="এই গ্রাহকের অ্যাকাউন্ট ব্যান করুন"
+                >
+                  🚫 Ban Customer Account
+                </Link>
+              </dd>
+            </div>
+          )}
           <div><dt>Customer notes</dt><dd>{order.notes ?? "No notes"}</dd></div>
         </dl>
       </div>

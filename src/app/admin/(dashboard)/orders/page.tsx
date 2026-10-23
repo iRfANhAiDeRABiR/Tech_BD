@@ -101,7 +101,7 @@ export default async function AdminOrdersPage({ searchParams }: AdminOrdersPageP
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>Order</th>
+            <th>Order &amp; Customer</th>
             <th>Received</th>
             <th>Order status</th>
             <th>Payment</th>
@@ -112,27 +112,40 @@ export default async function AdminOrdersPage({ searchParams }: AdminOrdersPageP
         <tbody>
           {orders.length === 0 ? (
             <tr><td colSpan={6} className={styles.emptyCell}>{search ? "No orders matched your search." : "No website orders have been received yet."}</td></tr>
-          ) : orders.map((order) => (
-            <tr key={order.id}>
-              <td><strong>{order.orderNumber}</strong></td>
-              <td>{formatDateTime(order.createdAt)}</td>
-              <td><span className={styles.statusBadge}>{order.status.replace(/_/g, " ")}</span></td>
-              <td>{order.payment ? <><span className={styles.statusBadge}>{order.payment.status}</span><br /><span className={styles.tableSubtext}>{order.payment.method} · {order.payment.transactionId}</span></> : <span className={styles.tableSubtext}>No payment</span>}</td>
-              <td>
-                <form action={updateOrderStatusAction} className={styles.inlineForm}>
-                  <input type="hidden" name="orderId" value={order.id} />
-                  <input type="hidden" name="returnTo" value={search ? `/admin/orders?q=${encodeURIComponent(search)}` : "/admin/orders"} />
-                  <select className={styles.compactSelect} name="status" defaultValue={order.status} aria-label={`Update status for ${order.orderNumber}`}>
-                    {orderStatusOptions.map((option) => (
-                      <option key={option.value} value={option.value}>{option.label}</option>
-                    ))}
-                  </select>
-                  <button className={styles.buttonSecondary} type="submit">Update</button>
-                </form>
-              </td>
-              <td><Link className={styles.buttonSecondary} href={`/admin/orders/${order.id}`}>View details</Link></td>
-            </tr>
-          ))}
+          ) : orders.map((order) => {
+            const ipMatch = order.notes?.match(/\[IP:\s*([^\]]+)\]/i);
+            const customerIp = ipMatch ? ipMatch[1].trim() : null;
+
+            return (
+              <tr key={order.id}>
+                <td>
+                  <strong>{order.orderNumber}</strong>
+                  {order.customerName && <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>{order.customerName}</div>}
+                  {customerIp && (
+                    <div style={{ fontSize: "0.74rem", color: "#6366f1", fontFamily: "monospace", marginTop: 2 }}>
+                      IP: {customerIp}
+                    </div>
+                  )}
+                </td>
+                <td>{formatDateTime(order.createdAt)}</td>
+                <td><span className={styles.statusBadge}>{order.status.replace(/_/g, " ")}</span></td>
+                <td>{order.payment ? <><span className={styles.statusBadge}>{order.payment.status}</span><br /><span className={styles.tableSubtext}>{order.payment.method} · {order.payment.transactionId}</span></> : <span className={styles.tableSubtext}>No payment</span>}</td>
+                <td>
+                  <form action={updateOrderStatusAction} className={styles.inlineForm}>
+                    <input type="hidden" name="orderId" value={order.id} />
+                    <input type="hidden" name="returnTo" value={search ? `/admin/orders?q=${encodeURIComponent(search)}` : "/admin/orders"} />
+                    <select className={styles.compactSelect} name="status" defaultValue={order.status} aria-label={`Update status for ${order.orderNumber}`}>
+                      {orderStatusOptions.map((option) => (
+                        <option key={option.value} value={option.value}>{option.label}</option>
+                      ))}
+                    </select>
+                    <button className={styles.buttonSecondary} type="submit">Update</button>
+                  </form>
+                </td>
+                <td><Link className={styles.buttonSecondary} href={`/admin/orders/${order.id}`}>View details</Link></td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

@@ -194,6 +194,127 @@ export async function getAdminEventLogs(options?: {
   }
 }
 
+export interface RecentIpActivityItem {
+  ip: string;
+  count: number;
+  lastSeenAt: string;
+  lastAction: string;
+  associatedEmail: string | null;
+  associatedName: string | null;
+  orderNumber?: string | null;
+  isBanned: boolean;
+  banId: string | null;
+}
+
+export async function getRecentIpActivityList(): Promise<RecentIpActivityItem[]> {
+  await ensureEventLogTable();
+
+  try {
+    // 1. Get recent logs that have an ipAddress
+    const rows = await prisma.$queryRawUnsafe<any[]>(`
+      SELECT "ipAddress" as ip, "action", "entityName", "adminEmail", "details", "createdAt"
+      FROM "AdminEventLog"
+      WHERE "ipAddress" IS NOT NULL AND "ipAddress" != ''
+      ORDER BY "createdAt" DESC
+      LIMIT 300
+    `).catch(() => []);
+
+    // 2. Also check recent orders
+    const recentOrders = await prisma.order.findMany({
+      take: 60,
+      orderBy: { createdAt: "desc" },
+      select: {
+        orderNumber: true,
+        customerName: true,
+        customerEmail: true,
+        notes: true,
+        createdAt: true,
+      },
+    }).catch(() => []);
+
+    // 3. Get active IP bans from AccessBan
+    const activeBans = await prisma.$queryRawUnsafe<any[]>(`
+      SELECT "id", "target" FROM "AccessBan" WHERE "type" = 'IP' AND "isActive" = true
+    `).catch(() => []);
+
+    const bannedMap = new Map<string, string>();
+    for (const b of activeBans || []) {
+      bannedMap.set(String(b.target).trim(), String(b.id));
+    }
+
+    const ipMap = new Map<string, RecentIpActivityItem>();
+
+    // Process orders first
+    for (const ord of recentOrders) {
+      if (ord.notes) {
+        const match = ord.notes.match(/\[IP:\s*([^\]]+)\]/i);
+        if (match && match[1]) {
+          const ip = match[1].trim();
+          if (ip && ip !== "unknown") {
+            ipMap.set(ip, {
+              ip,
+              count: 1,
+              lastSeenAt: new Date(ord.createdAt).toISOString(),
+              lastAction: `অর্ডার সম্পন্ন: ${ord.orderNumber}`,
+              associatedEmail: ord.customerEmail || null,
+              associatedName: ord.customerName || null,
+              orderNumber: ord.orderNumber,
+              isBanned: bannedMap.has(ip),
+              banId: bannedMap.get(ip) || null,
+            });
+          }
+        }
+      }
+    }
+
+    // Process event logs
+    for (const row of rows || []) {
+      const ip = String(row.ip).trim();
+      if (!ip || ip === "unknown") continue;
+
+      let name: string | null = null;
+      let email: string | null = row.adminEmail ? String(row.adminEmail) : null;
+      let orderNum: string | null = null;
+
+      if (row.details) {
+        try {
+          const parsed = typeof row.details === "string" ? JSON.parse(row.details) : row.details;
+          if (parsed.customerName) name = parsed.customerName;
+          if (parsed.customerEmail) email = parsed.customerEmail;
+          if (parsed.orderNumber) orderNum = parsed.orderNumber;
+        } catch {}
+      }
+
+      const existing = ipMap.get(ip);
+      if (existing) {
+        existing.count += 1;
+        if (!existing.associatedName && name) existing.associatedName = name;
+        if (!existing.associatedEmail && email) existing.associatedEmail = email;
+        if (!existing.orderNumber && orderNum) existing.orderNumber = orderNum;
+      } else {
+        ipMap.set(ip, {
+          ip,
+          count: 1,
+          lastSeenAt: new Date(row.createdAt).toISOString(),
+          lastAction: String(row.action),
+          associatedEmail: email,
+          associatedName: name || (row.entityName ? String(row.entityName) : null),
+          orderNumber: orderNum,
+          isBanned: bannedMap.has(ip),
+          banId: bannedMap.get(ip) || null,
+        });
+      }
+    }
+
+    return Array.from(ipMap.values()).sort(
+      (a, b) => new Date(b.lastSeenAt).getTime() - new Date(a.lastSeenAt).getTime()
+    );
+  } catch (err) {
+    console.error("Error in getRecentIpActivityList:", err);
+    return [];
+  }
+}
+
 export async function clearAllLogs(): Promise<boolean> {
   await ensureEventLogTable();
   try {
