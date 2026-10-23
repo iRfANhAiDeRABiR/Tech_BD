@@ -3,9 +3,11 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Download, Upload, FileText, CheckCircle2, AlertCircle, X, Loader2, ChevronDown } from "lucide-react";
+import { useAdminLanguage } from "@/context/AdminLanguageContext";
 import styles from "@/app/admin/admin.module.css";
 
 export function ProductImportExport() {
+  const { lang } = useAdminLanguage();
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -119,7 +121,7 @@ export function ProductImportExport() {
           ) : (
             <Download size={16} />
           )}
-          <span>Export</span>
+          <span>{lang === "bn" ? "এক্সপোর্ট" : "Export"}</span>
           <ChevronDown size={14} style={{ opacity: 0.7 }} />
         </button>
 
@@ -161,7 +163,7 @@ export function ProductImportExport() {
               onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-glass-hover)")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
             >
-              <FileText size={14} /> Export CSV
+              <FileText size={14} /> {lang === "bn" ? "CSV এক্সপোর্ট" : "Export CSV"}
             </button>
             <button
               type="button"
@@ -183,7 +185,7 @@ export function ProductImportExport() {
               onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-glass-hover)")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
             >
-              <FileText size={14} /> Export JSON
+              <FileText size={14} /> {lang === "bn" ? "JSON এক্সপোর্ট" : "Export JSON"}
             </button>
           </div>
         )}
@@ -197,7 +199,7 @@ export function ProductImportExport() {
         style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 14px" }}
       >
         <Upload size={16} />
-        <span>Import</span>
+        <span>{lang === "bn" ? "ইমপোর্ট" : "Import"}</span>
       </button>
 
       {/* Import Modal */}
@@ -240,10 +242,12 @@ export function ProductImportExport() {
             >
               <div>
                 <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: "var(--text-primary)" }}>
-                  Import Products
+                  {lang === "bn" ? "প্রোডাক্ট ইমপোর্ট" : "Import Products"}
                 </h2>
                 <p style={{ margin: "4px 0 0", fontSize: 13, color: "var(--text-secondary)" }}>
-                  Upload a CSV or JSON file to bulk create or update your catalog.
+                  {lang === "bn"
+                    ? "CSV বা JSON ফাইল আপলোড করে বাল্ক প্রোডাক্ট তৈরি বা আপডেট করুন।"
+                    : "Upload a CSV or JSON file to bulk create or update your catalog."}
                 </p>
               </div>
               <button
@@ -279,7 +283,9 @@ export function ProductImportExport() {
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <FileText size={18} style={{ color: "var(--accent-primary)" }} />
                 <span style={{ fontSize: 13, color: "var(--text-primary)" }}>
-                  Need the right format? Use our sample CSV template.
+                  {lang === "bn"
+                    ? "সঠিক ফরম্যাট দরকার? আমাদের CSV টেমপ্লেট ব্যবহার করুন।"
+                    : "Need the right format? Use our sample CSV template."}
                 </span>
               </div>
               <a
@@ -296,7 +302,7 @@ export function ProductImportExport() {
                   whiteSpace: "nowrap",
                 }}
               >
-                <Download size={14} /> Download Template
+                <Download size={14} /> {lang === "bn" ? "টেমপ্লেট ডাউনলোড" : "Download Template"}
               </a>
             </div>
 
@@ -339,16 +345,16 @@ export function ProductImportExport() {
                       {file.name}
                     </strong>
                     <span style={{ color: "var(--text-secondary)", fontSize: 12 }}>
-                      {(file.size / 1024).toFixed(1)} KB • Click to change file
+                      {(file.size / 1024).toFixed(1)} KB • {lang === "bn" ? "ফাইল পরিবর্তন করতে ক্লিক করুন" : "Click to change file"}
                     </span>
                   </div>
                 ) : (
                   <div>
                     <span style={{ color: "var(--text-primary)", fontWeight: 600, fontSize: 14, display: "block" }}>
-                      Click to browse or drag & drop file here
+                      {lang === "bn" ? "ফাইল ব্রাউজ করতে ক্লিক করুন বা এখানে ড্র্যাগ করুন" : "Click to browse or drag & drop file here"}
                     </span>
                     <span style={{ color: "var(--text-secondary)", fontSize: 12, marginTop: 4, display: "block" }}>
-                      Supports .CSV and .JSON files
+                      {lang === "bn" ? ".CSV এবং .JSON ফাইল সমর্থিত" : "Supports .CSV and .JSON files"}
                     </span>
                   </div>
                 )}
@@ -364,7 +370,9 @@ export function ProductImportExport() {
                     style={{ accentColor: "var(--accent-primary)" }}
                   />
                   <span style={{ color: "var(--text-primary)" }}>
-                    Update existing products if ID or Slug already exists
+                    {lang === "bn"
+                      ? "আইডি বা স্লাগ বিদ্যমান থাকলে প্রোডাক্ট আপডেট করুন"
+                      : "Update existing products if ID or Slug already exists"}
                   </span>
                 </label>
               </div>
@@ -414,7 +422,9 @@ export function ProductImportExport() {
                   disabled={isLoading}
                   className={styles.buttonSecondary}
                 >
-                  {importResult?.success ? "Done" : "Cancel"}
+                  {importResult?.success
+                    ? (lang === "bn" ? "সম্পন্ন" : "Done")
+                    : (lang === "bn" ? "বাতিল" : "Cancel")}
                 </button>
                 <button
                   type="submit"
@@ -425,12 +435,12 @@ export function ProductImportExport() {
                   {isLoading ? (
                     <>
                       <Loader2 size={16} className="animate-spin" />
-                      <span>Importing...</span>
+                      <span>{lang === "bn" ? "ইমপোর্ট হচ্ছে..." : "Importing..."}</span>
                     </>
                   ) : (
                     <>
                       <Upload size={16} />
-                      <span>Start Import</span>
+                      <span>{lang === "bn" ? "ইমপোর্ট শুরু করুন" : "Start Import"}</span>
                     </>
                   )}
                 </button>

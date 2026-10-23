@@ -1,12 +1,10 @@
-import Link from "next/link";
 import prisma from "@/lib/prisma";
-import { ProductImportExport } from "@/components/admin/ProductImportExport";
+import { AdminProductsHeader } from "@/components/admin/AdminProductsHeader";
 import {
   AdminProductsManager,
   type AdminProductItem,
   type CategorySummary,
 } from "@/components/admin/AdminProductsManager";
-import styles from "../../admin.module.css";
 
 export default async function AdminProducts({
   searchParams,
@@ -63,28 +61,10 @@ export default async function AdminProducts({
 
   return (
     <>
-      <div className={styles.header}>
-        <div>
-          <h1>Products</h1>
-          <p className={styles.muted}>
-            Manage, find, track, and edit your catalog items in real-time.
-          </p>
-        </div>
-        <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
-          <ProductImportExport />
-          <Link className={styles.button} href="/admin/products/new">
-            + Add product
-          </Link>
-        </div>
-      </div>
-
-      {query.saved && (
-        <p className={styles.notice}>✓ Product saved and updated successfully.</p>
-      )}
-      {query.deleted && (
-        <p className={styles.notice}>✓ Product catalog updated successfully.</p>
-      )}
-
+      <AdminProductsHeader
+        savedNotice={Boolean(query.saved)}
+        deletedNotice={Boolean(query.deleted)}
+      />
       <AdminProductsManager initialProducts={products} categories={categories} />
     </>
   );

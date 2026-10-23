@@ -36,6 +36,8 @@ import {
   reactivateBanAction,
   deleteBanAction,
 } from "@/app/admin/actions";
+import { useAdminLanguage } from "@/context/AdminLanguageContext";
+import type { AdminLanguage } from "@/lib/admin-translations";
 import styles from "./AccessBans.module.css";
 
 interface AccessBansClientProps {
@@ -48,15 +50,26 @@ interface AccessBansClientProps {
   initialReason?: string;
 }
 
-const REASON_PRESETS = [
-  "Payment Fraud / ভুয়া ট্রানজেকশন আইডি প্রদান",
-  "Spamming Fake Orders / একের পর এক ভুয়া অর্ডার",
-  "Automated Bot / Scraping / স্ক্র্যাপিং বা বট অ্যাক্টিভিটি",
-  "Abusive Behavior / কাস্টমার সাপোর্টে অশোভন আচরণ",
-  "DDoS / Excessive Requests / অস্বাভাবিক রিকোয়েস্ট বন্যা",
-  "Terms & Policy Violation / সাইট নীতিমালার স্পষ্ট লঙ্ঘন",
-  "Custom Reason (অন্যান্য কারণ)",
-];
+const REASON_PRESETS: Record<AdminLanguage, string[]> = {
+  en: [
+    "Payment Fraud / Fake Transaction ID",
+    "Spamming Fake Orders",
+    "Automated Bot / Scraping Activity",
+    "Abusive Behavior in Support",
+    "DDoS / Excessive Requests",
+    "Terms & Policy Violation",
+    "Custom Reason",
+  ],
+  bn: [
+    "Payment Fraud / ভুয়া ট্রানজেকশন আইডি প্রদান",
+    "Spamming Fake Orders / একের পর এক ভুয়া অর্ডার",
+    "Automated Bot / Scraping / স্ক্র্যাপিং বা বট অ্যাক্টিভিটি",
+    "Abusive Behavior / কাস্টমার সাপোর্টে অশোভন আচরণ",
+    "DDoS / Excessive Requests / অস্বাভাবিক রিকোয়েস্ট বন্যা",
+    "Terms & Policy Violation / সাইট নীতিমালার স্পষ্ট লঙ্ঘন",
+    "Custom Reason (অন্যান্য কারণ)",
+  ],
+};
 
 export function AccessBansClient({
   initialBans,
@@ -67,12 +80,15 @@ export function AccessBansClient({
   initialType,
   initialReason,
 }: AccessBansClientProps) {
+  const { t, lang, formatNumber } = useAdminLanguage();
   const [bans, setBans] = useState<AccessBanItem[]>(initialBans);
   const [activeView, setActiveView] = useState<"BANS" | "IP_TRACKER">("BANS");
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<"ALL" | "IP" | "USER">("ALL");
   const [statusFilter, setStatusFilter] = useState<"ALL" | "ACTIVE" | "REVOKED" | "EXPIRED">("ALL");
   const [copiedIp, setCopiedIp] = useState<string | null>(null);
+
+  const reasonPresets = REASON_PRESETS[lang] ?? REASON_PRESETS.en;
 
   // Modal State
   const [showModal, setShowModal] = useState(false);
@@ -82,13 +98,20 @@ export function AccessBansClient({
   const [targetInput, setTargetInput] = useState(initialTarget || "");
   const [selectedUser, setSelectedUser] = useState<RegisteredUserSummary | null>(null);
   const [userSearchText, setUserSearchText] = useState("");
-  const [reasonPreset, setReasonPreset] = useState(initialReason || REASON_PRESETS[0]);
+  const [reasonPreset, setReasonPreset] = useState(initialReason || reasonPresets[0]);
   const [customReason, setCustomReason] = useState("");
   const [duration, setDuration] = useState<"PERMANENT" | "24H" | "7D" | "30D" | "CUSTOM">("PERMANENT");
   const [customExpiresAt, setCustomExpiresAt] = useState("");
   const [notes, setNotes] = useState("");
   const [isPending, startTransition] = useTransition();
   const [formError, setFormError] = useState<string | null>(null);
+
+  // Sync reason preset when language changes if still on default
+  useEffect(() => {
+    if (!initialReason && !customReason) {
+      setReasonPreset(reasonPresets[0]);
+    }
+  }, [lang, reasonPresets, initialReason, customReason]);
 
   // Auto-open modal if initialTarget was passed via query
   useEffect(() => {
@@ -100,12 +123,12 @@ export function AccessBansClient({
         setBanType("IP");
       }
       if (initialReason) {
-        setReasonPreset("Custom Reason (অন্যান্য কারণ)");
+        setReasonPreset(lang === "bn" ? "Custom Reason (অন্যান্য কারণ)" : "Custom Reason");
         setCustomReason(initialReason);
       }
       setShowModal(true);
     }
-  }, [initialTarget, initialType, initialReason]);
+  }, [initialTarget, initialType, initialReason, lang]);
 
   // Stats
   const stats = useMemo(() => {
@@ -159,123 +182,57 @@ export function AccessBansClient({
 
     return recentIps.filter((item) => {
       const matchIp = item.ip.toLowerCase().includes(q);
-      const matchName = (item.associatedName && item.associatedName.toLowerCase().includes(q)) || false;
-      const matchEmail = (item.associatedEmail && item.associatedEmail.toLowerCase().includes(q)) || false;
-      const matchAction = item.lastAction.toLowerCase().includes(q);
-      const matchOrder = (item.orderNumber && item.orderNumber.toLowerCase().includes(q)) || false;
-      return matchIp || matchName || matchEmail || matchAction || matchOrder;
+      const matchAction = item.lastAction?.toLowerCase().includes(q) || false;
+      const matchEmail = item.associatedEmail?.toLowerCase().includes(q) || false;
+      const matchName = item.associatedName?.toLowerCase().includes(q) || false;
+      const matchOrder = item.orderNumber?.toLowerCase().includes(q) || false;
+      return matchIp || matchAction || matchEmail || matchName || matchOrder;
     });
   }, [recentIps, searchQuery]);
 
-  // Filter users inside modal
+  // Registered Users search for User Ban modal
   const filteredUsers = useMemo(() => {
-    if (!userSearchText.trim()) return registeredUsers.slice(0, 15);
-    const q = userSearchText.toLowerCase();
+    const q = userSearchText.trim().toLowerCase();
+    if (!q) return registeredUsers.slice(0, 8);
     return registeredUsers
-      .filter(
-        (u) =>
-          u.username?.toLowerCase().includes(q) ||
-          u.email?.toLowerCase().includes(q) ||
-          u.fullName?.toLowerCase().includes(q) ||
-          u.phone?.toLowerCase().includes(q)
-      )
-      .slice(0, 15);
+      .filter((u) => {
+        const matchName = u.fullName?.toLowerCase().includes(q) || false;
+        const matchUsername = u.username?.toLowerCase().includes(q) || false;
+        const matchEmail = u.email?.toLowerCase().includes(q) || false;
+        const matchPhone = u.phone?.toLowerCase().includes(q) || false;
+        return matchName || matchUsername || matchEmail || matchPhone;
+      })
+      .slice(0, 8);
   }, [registeredUsers, userSearchText]);
 
   // Handlers
-  const handleGenerateRandomIp = () => {
-    const octet1 = Math.floor(Math.random() * (223 - 11)) + 11;
-    const octet2 = Math.floor(Math.random() * 255);
-    const octet3 = Math.floor(Math.random() * 255);
-    const octet4 = Math.floor(Math.random() * 254) + 1;
-    setTargetInput(`${octet1}.${octet2}.${octet3}.${octet4}`);
+  const handleCopyIp = (ip: string) => {
+    navigator.clipboard?.writeText(ip);
+    setCopiedIp(ip);
+    setTimeout(() => setCopiedIp(null), 2000);
   };
 
   const handleUseVisitorIp = () => {
-    setTargetInput(visitorIp || "127.0.0.1");
+    setTargetInput(visitorIp);
   };
 
-  const handleSelectUser = (u: RegisteredUserSummary) => {
-    setSelectedUser(u);
-    setTargetInput(u.email || u.id);
+  const handleGenerateRandomIp = () => {
+    const randomIp = `${Math.floor(Math.random() * 200) + 20}.${Math.floor(
+      Math.random() * 255
+    )}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 254) + 1}`;
+    setTargetInput(randomIp);
   };
 
-  const handleCopyIp = async (ipText: string) => {
-    try {
-      await navigator.clipboard.writeText(ipText);
-      setCopiedIp(ipText);
-      setTimeout(() => setCopiedIp(null), 2000);
-    } catch {}
-  };
-
-  const handleQuickBanIp = (item: RecentIpActivityItem) => {
-    setBanType("IP");
-    setTargetInput(item.ip);
-    setNotes(
-      item.orderNumber
-        ? `সন্দেহজনক অর্ডার #${item.orderNumber} (${item.associatedName || item.associatedEmail || ""})`
-        : item.lastAction
-    );
-    setReasonPreset(
-      item.orderNumber
-        ? "Payment Fraud / ভুয়া ট্রানজেকশন আইডি প্রদান"
-        : "Automated Bot / Scraping / স্ক্র্যাপিং বা বট অ্যাক্টিভিটি"
-    );
-    setShowModal(true);
-  };
-
-  const handleSubmitBan = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setFormError(null);
-
-    const targetVal = targetInput.trim();
-    if (!targetVal) {
-      setFormError("অনুগ্রহ করে আইপি ঠিকানা বা ব্যবহারকারীর তথ্য দিন।");
-      return;
-    }
-
-    const finalReason =
-      reasonPreset === "Custom Reason (অন্যান্য কারণ)"
-        ? customReason.trim() || "Policy violation"
-        : reasonPreset;
-
-    const formData = new FormData();
-    formData.set("type", banType);
-    formData.set("target", targetVal);
-    formData.set("reason", finalReason);
-    formData.set("notes", notes.trim());
-    formData.set("duration", duration);
-    if (duration === "CUSTOM" && customExpiresAt) {
-      formData.set("customExpiresAt", customExpiresAt);
-    }
-
-    if (banType === "USER" && selectedUser) {
-      formData.set("targetUserId", selectedUser.id);
-      if (selectedUser.email) formData.set("targetEmail", selectedUser.email);
-      if (selectedUser.phone) formData.set("targetPhone", selectedUser.phone);
-      if (selectedUser.username) formData.set("targetUsername", selectedUser.username);
-    } else if (banType === "USER") {
-      if (targetVal.includes("@")) {
-        formData.set("targetEmail", targetVal);
-      }
-    }
-
-    startTransition(async () => {
-      try {
-        await createBanAction(formData);
-        setShowModal(false);
-        resetForm();
-      } catch (err: any) {
-        setFormError(err.message || "ব্যান তৈরি করতে সমস্যা হয়েছে।");
-      }
-    });
+  const handleSelectUser = (user: RegisteredUserSummary) => {
+    setSelectedUser(user);
+    setTargetInput(user.email || user.username || user.id);
   };
 
   const resetForm = () => {
     setTargetInput("");
     setSelectedUser(null);
     setUserSearchText("");
-    setReasonPreset(REASON_PRESETS[0]);
+    setReasonPreset(reasonPresets[0]);
     setCustomReason("");
     setDuration("PERMANENT");
     setCustomExpiresAt("");
@@ -284,7 +241,12 @@ export function AccessBansClient({
   };
 
   const handleRevoke = (id: string) => {
-    if (!confirm("আপনি কি নিশ্চিত এই ব্যানটি তুলে নিতে (Revoke) চান?")) return;
+    const confirmMsg =
+      lang === "bn"
+        ? "আপনি কি নিশ্চিত এই ব্যানটি তুলে নিতে চান?"
+        : "Are you sure you want to revoke this ban?";
+    if (!confirm(confirmMsg)) return;
+
     startTransition(async () => {
       await revokeBanAction(id);
       setBans((prev) =>
@@ -294,7 +256,12 @@ export function AccessBansClient({
   };
 
   const handleReactivate = (id: string) => {
-    if (!confirm("আপনি কি এই ব্যানটি পুনরায় সক্রিয় করতে চান?")) return;
+    const confirmMsg =
+      lang === "bn"
+        ? "আপনি কি এই ব্যানটি পুনরায় সক্রিয় করতে চান?"
+        : "Are you sure you want to reactivate this ban?";
+    if (!confirm(confirmMsg)) return;
+
     startTransition(async () => {
       await reactivateBanAction(id);
       setBans((prev) =>
@@ -304,12 +271,76 @@ export function AccessBansClient({
   };
 
   const handleDelete = (id: string) => {
-    if (!confirm("এই ব্যান রেকর্ডটি সম্পূর্ণ ডিলিট করে দিতে চান?")) return;
+    const confirmMsg =
+      lang === "bn"
+        ? "আপনি কি নিশ্চিত যে এই ব্যান রেকর্ডটি স্থায়ীভাবে মুছে ফেলতে চান?"
+        : "Are you sure you want to permanently delete this ban record?";
+    if (!confirm(confirmMsg)) return;
+
     startTransition(async () => {
       await deleteBanAction(id);
       setBans((prev) => prev.filter((b) => b.id !== id));
     });
   };
+
+  const handleQuickBanIp = (ipItem: RecentIpActivityItem) => {
+    setBanType("IP");
+    setTargetInput(ipItem.ip);
+    const defaultReason =
+      lang === "bn"
+        ? `আইপি ট্র্যাকার থেকে দ্রুত ব্যান (${ipItem.lastAction || "Activity"})`
+        : `Quick ban from IP Tracker (${ipItem.lastAction || "Activity"})`;
+    setReasonPreset(reasonPresets[0]);
+    setNotes(defaultReason);
+    setShowModal(true);
+  };
+
+  const handleSubmitBan = (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError(null);
+
+    const target = targetInput.trim();
+    if (!target) {
+      setFormError(lang === "bn" ? "টার্গেট আইপি বা ইউজার প্রদান করুন" : "Please provide a target IP or user");
+      return;
+    }
+
+    const finalReason =
+      reasonPreset.startsWith("Custom Reason") || reasonPreset.includes("অন্যান্য")
+        ? customReason.trim() || reasonPreset
+        : reasonPreset;
+
+    const formData = new FormData();
+    formData.set("type", banType);
+    formData.set("target", target);
+    formData.set("reason", finalReason);
+    formData.set("duration", duration);
+    if (duration === "CUSTOM" && customExpiresAt) {
+      formData.set("customExpiresAt", customExpiresAt);
+    }
+    if (notes.trim()) {
+      formData.set("notes", notes.trim());
+    }
+
+    if (banType === "USER" && selectedUser) {
+      if (selectedUser.id) formData.set("targetUserId", selectedUser.id);
+      if (selectedUser.email) formData.set("targetEmail", selectedUser.email);
+      if (selectedUser.phone) formData.set("targetPhone", selectedUser.phone);
+      if (selectedUser.username) formData.set("targetUsername", selectedUser.username);
+    }
+
+    startTransition(async () => {
+      try {
+        await createBanAction(formData);
+        setShowModal(false);
+        resetForm();
+      } catch (err: any) {
+        setFormError(err?.message || (lang === "bn" ? "ব্যান প্রয়োগ ব্যর্থ হয়েছে" : "Failed to enforce ban"));
+      }
+    });
+  };
+
+  const dateLocale = lang === "bn" ? "bn-BD" : "en-US";
 
   return (
     <div>
@@ -318,11 +349,9 @@ export function AccessBansClient({
         <div>
           <h1 className={styles.headerTitle}>
             <ShieldAlert size={26} color="#ef4444" />
-            <span>অ্যাক্সেস কন্ট্রোল, ব্যান ও আইপি ট্র্যাকার</span>
+            <span>{t.bans_page_title}</span>
           </h1>
-          <p className={styles.headerSubtitle}>
-            সাইটের নিরাপত্তা ও ফ্রড রোধে অর্ডার ও ভিজিটরদের আইপি অ্যাড্রেস শনাক্ত করুন এবং যেকোনো আইপি বা রেজিস্টার্ড অ্যাকাউন্টকে ১-ক্লিকে ব্যান করুন।
-          </p>
+          <p className={styles.headerSubtitle}>{t.bans_page_subtitle}</p>
         </div>
 
         <button
@@ -334,7 +363,7 @@ export function AccessBansClient({
           }}
         >
           <Plus size={18} />
-          <span>নতুন ব্যান যুক্ত করুন</span>
+          <span>{t.bans_add_btn}</span>
         </button>
       </div>
 
@@ -345,8 +374,8 @@ export function AccessBansClient({
             <Lock size={22} />
           </div>
           <div className={styles.statInfo}>
-            <span className={styles.statLabel}>সক্রিয় ব্যান</span>
-            <span className={styles.statValue}>{stats.activeCount}</span>
+            <span className={styles.statLabel}>{t.bans_stat_active}</span>
+            <span className={styles.statValue}>{formatNumber(stats.activeCount)}</span>
           </div>
         </div>
 
@@ -355,8 +384,8 @@ export function AccessBansClient({
             <Globe size={22} />
           </div>
           <div className={styles.statInfo}>
-            <span className={styles.statLabel}>আইপি ব্যান</span>
-            <span className={styles.statValue}>{stats.ipCount}</span>
+            <span className={styles.statLabel}>{t.bans_stat_ip}</span>
+            <span className={styles.statValue}>{formatNumber(stats.ipCount)}</span>
           </div>
         </div>
 
@@ -365,8 +394,8 @@ export function AccessBansClient({
             <UserX size={22} />
           </div>
           <div className={styles.statInfo}>
-            <span className={styles.statLabel}>ইউজার ব্যান</span>
-            <span className={styles.statValue}>{stats.userCount}</span>
+            <span className={styles.statLabel}>{t.bans_stat_user}</span>
+            <span className={styles.statValue}>{formatNumber(stats.userCount)}</span>
           </div>
         </div>
 
@@ -375,8 +404,8 @@ export function AccessBansClient({
             <Radar size={22} />
           </div>
           <div className={styles.statInfo}>
-            <span className={styles.statLabel}>শনাক্তকৃত সাম্প্রতিক আইপি</span>
-            <span className={styles.statValue}>{recentIps.length}</span>
+            <span className={styles.statLabel}>{t.bans_stat_recent_ips}</span>
+            <span className={styles.statValue}>{formatNumber(recentIps.length)}</span>
           </div>
         </div>
       </div>
@@ -389,7 +418,7 @@ export function AccessBansClient({
           onClick={() => setActiveView("BANS")}
         >
           <ShieldAlert size={16} />
-          <span>বর্তমান ব্যান তালিকা ({bans.length})</span>
+          <span>{t.bans_tab_list(formatNumber(bans.length))}</span>
         </button>
 
         <button
@@ -398,7 +427,7 @@ export function AccessBansClient({
           onClick={() => setActiveView("IP_TRACKER")}
         >
           <Radar size={16} />
-          <span>🔍 সাম্প্রতিক ভিজিটর ও অর্ডার আইপি ট্র্যাকার ({recentIps.length})</span>
+          <span>{t.bans_tab_tracker(formatNumber(recentIps.length))}</span>
         </button>
       </div>
 
@@ -412,7 +441,7 @@ export function AccessBansClient({
               <input
                 type="text"
                 className={styles.searchInput}
-                placeholder="আইপি, ইমেইল, ইউজারনেম বা কারণ খুঁজুন..."
+                placeholder={t.bans_search_placeholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -426,21 +455,21 @@ export function AccessBansClient({
                   className={`${styles.filterBtn} ${typeFilter === "ALL" ? styles.filterBtnActive : ""}`}
                   onClick={() => setTypeFilter("ALL")}
                 >
-                  সবগুলো
+                  {t.bans_filter_all}
                 </button>
                 <button
                   type="button"
                   className={`${styles.filterBtn} ${typeFilter === "IP" ? styles.filterBtnActive : ""}`}
                   onClick={() => setTypeFilter("IP")}
                 >
-                  🌐 আইপি ব্যান
+                  {t.bans_filter_ip}
                 </button>
                 <button
                   type="button"
                   className={`${styles.filterBtn} ${typeFilter === "USER" ? styles.filterBtnActive : ""}`}
                   onClick={() => setTypeFilter("USER")}
                 >
-                  👤 ইউজার ব্যান
+                  {t.bans_filter_user}
                 </button>
               </div>
 
@@ -451,21 +480,21 @@ export function AccessBansClient({
                   className={`${styles.filterBtn} ${statusFilter === "ALL" ? styles.filterBtnActive : ""}`}
                   onClick={() => setStatusFilter("ALL")}
                 >
-                  সকল অবস্থা
+                  {t.bans_status_all}
                 </button>
                 <button
                   type="button"
                   className={`${styles.filterBtn} ${statusFilter === "ACTIVE" ? styles.filterBtnActive : ""}`}
                   onClick={() => setStatusFilter("ACTIVE")}
                 >
-                  সক্রিয়
+                  {t.bans_status_active}
                 </button>
                 <button
                   type="button"
                   className={`${styles.filterBtn} ${statusFilter === "REVOKED" ? styles.filterBtnActive : ""}`}
                   onClick={() => setStatusFilter("REVOKED")}
                 >
-                  স্থগিত বাতিল (Revoked)
+                  {t.bans_status_revoked}
                 </button>
               </div>
             </div>
@@ -477,14 +506,14 @@ export function AccessBansClient({
               <table className={styles.table}>
                 <thead>
                   <tr>
-                    <th>লক্ষ্যবস্তু (Target)</th>
-                    <th>ব্যান টাইপ</th>
-                    <th>কারণ ও নোট</th>
-                    <th>মেয়াদকাল (Duration)</th>
-                    <th>হিট সংখ্যা</th>
-                    <th>তারিখ ও বাই</th>
-                    <th>স্ট্যাটাস</th>
-                    <th>অ্যাকশন</th>
+                    <th>{t.bans_th_target}</th>
+                    <th>{t.bans_th_type}</th>
+                    <th>{t.bans_th_reason}</th>
+                    <th>{t.bans_th_duration}</th>
+                    <th>{t.bans_th_hits}</th>
+                    <th>{t.bans_th_date_by}</th>
+                    <th>{t.bans_th_status}</th>
+                    <th style={{ textAlign: "right" }}>{t.bans_th_action}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -516,7 +545,7 @@ export function AccessBansClient({
                                       type="button"
                                       className={styles.copyCodeBtn}
                                       onClick={() => handleCopyIp(ban.target)}
-                                      title="আইপি কপি করুন"
+                                      title={t.bans_copy_ip}
                                     >
                                       {copiedIp === ban.target ? <Check size={12} color="#10b981" /> : <Copy size={12} />}
                                     </button>
@@ -559,19 +588,19 @@ export function AccessBansClient({
                             {ban.expiresAt ? (
                               <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                                 <span style={{ fontSize: "0.82rem", fontWeight: 600 }}>
-                                  {new Date(ban.expiresAt).toLocaleDateString("bn-BD", {
+                                  {new Date(ban.expiresAt).toLocaleDateString(dateLocale, {
                                     year: "numeric",
                                     month: "short",
                                     day: "numeric",
                                   })}
                                 </span>
                                 <span style={{ fontSize: "0.74rem", color: isExpired ? "#ef4444" : "var(--text-secondary)" }}>
-                                  {isExpired ? "মেয়াদোত্তীর্ণ (Expired)" : "নির্দিষ্ট মেয়াদী"}
+                                  {isExpired ? t.bans_expired : t.bans_timed}
                                 </span>
                               </div>
                             ) : (
                               <span style={{ fontSize: "0.82rem", fontWeight: 700, color: "#ef4444" }}>
-                                স্থায়ী (Permanent)
+                                {t.bans_permanent}
                               </span>
                             )}
                           </td>
@@ -580,15 +609,15 @@ export function AccessBansClient({
                           <td>
                             <span className={styles.hitCounter}>
                               <AlertTriangle size={12} />
-                              {ban.hitCount || 0}
+                              {formatNumber(ban.hitCount || 0)}
                             </span>
                           </td>
 
                           {/* Date & Admin */}
                           <td>
                             <div style={{ fontSize: "0.78rem", color: "var(--text-secondary)" }}>
-                              <div>{new Date(ban.createdAt).toLocaleDateString()}</div>
-                              <div>বাই: {ban.bannedBy || "Admin"}</div>
+                              <div>{new Date(ban.createdAt).toLocaleDateString(dateLocale)}</div>
+                              <div>{t.bans_by(ban.bannedBy || "Admin")}</div>
                             </div>
                           </td>
 
@@ -596,50 +625,50 @@ export function AccessBansClient({
                           <td>
                             {isEffectiveActive ? (
                               <span className={`${styles.badge} ${styles.badgeActive}`}>
-                                ● সক্রিয় (Banned)
+                                {t.bans_active_badge}
                               </span>
                             ) : isExpired ? (
                               <span className={`${styles.badge} ${styles.badgeExpired}`}>
-                                মেয়াদ শেষ
+                                {t.bans_expired}
                               </span>
                             ) : (
                               <span className={`${styles.badge} ${styles.badgeRevoked}`}>
-                                ✓ প্রত্যাহারকৃত (Revoked)
+                                {t.bans_revoked_badge}
                               </span>
                             )}
                           </td>
 
                           {/* Actions */}
-                          <td>
-                            <div className={styles.actionBtns}>
+                          <td style={{ textAlign: "right" }}>
+                            <div className={styles.actionsWrap} style={{ justifyContent: "flex-end" }}>
                               {isEffectiveActive ? (
                                 <button
                                   type="button"
                                   className={styles.actionBtn}
                                   onClick={() => handleRevoke(ban.id)}
                                   disabled={isPending}
-                                  title="ব্যান তুলে নিন"
+                                  title={t.bans_action_revoke}
                                 >
-                                  আনব্যান
+                                  {t.bans_action_revoke}
                                 </button>
                               ) : (
                                 <button
                                   type="button"
-                                  className={`${styles.actionBtn} ${styles.actionBtnReactivate}`}
+                                  className={`${styles.actionBtn} ${styles.actionBtnSuccess}`}
                                   onClick={() => handleReactivate(ban.id)}
                                   disabled={isPending}
-                                  title="পুনরায় সক্রিয় করুন"
+                                  title={t.bans_action_reactivate}
                                 >
-                                  পুনঃসক্রিয়
+                                  {t.bans_action_reactivate}
                                 </button>
                               )}
 
                               <button
                                 type="button"
-                                className={`${styles.actionBtn} ${styles.actionBtnDelete}`}
+                                className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
                                 onClick={() => handleDelete(ban.id)}
                                 disabled={isPending}
-                                title="রেকর্ড মুছে ফেলুন"
+                                title={t.bans_action_delete}
                               >
                                 <Trash2 size={13} />
                               </button>
@@ -653,8 +682,8 @@ export function AccessBansClient({
                       <td colSpan={8}>
                         <div className={styles.emptyState}>
                           <ShieldCheck size={40} style={{ opacity: 0.4 }} />
-                          <h4>কোনো ব্যান রেকর্ড পাওয়া যায়নি</h4>
-                          <p>নতুন আইপি বা অ্যাকাউন্ট ব্যান করতে উপরের বাটনে ক্লিক করুন অথবা "আইপি ট্র্যাকার" ট্যাব থেকে শনাক্ত করুন।</p>
+                          <h4>{t.bans_empty_title}</h4>
+                          <p>{t.bans_empty_sub}</p>
                         </div>
                       </td>
                     </tr>
@@ -666,16 +695,24 @@ export function AccessBansClient({
         </>
       )}
 
-      {/* ── View 2: Recent IP Tracker & Suspects ── */}
+      {/* ── View 2: Recent IPs Tracker ── */}
       {activeView === "IP_TRACKER" && (
         <>
-          <div className={styles.controlsRow}>
-            <div className={styles.searchBox}>
-              <Search size={16} className={styles.searchIcon} />
+          <div className={styles.ipTrackerHeader}>
+            <div>
+              <h3 style={{ margin: "0 0 4px", fontSize: "1rem", fontWeight: 700, color: "var(--text-primary)" }}>
+                {t.tracker_header_title}
+              </h3>
+              <p style={{ margin: 0, fontSize: "0.82rem", color: "var(--text-secondary)" }}>
+                {t.tracker_header_sub}
+              </p>
+            </div>
+            <div className={styles.searchBox} style={{ maxWidth: 300 }}>
+              <Search size={15} className={styles.searchIcon} />
               <input
                 type="text"
                 className={styles.searchInput}
-                placeholder="আইপি, গ্রাহকের নাম, ইমেইল বা অর্ডার নম্বর দিয়ে খুঁজুন..."
+                placeholder={lang === "bn" ? "আইপি দিয়ে ফিল্টার করুন..." : "Filter by IP..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -687,70 +724,49 @@ export function AccessBansClient({
               <table className={styles.table}>
                 <thead>
                   <tr>
-                    <th>আইপি অ্যাড্রেস (Visitor IP)</th>
-                    <th>সম্পৃক্ত গ্রাহক / ইউজার</th>
-                    <th>সাম্প্রতিক কর্মকাণ্ড (Activity Context)</th>
-                    <th>কার্যকলাপ সংখ্যা</th>
-                    <th>সর্বশেষ উপস্থিতি</th>
-                    <th>বর্তমান অবস্থা</th>
-                    <th>অ্যাকশন</th>
+                    <th>{t.tracker_th_ip}</th>
+                    <th>{t.tracker_th_source}</th>
+                    <th>{t.tracker_th_events}</th>
+                    <th>{t.tracker_th_last_seen}</th>
+                    <th>{t.tracker_th_ban_status}</th>
+                    <th style={{ textAlign: "right" }}>{t.tracker_th_action}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredRecentIps.length > 0 ? (
-                    filteredRecentIps.map((item, idx) => (
-                      <tr key={idx}>
-                        {/* IP */}
+                    filteredRecentIps.map((item) => (
+                      <tr key={item.ip}>
+                        {/* IP Address */}
                         <td>
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <span className={styles.targetValue}>{item.displayIp || item.ip}</span>
+                            <span className={styles.ipMonospace}>{item.ip}</span>
                             <button
                               type="button"
                               className={styles.copyCodeBtn}
                               onClick={() => handleCopyIp(item.ip)}
-                              title="আইপি কপি করুন"
+                              title={t.bans_copy_ip}
                             >
-                              {copiedIp === item.ip ? <Check size={13} color="#10b981" /> : <Copy size={13} />}
+                              {copiedIp === item.ip ? <Check size={12} color="#10b981" /> : <Copy size={12} />}
                             </button>
-                          </div>
-                        </td>
-
-                        {/* Associated User */}
-                        <td>
-                          <div>
-                            {item.associatedName || item.associatedEmail ? (
-                              <>
-                                <strong style={{ display: "block", fontSize: "0.88rem" }}>
-                                  {item.associatedName || "Customer"}
-                                </strong>
-                                {item.associatedEmail && (
-                                  <span style={{ fontSize: "0.76rem", color: "var(--text-secondary)" }}>
-                                    {item.associatedEmail}
-                                  </span>
-                                )}
-                              </>
-                            ) : (
-                              <span style={{ fontSize: "0.82rem", color: "var(--text-secondary)", fontStyle: "italic" }}>
-                                ভিজিটর (Guest)
+                            {item.ip === visitorIp && (
+                              <span style={{ fontSize: "0.68rem", padding: "1px 6px", borderRadius: 4, background: "rgba(14, 165, 233, 0.15)", color: "#38bdf8", fontWeight: 700 }}>
+                                {lang === "bn" ? "আপনার বর্তমান আইপি" : "Your Current IP"}
                               </span>
                             )}
                           </div>
                         </td>
 
-                        {/* Activity */}
+                        {/* Source Event */}
                         <td>
                           <div>
-                            <span style={{ fontSize: "0.84rem", fontWeight: 600, color: "var(--text-primary)" }}>
+                            <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--text-primary)" }}>
                               {item.lastAction}
                             </span>
                             {item.orderNumber && (
                               <div style={{ marginTop: 2 }}>
-                                <Link
-                                  href={`/admin/orders?q=${encodeURIComponent(item.orderNumber)}`}
-                                  style={{ fontSize: "0.76rem", color: "#6366f1", textDecoration: "underline" }}
-                                >
-                                  অর্ডার দেখুন ↗
-                                </Link>
+                                <span style={{ fontSize: "0.76rem", color: "#6366f1", fontWeight: 600 }}>
+                                  #{item.orderNumber}
+                                </span>
                               </div>
                             )}
                           </div>
@@ -759,14 +775,14 @@ export function AccessBansClient({
                         {/* Count */}
                         <td>
                           <span style={{ fontSize: "0.84rem", fontWeight: 700 }}>
-                            {item.count} বার
+                            {formatNumber(item.count)} {lang === "bn" ? "বার" : "events"}
                           </span>
                         </td>
 
                         {/* Last Seen */}
                         <td>
                           <span style={{ fontSize: "0.82rem", color: "var(--text-secondary)" }}>
-                            {new Date(item.lastSeenAt).toLocaleString("bn-BD", {
+                            {new Date(item.lastSeenAt).toLocaleString(dateLocale, {
                               month: "short",
                               day: "numeric",
                               hour: "2-digit",
@@ -779,17 +795,17 @@ export function AccessBansClient({
                         <td>
                           {item.isBanned ? (
                             <span className={`${styles.badge} ${styles.badgeActive}`}>
-                              ● ব্যান করা আছে (Banned)
+                              {t.tracker_banned_label}
                             </span>
                           ) : (
                             <span className={`${styles.badge} ${styles.badgeAllowed}`}>
-                              ✓ স্বাভাবিক (Allowed)
+                              {lang === "bn" ? "✓ স্বাভাবিক (Allowed)" : "✓ Allowed"}
                             </span>
                           )}
                         </td>
 
                         {/* Action */}
-                        <td>
+                        <td style={{ textAlign: "right" }}>
                           {item.isBanned ? (
                             <button
                               type="button"
@@ -798,7 +814,7 @@ export function AccessBansClient({
                                 if (item.banId) handleRevoke(item.banId);
                               }}
                             >
-                              আনব্যান
+                              {t.bans_action_revoke}
                             </button>
                           ) : (
                             <button
@@ -807,7 +823,7 @@ export function AccessBansClient({
                               onClick={() => handleQuickBanIp(item)}
                             >
                               <ShieldAlert size={13} />
-                              <span>🚫 Ban This IP</span>
+                              <span>{t.tracker_ban_btn}</span>
                             </button>
                           )}
                         </td>
@@ -815,11 +831,11 @@ export function AccessBansClient({
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={7}>
+                      <td colSpan={6}>
                         <div className={styles.emptyState}>
                           <Radar size={40} style={{ opacity: 0.4 }} />
-                          <h4>কোনো আইপি রেকর্ড পাওয়া যায়নি</h4>
-                          <p>গ্রাহক যখনই ওয়েবসাইট ভিজিট বা কোনো অর্ডার সম্পন্ন করবে, তাদের আইপি স্বয়ংক্রিয়ভাবে এখানে তালিকাভুক্ত হবে।</p>
+                          <h4>{t.tracker_empty_title}</h4>
+                          <p>{t.tracker_empty_sub}</p>
                         </div>
                       </td>
                     </tr>
@@ -846,8 +862,8 @@ export function AccessBansClient({
                   <ShieldAlert size={24} />
                 </div>
                 <div>
-                  <h3 className={styles.modalTitle}>নতুন অ্যাক্সেস ব্যান যুক্ত করুন</h3>
-                  <p className={styles.modalSubtitle}>নির্দিষ্ট আইপি বা ব্যবহারকারীকে সাইটে ঢুকতে বাধা দিন</p>
+                  <h3 className={styles.modalTitle}>{t.bans_modal_title}</h3>
+                  <p className={styles.modalSubtitle}>{t.bans_modal_desc}</p>
                 </div>
               </div>
 
@@ -872,7 +888,7 @@ export function AccessBansClient({
                 }}
               >
                 <Globe size={16} />
-                <span>আইপি অ্যাড্রেস ব্যান (IP)</span>
+                <span>{t.bans_modal_opt_ip}</span>
               </button>
 
               <button
@@ -883,7 +899,7 @@ export function AccessBansClient({
                 }}
               >
                 <UserX size={16} />
-                <span>ইউজার অ্যাকাউন্ট ব্যান (User)</span>
+                <span>{t.bans_modal_opt_user}</span>
               </button>
             </div>
 
@@ -913,42 +929,44 @@ export function AccessBansClient({
               {banType === "IP" ? (
                 <div className={styles.formGroup}>
                   <div className={styles.formLabel}>
-                    <span>টার্গেট আইপি অ্যাড্রেস (Target IP)</span>
+                    <span>{t.bans_modal_label_ip}</span>
                     <div style={{ display: "flex", gap: 10 }}>
                       <button
                         type="button"
                         className={styles.quickActionLink}
                         onClick={handleUseVisitorIp}
                       >
-                        আমার আইপি দিন ({visitorIp})
+                        {lang === "bn" ? `আমার আইপি (${visitorIp})` : `My IP (${visitorIp})`}
                       </button>
                       <button
                         type="button"
                         className={styles.quickActionLink}
                         onClick={handleGenerateRandomIp}
                       >
-                        🎲 র‍্যান্ডম আইপি বানান
+                        {lang === "bn" ? "🎲 র‍্যান্ডম আইপি বানান" : "🎲 Random IP"}
                       </button>
                     </div>
                   </div>
                   <input
                     type="text"
                     className={styles.formInput}
-                    placeholder="যেমন: 203.0.113.45 বা 192.168.1.0/24"
+                    placeholder={lang === "bn" ? "যেমন: 203.0.113.45 বা 192.168.1.0/24" : "e.g. 203.0.113.45 or 192.168.1.0/24"}
                     value={targetInput}
                     onChange={(e) => setTargetInput(e.target.value)}
                     required
                     autoFocus
                   />
                   <span style={{ fontSize: "0.74rem", color: "var(--text-secondary)" }}>
-                    একক আইপি (IPv4/IPv6) অথবা সাবনেট সিআইডিআর রেঞ্জ দেওয়া যাবে।
+                    {lang === "bn"
+                      ? "একক আইপি (IPv4/IPv6) অথবা সাবনেট সিআইডিআর রেঞ্জ দেওয়া যাবে।"
+                      : "Supports single IPv4/IPv6 or CIDR subnet ranges."}
                   </span>
                 </div>
               ) : (
                 /* User Input */
                 <div className={styles.formGroup}>
                   <div className={styles.formLabel}>
-                    <span>টার্গেট ব্যবহারকারী (Select Registered User)</span>
+                    <span>{t.bans_modal_label_user}</span>
                   </div>
 
                   {/* Registered Users Search & List */}
@@ -956,7 +974,7 @@ export function AccessBansClient({
                     <input
                       type="text"
                       className={styles.formInput}
-                      placeholder="রেজিস্টার্ড ইউজারদের মধ্য থেকে খুঁজুন (ইমেইল/নাম)..."
+                      placeholder={t.bans_modal_user_search}
                       value={userSearchText}
                       onChange={(e) => setUserSearchText(e.target.value)}
                     />
@@ -989,12 +1007,12 @@ export function AccessBansClient({
 
                   <div style={{ marginTop: 8 }}>
                     <label style={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: 4, display: "block" }}>
-                      অথবা সরাসরি ইউজার আইডি / ইমেইল লিখুন:
+                      {lang === "bn" ? "অথবা সরাসরি ইউজার আইডি / ইমেইল লিখুন:" : "Or enter user email / ID directly:"}
                     </label>
                     <input
                       type="text"
                       className={styles.formInput}
-                      placeholder="যেমন: user@example.com বা UUID"
+                      placeholder={lang === "bn" ? "যেমন: user@example.com বা UUID" : "e.g. user@example.com or UUID"}
                       value={targetInput}
                       onChange={(e) => {
                         setTargetInput(e.target.value);
@@ -1008,25 +1026,25 @@ export function AccessBansClient({
 
               {/* Reason */}
               <div className={styles.formGroup}>
-                <label className={styles.formLabel}>স্থগিতকরণের কারণ (Reason)</label>
+                <label className={styles.formLabel}>{t.bans_modal_reason_label}</label>
                 <select
                   className={styles.formSelect}
                   value={reasonPreset}
                   onChange={(e) => setReasonPreset(e.target.value)}
                 >
-                  {REASON_PRESETS.map((p, idx) => (
+                  {reasonPresets.map((p, idx) => (
                     <option key={idx} value={p}>
                       {p}
                     </option>
                   ))}
                 </select>
 
-                {reasonPreset === "Custom Reason (অন্যান্য কারণ)" && (
+                {(reasonPreset.startsWith("Custom Reason") || reasonPreset.includes("অন্যান্য")) && (
                   <input
                     type="text"
                     className={styles.formInput}
                     style={{ marginTop: 8 }}
-                    placeholder="কাস্টম কারণ বিস্তারিত লিখুন..."
+                    placeholder={t.bans_modal_custom_reason_placeholder}
                     value={customReason}
                     onChange={(e) => setCustomReason(e.target.value)}
                     required
@@ -1036,17 +1054,17 @@ export function AccessBansClient({
 
               {/* Duration */}
               <div className={styles.formGroup}>
-                <label className={styles.formLabel}>মেয়াদকাল (Duration)</label>
+                <label className={styles.formLabel}>{t.bans_modal_duration_label}</label>
                 <select
                   className={styles.formSelect}
                   value={duration}
                   onChange={(e) => setDuration(e.target.value as any)}
                 >
-                  <option value="PERMANENT">♾️ স্থায়ী ব্যান (Permanent - Never expires)</option>
-                  <option value="24H">⏱️ ২৪ ঘণ্টা (24 Hours)</option>
-                  <option value="7D">📅 ৭ দিন (7 Days)</option>
-                  <option value="30D">🗓️ ৩০ দিন (30 Days)</option>
-                  <option value="CUSTOM">📆 নির্দিষ্ট তারিখ নির্ধারণ করুন (Custom Date)</option>
+                  <option value="PERMANENT">♾️ {t.bans_modal_duration_permanent}</option>
+                  <option value="24H">⏱️ {t.bans_modal_duration_24h}</option>
+                  <option value="7D">📅 {t.bans_modal_duration_7d}</option>
+                  <option value="30D">🗓️ {t.bans_modal_duration_30d}</option>
+                  <option value="CUSTOM">📆 {t.bans_modal_duration_custom}</option>
                 </select>
 
                 {duration === "CUSTOM" && (
@@ -1063,11 +1081,11 @@ export function AccessBansClient({
 
               {/* Notes */}
               <div className={styles.formGroup}>
-                <label className={styles.formLabel}>অ্যাডমিন নোট (অভ্যন্তরীণ ব্যাখ্যার জন্য)</label>
+                <label className={styles.formLabel}>{t.bans_modal_notes_label}</label>
                 <textarea
                   className={styles.formTextarea}
                   rows={2}
-                  placeholder="যেমন: বারবার বিকাশ ট্রানজেকশনে ভুয়া স্ক্রিনশট সাবমিট করেছে..."
+                  placeholder={t.bans_modal_notes_placeholder}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                 />
@@ -1076,7 +1094,7 @@ export function AccessBansClient({
               {/* Submit */}
               <button type="submit" disabled={isPending} className={styles.submitBtn}>
                 <ShieldAlert size={18} />
-                <span>{isPending ? "ব্যান প্রয়োগ করা হচ্ছে..." : "ব্যান নিশ্চিত ও কার্যকর করুন"}</span>
+                <span>{isPending ? t.bans_modal_btn_submitting : t.bans_modal_btn_submit}</span>
               </button>
             </form>
           </div>

@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import type { AdminEventLogItem, EventCategory } from "@/lib/audit-logs-store";
 import { clearEventLogsAction } from "@/app/admin/actions";
+import { useAdminLanguage } from "@/context/AdminLanguageContext";
 import styles from "./EventLogs.module.css";
 
 interface EventLogsClientProps {
@@ -33,6 +34,7 @@ interface EventLogsClientProps {
 }
 
 export function EventLogsClient({ initialLogs }: EventLogsClientProps) {
+  const { t, lang, formatNumber } = useAdminLanguage();
   const [logs, setLogs] = useState<AdminEventLogItem[]>(initialLogs);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("ALL");
@@ -73,12 +75,10 @@ export function EventLogsClient({ initialLogs }: EventLogsClientProps) {
         const matchAction = l.action.toLowerCase().includes(q);
         const matchEntity = (l.entityName && l.entityName.toLowerCase().includes(q)) || false;
         const matchEntityId = (l.entityId && l.entityId.toLowerCase().includes(q)) || false;
-        const matchType = l.entityType.toLowerCase().includes(q);
-        const matchEmail = (l.adminEmail && l.adminEmail.toLowerCase().includes(q)) || false;
-        const matchDetails = (l.details && l.details.toLowerCase().includes(q)) || false;
+        const matchAdmin = (l.adminEmail && l.adminEmail.toLowerCase().includes(q)) || false;
         const matchIp = (l.ipAddress && l.ipAddress.toLowerCase().includes(q)) || false;
-
-        return matchAction || matchEntity || matchEntityId || matchType || matchEmail || matchDetails || matchIp;
+        const matchDetails = (l.details && l.details.toLowerCase().includes(q)) || false;
+        return matchAction || matchEntity || matchEntityId || matchAdmin || matchIp || matchDetails;
       }
 
       return true;
@@ -95,9 +95,7 @@ export function EventLogsClient({ initialLogs }: EventLogsClientProps) {
   };
 
   const handleClearLogs = () => {
-    if (!confirm("আপনি কি নিশ্চিত সমস্ত ইভেন্ট হিস্টোরি মুছে ফেলতে চান? এটি আর ফিরিয়ে আনা যাবে না।")) {
-      return;
-    }
+    if (!confirm(t.logs_confirm_clear)) return;
     startTransition(async () => {
       await clearEventLogsAction();
       setLogs([]);
@@ -105,36 +103,53 @@ export function EventLogsClient({ initialLogs }: EventLogsClientProps) {
   };
 
   const exportToJson = () => {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(filteredLogs, null, 2));
-    const downloadAnchor = document.createElement("a");
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `techbd-event-logs-${new Date().toISOString().slice(0, 10)}.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(logs, null, 2));
+    const dlAnchorElem = document.createElement("a");
+    dlAnchorElem.setAttribute("href", dataStr);
+    dlAnchorElem.setAttribute("download", `admin-audit-logs-${Date.now()}.json`);
+    dlAnchorElem.click();
   };
 
   const exportToCsv = () => {
-    const headers = ["Timestamp", "Action", "Category", "Entity Type", "Entity Name", "Admin", "Severity", "Details"];
-    const rows = filteredLogs.map((l) => [
-      `"${new Date(l.createdAt).toLocaleString()}"`,
-      `"${l.action}"`,
-      `"${l.category}"`,
-      `"${l.entityType}"`,
-      `"${l.entityName || l.entityId || ""}"`,
-      `"${l.adminEmail || "Admin"}"`,
-      `"${l.severity}"`,
+    const headers = ["ID", "Time", "Category", "Action", "EntityType", "EntityId", "EntityName", "AdminEmail", "IP", "Severity", "Details"];
+    const rows = logs.map((l) => [
+      l.id,
+      new Date(l.createdAt).toISOString(),
+      l.category,
+      l.action,
+      l.entityType,
+      l.entityId || "",
+      `"${(l.entityName || "").replace(/"/g, '""')}"`,
+      l.adminEmail || "",
+      l.ipAddress || "",
+      l.severity,
       `"${(l.details || "").replace(/"/g, '""')}"`,
     ]);
 
-    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `techbd-event-logs-${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const dlAnchorElem = document.createElement("a");
+    dlAnchorElem.setAttribute("href", encodeURI(csvContent));
+    dlAnchorElem.setAttribute("download", `admin-audit-logs-${Date.now()}.csv`);
+    dlAnchorElem.click();
+  };
+
+  const getCategoryIcon = (cat: EventCategory) => {
+    switch (cat) {
+      case "ORDERS":
+        return <ShoppingBag size={14} color="#10b981" />;
+      case "CATALOG":
+        return <Package size={14} color="#38bdf8" />;
+      case "CATEGORIES":
+        return <Layers size={14} color="#818cf8" />;
+      case "DOWNLOADS":
+        return <DownloadCloud size={14} color="#a855f7" />;
+      case "SECURITY":
+        return <ShieldAlert size={14} color="#ef4444" />;
+      case "AUTH":
+        return <KeyRound size={14} color="#f59e0b" />;
+      default:
+        return <Activity size={14} color="#94a3b8" />;
+    }
   };
 
   const getCategoryBadgeClass = (cat: EventCategory) => {
@@ -161,10 +176,16 @@ export function EventLogsClient({ initialLogs }: EventLogsClientProps) {
       const past = new Date(isoString).getTime();
       const diffSec = Math.floor((now - past) / 1000);
 
-      if (diffSec < 60) return "এইমাত্র (Just now)";
-      if (diffSec < 3600) return `${Math.floor(diffSec / 60)} মিনিট আগে`;
-      if (diffSec < 86400) return `${Math.floor(diffSec / 3600)} ঘণ্টা আগে`;
-      return new Date(isoString).toLocaleDateString("bn-BD", {
+      if (diffSec < 60) return lang === "bn" ? "এইমাত্র (Just now)" : "Just now";
+      if (diffSec < 3600) {
+        const mins = Math.floor(diffSec / 60);
+        return lang === "bn" ? `${formatNumber(mins)} মিনিট আগে` : `${mins} min ago`;
+      }
+      if (diffSec < 86400) {
+        const hours = Math.floor(diffSec / 3600);
+        return lang === "bn" ? `${formatNumber(hours)} ঘণ্টা আগে` : `${hours} hours ago`;
+      }
+      return new Date(isoString).toLocaleDateString(lang === "bn" ? "bn-BD" : "en-US", {
         month: "short",
         day: "numeric",
         hour: "2-digit",
@@ -182,22 +203,20 @@ export function EventLogsClient({ initialLogs }: EventLogsClientProps) {
         <div>
           <h1 className={styles.headerTitle}>
             <ClipboardList size={26} color="#6366f1" />
-            <span>ইভেন্ট ও অ্যাক্টিভিটি পরিবর্তন লগ (Audit & Event Logs)</span>
+            <span>{t.logs_page_title}</span>
           </h1>
-          <p className={styles.headerSubtitle}>
-            অ্যাডমিন প্যানেলে কৃত যেকোনো পরিবর্তন—অর্ডার স্ট্যাটাস, প্রোডাক্ট ও ক্যাটালগ এডিট, ডাউনলোড লিঙ্ক বা সিকিউরিটি ব্যানের বিস্তারিত ইতিহাস।
-          </p>
+          <p className={styles.headerSubtitle}>{t.logs_page_subtitle}</p>
         </div>
 
         <div className={styles.headerActions}>
-          <button type="button" className={styles.actionBtn} onClick={exportToJson} title="JSON ফরম্যাটে ডাউনলোড করুন">
+          <button type="button" className={styles.actionBtn} onClick={exportToJson} title="Download JSON">
             <Download size={15} />
-            <span>JSON এক্সপোর্ট</span>
+            <span>JSON</span>
           </button>
 
-          <button type="button" className={styles.actionBtn} onClick={exportToCsv} title="CSV স্প্রেডশিট ডাউনলোড করুন">
+          <button type="button" className={styles.actionBtn} onClick={exportToCsv} title="Download CSV">
             <FileText size={15} />
-            <span>CSV এক্সপোর্ট</span>
+            <span>{t.logs_btn_export}</span>
           </button>
 
           {logs.length > 0 && (
@@ -206,10 +225,10 @@ export function EventLogsClient({ initialLogs }: EventLogsClientProps) {
               className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
               onClick={handleClearLogs}
               disabled={isPending}
-              title="সমস্ত লগ মুছে ফেলুন"
+              title={t.logs_btn_clear}
             >
               <Trash2 size={15} />
-              <span>লগ মুছে ফেলুন</span>
+              <span>{isPending ? t.logs_btn_clearing : t.logs_btn_clear}</span>
             </button>
           )}
         </div>
@@ -222,8 +241,8 @@ export function EventLogsClient({ initialLogs }: EventLogsClientProps) {
             <ClipboardList size={22} />
           </div>
           <div className={styles.statInfo}>
-            <span className={styles.statLabel}>মোট রেকর্ডকৃত ইভেন্ট</span>
-            <span className={styles.statValue}>{stats.total}</span>
+            <span className={styles.statLabel}>{t.logs_stat_total}</span>
+            <span className={styles.statValue}>{formatNumber(stats.total)}</span>
           </div>
         </div>
 
@@ -232,8 +251,8 @@ export function EventLogsClient({ initialLogs }: EventLogsClientProps) {
             <ShoppingBag size={22} />
           </div>
           <div className={styles.statInfo}>
-            <span className={styles.statLabel}>অর্ডার ও পেমেন্ট সংক্রান্ত</span>
-            <span className={styles.statValue}>{stats.orders}</span>
+            <span className={styles.statLabel}>{t.logs_stat_orders}</span>
+            <span className={styles.statValue}>{formatNumber(stats.orders)}</span>
           </div>
         </div>
 
@@ -242,8 +261,8 @@ export function EventLogsClient({ initialLogs }: EventLogsClientProps) {
             <Package size={22} />
           </div>
           <div className={styles.statInfo}>
-            <span className={styles.statLabel}>প্রোডাক্ট ও ক্যাটালগ এডিট</span>
-            <span className={styles.statValue}>{stats.catalog}</span>
+            <span className={styles.statLabel}>{t.logs_stat_catalog}</span>
+            <span className={styles.statValue}>{formatNumber(stats.catalog)}</span>
           </div>
         </div>
 
@@ -252,8 +271,8 @@ export function EventLogsClient({ initialLogs }: EventLogsClientProps) {
             <ShieldAlert size={22} />
           </div>
           <div className={styles.statInfo}>
-            <span className={styles.statLabel}>সিকিউরিটি ও ব্যান ইভেন্ট</span>
-            <span className={styles.statValue}>{stats.security}</span>
+            <span className={styles.statLabel}>{t.logs_stat_security}</span>
+            <span className={styles.statValue}>{formatNumber(stats.security)}</span>
           </div>
         </div>
       </div>
@@ -265,7 +284,7 @@ export function EventLogsClient({ initialLogs }: EventLogsClientProps) {
           <input
             type="text"
             className={styles.searchInput}
-            placeholder="অ্যাকশন, প্রোডাক্ট, অর্ডার বা অ্যাডমিন ইমেইল খুঁজুন..."
+            placeholder={t.logs_search_placeholder}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -279,61 +298,99 @@ export function EventLogsClient({ initialLogs }: EventLogsClientProps) {
               className={`${styles.filterBtn} ${categoryFilter === "ALL" ? styles.filterBtnActive : ""}`}
               onClick={() => setCategoryFilter("ALL")}
             >
-              সব ক্যাটাগরি
+              {t.logs_cat_all}
             </button>
             <button
               type="button"
               className={`${styles.filterBtn} ${categoryFilter === "ORDERS" ? styles.filterBtnActive : ""}`}
               onClick={() => setCategoryFilter("ORDERS")}
             >
-              📦 অর্ডার
+              {t.logs_cat_orders}
             </button>
             <button
               type="button"
               className={`${styles.filterBtn} ${categoryFilter === "CATALOG" ? styles.filterBtnActive : ""}`}
               onClick={() => setCategoryFilter("CATALOG")}
             >
-              🏷️ প্রোডাক্ট
+              {t.logs_cat_catalog}
             </button>
             <button
               type="button"
               className={`${styles.filterBtn} ${categoryFilter === "DOWNLOADS" ? styles.filterBtnActive : ""}`}
               onClick={() => setCategoryFilter("DOWNLOADS")}
             >
-              📥 ডাউনলোড
+              {t.logs_cat_downloads}
             </button>
             <button
               type="button"
               className={`${styles.filterBtn} ${categoryFilter === "SECURITY" ? styles.filterBtnActive : ""}`}
               onClick={() => setCategoryFilter("SECURITY")}
             >
-              🛡️ সিকিউরিটি
+              {t.logs_cat_security}
+            </button>
+            <button
+              type="button"
+              className={`${styles.filterBtn} ${categoryFilter === "AUTH" ? styles.filterBtnActive : ""}`}
+              onClick={() => setCategoryFilter("AUTH")}
+            >
+              {t.logs_cat_auth}
+            </button>
+          </div>
+
+          {/* Severity Filter */}
+          <div className={styles.filterTabs}>
+            <button
+              type="button"
+              className={`${styles.filterBtn} ${severityFilter === "ALL" ? styles.filterBtnActive : ""}`}
+              onClick={() => setSeverityFilter("ALL")}
+            >
+              {t.logs_sev_all}
+            </button>
+            <button
+              type="button"
+              className={`${styles.filterBtn} ${severityFilter === "SUCCESS" ? styles.filterBtnActive : ""}`}
+              onClick={() => setSeverityFilter("SUCCESS")}
+            >
+              {t.logs_sev_success}
+            </button>
+            <button
+              type="button"
+              className={`${styles.filterBtn} ${severityFilter === "WARNING" ? styles.filterBtnActive : ""}`}
+              onClick={() => setSeverityFilter("WARNING")}
+            >
+              {t.logs_sev_warning}
+            </button>
+            <button
+              type="button"
+              className={`${styles.filterBtn} ${severityFilter === "CRITICAL" ? styles.filterBtnActive : ""}`}
+              onClick={() => setSeverityFilter("CRITICAL")}
+            >
+              {t.logs_sev_critical}
             </button>
           </div>
         </div>
       </div>
 
-      {/* ── Event Log Table ── */}
+      {/* ── Table Container ── */}
       <div className={styles.tableContainer}>
         <div className={styles.tableWrap}>
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>সময় (Timestamp)</th>
-                <th>ক্যাটাগরি</th>
-                <th>অ্যাকশন (Action)</th>
-                <th>টার্গেট এনটিটি (Target)</th>
-                <th>পরিবর্তনের সারসংক্ষেপ (Changes Summary)</th>
-                <th>অ্যাডমিন</th>
+                <th style={{ width: 140 }}>{t.logs_th_time}</th>
+                <th style={{ width: 120 }}>{t.logs_th_category}</th>
+                <th style={{ width: 160 }}>{t.logs_th_action}</th>
+                <th style={{ width: 180 }}>{t.logs_th_target}</th>
+                <th>{t.logs_th_details}</th>
+                <th style={{ width: 150 }}>{t.logs_th_admin}</th>
               </tr>
             </thead>
             <tbody>
               {filteredLogs.length > 0 ? (
                 filteredLogs.map((log) => {
                   const isExpanded = expandedLogIds.has(log.id);
-
                   let parsedJson: any = null;
-                  if (log.details) {
+                  if (log.details && (log.details.startsWith("{") || log.details.startsWith("["))) {
                     try {
                       parsedJson = JSON.parse(log.details);
                     } catch {
@@ -343,64 +400,49 @@ export function EventLogsClient({ initialLogs }: EventLogsClientProps) {
 
                   return (
                     <tr key={log.id}>
-                      {/* Timestamp */}
+                      {/* Time */}
                       <td style={{ whiteSpace: "nowrap" }}>
-                        <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-primary)" }}>
-                          {formatRelativeTime(log.createdAt)}
-                        </div>
-                        <div style={{ fontSize: "0.74rem", color: "var(--text-secondary)" }}>
-                          {new Date(log.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                          <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--text-primary)" }}>
+                            {formatRelativeTime(log.createdAt)}
+                          </span>
+                          <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)" }}>
+                            {new Date(log.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                          </span>
                         </div>
                       </td>
 
-                      {/* Category Badge */}
+                      {/* Category */}
                       <td>
                         <span className={`${styles.badge} ${getCategoryBadgeClass(log.category)}`}>
-                          {log.category}
+                          {getCategoryIcon(log.category)}
+                          <span>{log.category}</span>
                         </span>
                       </td>
 
                       {/* Action */}
                       <td>
-                        <span className={styles.actionPill}>{log.action}</span>
+                        <span className={styles.actionCodeTag}>{log.action}</span>
                       </td>
 
                       {/* Target Entity */}
                       <td>
-                        <div>
-                          <span style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--text-secondary)", display: "block" }}>
-                            {log.entityType}
-                          </span>
-                          <strong style={{ fontSize: "0.9rem", color: "var(--text-primary)" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                          <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-primary)" }}>
                             {log.entityName || log.entityId || "—"}
-                          </strong>
-                          {log.entityId && log.entityName && log.entityId !== log.entityName && (
-                            <div style={{ fontSize: "0.74rem", color: "var(--text-secondary)", fontFamily: "monospace" }}>
-                              ID: {log.entityId}
-                            </div>
-                          )}
+                          </span>
+                          <span style={{ fontSize: "0.74rem", color: "var(--text-secondary)" }}>
+                            {log.entityType} {log.entityId && log.entityName ? `(#${log.entityId})` : ""}
+                          </span>
                         </div>
                       </td>
 
-                      {/* Changes Summary & JSON Diff */}
+                      {/* Details */}
                       <td>
-                        <div>
-                          {parsedJson ? (
-                            <div style={{ fontSize: "0.82rem", color: "var(--text-secondary)" }}>
-                              {Object.entries(parsedJson).slice(0, 3).map(([key, val]) => (
-                                <div key={key}>
-                                  <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>{key}:</span>{" "}
-                                  <span>{typeof val === "object" ? JSON.stringify(val) : String(val)}</span>
-                                </div>
-                              ))}
-                            </div>
+                        <div style={{ maxWidth: 360 }}>
+                          {!log.details ? (
+                            <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>—</span>
                           ) : (
-                            <span style={{ fontSize: "0.82rem", color: "var(--text-secondary)" }}>
-                              {log.details || "কোনো অতিরিক্ত ডেটা নেই"}
-                            </span>
-                          )}
-
-                          {log.details && (
                             <>
                               <button
                                 type="button"
@@ -409,12 +451,12 @@ export function EventLogsClient({ initialLogs }: EventLogsClientProps) {
                               >
                                 {isExpanded ? (
                                   <>
-                                    <span>লুকান</span>
+                                    <span>{t.logs_toggle_hide}</span>
                                     <ChevronUp size={13} />
                                   </>
                                 ) : (
                                   <>
-                                    <span>সম্পূর্ণ ডিটেইলস দেখুন</span>
+                                    <span>{t.logs_toggle_show}</span>
                                     <ChevronDown size={13} />
                                   </>
                                 )}
@@ -452,8 +494,8 @@ export function EventLogsClient({ initialLogs }: EventLogsClientProps) {
                   <td colSpan={6}>
                     <div className={styles.emptyState}>
                       <ClipboardList size={40} style={{ opacity: 0.4 }} />
-                      <h4>কোনো ইভেন্ট লগ পাওয়া যায়নি</h4>
-                      <p>অ্যাডমিন প্যানেলে কোনো তথ্য পরিবর্তন বা আপডেট হলে তা স্বয়ংক্রিয়ভাবে এখানে সংরক্ষিত হবে।</p>
+                      <h4>{t.logs_empty_title}</h4>
+                      <p>{t.logs_empty_sub}</p>
                     </div>
                   </td>
                 </tr>
@@ -465,4 +507,3 @@ export function EventLogsClient({ initialLogs }: EventLogsClientProps) {
     </div>
   );
 }
-

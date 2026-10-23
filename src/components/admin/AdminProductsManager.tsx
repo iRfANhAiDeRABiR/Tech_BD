@@ -21,6 +21,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { deleteProductAction, toggleProductStockAction, toggleProductStatusAction } from "@/app/admin/actions";
+import { useAdminLanguage } from "@/context/AdminLanguageContext";
 import styles from "./AdminProductsManager.module.css";
 
 export interface AdminProductItem {
@@ -63,6 +64,7 @@ export function AdminProductsManager({
   initialProducts,
   categories,
 }: AdminProductsManagerProps) {
+  const { lang, formatNumber, formatCurrency } = useAdminLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<
@@ -205,8 +207,10 @@ export function AdminProductsManager({
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
           <div className={styles.statInfo}>
-            <span className={styles.statLabel}>Total Products</span>
-            <span className={styles.statValue}>{stats.total}</span>
+            <span className={styles.statLabel}>
+              {lang === "bn" ? "মোট প্রোডাক্ট" : "Total Products"}
+            </span>
+            <span className={styles.statValue}>{formatNumber(stats.total)}</span>
           </div>
           <div className={`${styles.statIcon} ${styles.iconBlue}`}>
             <Package size={20} />
@@ -215,8 +219,10 @@ export function AdminProductsManager({
 
         <div className={styles.statCard}>
           <div className={styles.statInfo}>
-            <span className={styles.statLabel}>Active in Store</span>
-            <span className={styles.statValue}>{stats.active}</span>
+            <span className={styles.statLabel}>
+              {lang === "bn" ? "স্টোরে সক্রিয়" : "Active in Store"}
+            </span>
+            <span className={styles.statValue}>{formatNumber(stats.active)}</span>
           </div>
           <div className={`${styles.statIcon} ${styles.iconGreen}`}>
             <CheckCircle2 size={20} />
@@ -225,8 +231,10 @@ export function AdminProductsManager({
 
         <div className={styles.statCard}>
           <div className={styles.statInfo}>
-            <span className={styles.statLabel}>Out of Stock</span>
-            <span className={styles.statValue}>{stats.outOfStock}</span>
+            <span className={styles.statLabel}>
+              {lang === "bn" ? "স্টক আউট" : "Out of Stock"}
+            </span>
+            <span className={styles.statValue}>{formatNumber(stats.outOfStock)}</span>
           </div>
           <div className={`${styles.statIcon} ${styles.iconAmber}`}>
             <AlertCircle size={20} />
@@ -235,8 +243,10 @@ export function AdminProductsManager({
 
         <div className={styles.statCard}>
           <div className={styles.statInfo}>
-            <span className={styles.statLabel}>Categories</span>
-            <span className={styles.statValue}>{stats.catsCount}</span>
+            <span className={styles.statLabel}>
+              {lang === "bn" ? "ক্যাটাগরি সমূহ" : "Categories"}
+            </span>
+            <span className={styles.statValue}>{formatNumber(stats.catsCount)}</span>
           </div>
           <div className={`${styles.statIcon} ${styles.iconPurple}`}>
             <Layers size={20} />
@@ -256,7 +266,11 @@ export function AdminProductsManager({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by name, category, or ID..."
+              placeholder={
+                lang === "bn"
+                  ? "নাম, ক্যাটাগরি বা আইডি দিয়ে খুঁজুন..."
+                  : "Search by name, category, or ID..."
+              }
               className={styles.searchInput}
             />
             {searchQuery && (
@@ -264,7 +278,7 @@ export function AdminProductsManager({
                 type="button"
                 onClick={() => setSearchQuery("")}
                 className={styles.searchClear}
-                title="Clear search"
+                title={lang === "bn" ? "সার্চ মুছুন" : "Clear search"}
               >
                 <X size={14} />
               </button>
@@ -278,12 +292,16 @@ export function AdminProductsManager({
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
               className={styles.selectDropdown}
-              aria-label="Filter by category"
+              aria-label={lang === "bn" ? "ক্যাটাগরি ফিল্টার" : "Filter by category"}
             >
-              <option value="all">All Categories ({categories.length})</option>
+              <option value="all">
+                {lang === "bn"
+                  ? `সকল ক্যাটাগরি (${formatNumber(categories.length)})`
+                  : `All Categories (${categories.length})`}
+              </option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.name} {c._count?.products ? `(${c._count.products})` : ""}
+                  {c.name} {c._count?.products ? `(${formatNumber(c._count.products)})` : ""}
                 </option>
               ))}
             </select>
@@ -293,15 +311,29 @@ export function AdminProductsManager({
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
               className={styles.selectDropdown}
-              aria-label="Sort products"
+              aria-label={lang === "bn" ? "প্রোডাক্ট সাজান" : "Sort products"}
             >
-              <option value="default">Sort: Order (Default)</option>
-              <option value="price-asc">Price: Low to High</option>
-              <option value="price-desc">Price: High to Low</option>
-              <option value="name-asc">Name: A to Z</option>
-              <option value="name-desc">Name: Z to A</option>
-              <option value="options-desc">Most Options</option>
-              <option value="recent">Recently Updated</option>
+              <option value="default">
+                {lang === "bn" ? "ক্রমানুসার: ডিফল্ট" : "Sort: Order (Default)"}
+              </option>
+              <option value="price-asc">
+                {lang === "bn" ? "মূল্য: কম থেকে বেশি" : "Price: Low to High"}
+              </option>
+              <option value="price-desc">
+                {lang === "bn" ? "মূল্য: বেশি থেকে কম" : "Price: High to Low"}
+              </option>
+              <option value="name-asc">
+                {lang === "bn" ? "নাম: A থেকে Z" : "Name: A to Z"}
+              </option>
+              <option value="name-desc">
+                {lang === "bn" ? "নাম: Z থেকে A" : "Name: Z to A"}
+              </option>
+              <option value="options-desc">
+                {lang === "bn" ? "সর্বোচ্চ ভ্যারিয়েন্ট/অপশন" : "Most Options"}
+              </option>
+              <option value="recent">
+                {lang === "bn" ? "সম্প্রতি আপডেটকৃত" : "Recently Updated"}
+              </option>
             </select>
 
             {/* View Mode Toggle: Table vs Grid */}
@@ -312,7 +344,7 @@ export function AdminProductsManager({
                 className={`${styles.viewModeBtn} ${
                   viewMode === "table" ? styles.viewModeBtnActive : ""
                 }`}
-                title="Table list view"
+                title={lang === "bn" ? "টেবিল ভিউ" : "Table list view"}
               >
                 <List size={16} />
               </button>
@@ -322,7 +354,7 @@ export function AdminProductsManager({
                 className={`${styles.viewModeBtn} ${
                   viewMode === "grid" ? styles.viewModeBtnActive : ""
                 }`}
-                title="Grid card view"
+                title={lang === "bn" ? "গ্রিড কার্ড ভিউ" : "Grid card view"}
               >
                 <Grid size={16} />
               </button>
@@ -340,8 +372,8 @@ export function AdminProductsManager({
                 statusFilter === "ALL" ? styles.statusTabBtnActive : ""
               }`}
             >
-              <span>All Products</span>
-              <span className={styles.tabBadge}>{stats.total}</span>
+              <span>{lang === "bn" ? "সব প্রোডাক্ট" : "All Products"}</span>
+              <span className={styles.tabBadge}>{formatNumber(stats.total)}</span>
             </button>
 
             <button
@@ -351,8 +383,8 @@ export function AdminProductsManager({
                 statusFilter === "ACTIVE" ? styles.statusTabBtnActive : ""
               }`}
             >
-              <span>Active</span>
-              <span className={styles.tabBadge}>{stats.active}</span>
+              <span>{lang === "bn" ? "সক্রিয়" : "Active"}</span>
+              <span className={styles.tabBadge}>{formatNumber(stats.active)}</span>
             </button>
 
             <button
@@ -362,8 +394,8 @@ export function AdminProductsManager({
                 statusFilter === "OUT_OF_STOCK" ? styles.statusTabBtnActive : ""
               }`}
             >
-              <span>Out of Stock</span>
-              <span className={styles.tabBadge}>{stats.outOfStock}</span>
+              <span>{lang === "bn" ? "স্টক আউট" : "Out of Stock"}</span>
+              <span className={styles.tabBadge}>{formatNumber(stats.outOfStock)}</span>
             </button>
 
             <button
@@ -373,8 +405,8 @@ export function AdminProductsManager({
                 statusFilter === "DRAFT" ? styles.statusTabBtnActive : ""
               }`}
             >
-              <span>Draft</span>
-              <span className={styles.tabBadge}>{stats.drafts}</span>
+              <span>{lang === "bn" ? "ড্রাফট" : "Draft"}</span>
+              <span className={styles.tabBadge}>{formatNumber(stats.drafts)}</span>
             </button>
 
             {stats.archived > 0 && (
@@ -385,21 +417,30 @@ export function AdminProductsManager({
                   statusFilter === "ARCHIVED" ? styles.statusTabBtnActive : ""
                 }`}
               >
-                <span>Archived</span>
-                <span className={styles.tabBadge}>{stats.archived}</span>
+                <span>{lang === "bn" ? "আর্কাইভড" : "Archived"}</span>
+                <span className={styles.tabBadge}>{formatNumber(stats.archived)}</span>
               </button>
             )}
           </div>
 
           {/* Results Summary Count */}
           <div className={styles.resultsSummary}>
-            Showing <strong>{filteredProducts.length}</strong> of {initialProducts.length}
+            {lang === "bn" ? (
+              <>
+                দেখানো হচ্ছে <strong>{formatNumber(filteredProducts.length)}</strong> /{" "}
+                {formatNumber(initialProducts.length)} টি
+              </>
+            ) : (
+              <>
+                Showing <strong>{filteredProducts.length}</strong> of {initialProducts.length}
+              </>
+            )}
             {isFiltering && (
               <>
                 {" "}
-                (filtered){" "}
+                {lang === "bn" ? "(ফিল্টারকৃত) " : "(filtered) "}
                 <button type="button" onClick={resetFilters} className={styles.resetBtn}>
-                  Reset
+                  {lang === "bn" ? "রিসেট" : "Reset"}
                 </button>
               </>
             )}
@@ -414,9 +455,13 @@ export function AdminProductsManager({
         <div className={styles.tableCard}>
           <div className={styles.emptyState}>
             <Package size={40} style={{ opacity: 0.4 }} />
-            <div style={{ fontSize: "16px", fontWeight: 700 }}>No products found</div>
+            <div style={{ fontSize: "16px", fontWeight: 700 }}>
+              {lang === "bn" ? "কোন প্রোডাক্ট পাওয়া যায়নি" : "No products found"}
+            </div>
             <div style={{ fontSize: "13px" }}>
-              Try adjusting your search query or filter settings.
+              {lang === "bn"
+                ? "আপনার অনুসন্ধান বা ফিল্টার পরিবর্তন করে পুনরায় চেষ্টা করুন।"
+                : "Try adjusting your search query or filter settings."}
             </div>
             {isFiltering && (
               <button
@@ -425,7 +470,7 @@ export function AdminProductsManager({
                 className={styles.resetBtn}
                 style={{ marginTop: "8px", fontSize: "13px" }}
               >
-                Clear all filters
+                {lang === "bn" ? "সকল ফিল্টার মুছুন" : "Clear all filters"}
               </button>
             )}
           </div>
@@ -437,13 +482,13 @@ export function AdminProductsManager({
             <table className={styles.productTable}>
               <thead>
                 <tr>
-                  <th>Product</th>
-                  <th>Category</th>
-                  <th>Price</th>
-                  <th>Options</th>
-                  <th>Stock</th>
-                  <th>Status</th>
-                  <th style={{ textAlign: "right" }}>Actions</th>
+                  <th>{lang === "bn" ? "প্রোডাক্ট" : "Product"}</th>
+                  <th>{lang === "bn" ? "ক্যাটাগরি" : "Category"}</th>
+                  <th>{lang === "bn" ? "মূল্য" : "Price"}</th>
+                  <th>{lang === "bn" ? "অপশন" : "Options"}</th>
+                  <th>{lang === "bn" ? "স্টক" : "Stock"}</th>
+                  <th>{lang === "bn" ? "স্ট্যাটাস" : "Status"}</th>
+                  <th style={{ textAlign: "right" }}>{lang === "bn" ? "অ্যাকশন" : "Actions"}</th>
                 </tr>
               </thead>
               <tbody>
@@ -499,10 +544,10 @@ export function AdminProductsManager({
                       {/* Price */}
                       <td className={styles.productCell}>
                         <div className={styles.priceCol}>
-                          ৳{product.price.toLocaleString("en-BD")}
+                          {formatCurrency(product.price)}
                           {product.originalPrice && product.originalPrice > product.price && (
                             <span className={styles.originalPriceStrikethrough}>
-                              ৳{product.originalPrice.toLocaleString("en-BD")}
+                              {formatCurrency(product.originalPrice)}
                             </span>
                           )}
                         </div>
@@ -513,8 +558,11 @@ export function AdminProductsManager({
                         <span className={styles.optionsPill}>
                           <Tag size={11} />
                           <span>
-                            {product._count.options}{" "}
-                            {product._count.options === 1 ? "Option" : "Options"}
+                            {lang === "bn"
+                              ? `${formatNumber(product._count.options)} টি অপশন`
+                              : `${product._count.options} ${
+                                  product._count.options === 1 ? "Option" : "Options"
+                                }`}
                           </span>
                         </span>
                       </td>
@@ -527,7 +575,11 @@ export function AdminProductsManager({
                           className={`${styles.stockToggleBtn} ${
                             isOut ? styles.stockOut : styles.stockIn
                           }`}
-                          title="Click to toggle Stock Status"
+                          title={
+                            lang === "bn"
+                              ? "স্টক স্ট্যাটাস পরিবর্তন করতে ক্লিক করুন"
+                              : "Click to toggle Stock Status"
+                          }
                         >
                           <span
                             style={{
@@ -537,7 +589,15 @@ export function AdminProductsManager({
                               background: isOut ? "#ef4444" : "#10b981",
                             }}
                           />
-                          <span>{isOut ? "Out of Stock" : "In Stock"}</span>
+                          <span>
+                            {isOut
+                              ? lang === "bn"
+                                ? "স্টক আউট"
+                                : "Out of Stock"
+                              : lang === "bn"
+                              ? "স্টকে আছে"
+                              : "In Stock"}
+                          </span>
                         </button>
                       </td>
 
@@ -549,9 +609,21 @@ export function AdminProductsManager({
                           className={`${styles.stockToggleBtn} ${
                             isActive ? styles.stockIn : styles.stockOut
                           }`}
-                          title="Click to toggle Active / Draft status"
+                          title={
+                            lang === "bn"
+                              ? "সক্রিয় / ড্রাফট স্ট্যাটাস পরিবর্তন করতে ক্লিক করুন"
+                              : "Click to toggle Active / Draft status"
+                          }
                         >
-                          <span>{product.status}</span>
+                          <span>
+                            {product.status === "ACTIVE"
+                              ? lang === "bn"
+                                ? "সক্রিয়"
+                                : "ACTIVE"
+                              : lang === "bn"
+                              ? "ড্রাফট"
+                              : product.status}
+                          </span>
                         </button>
                       </td>
 
@@ -564,11 +636,11 @@ export function AdminProductsManager({
                           <Link
                             href={`/admin/products/${product.id}/edit`}
                             className={styles.btnActionEdit}
-                            title="Edit product details"
+                            title={lang === "bn" ? "প্রোডাক্ট এডিট করুন" : "Edit product details"}
                             prefetch={false}
                           >
                             <Edit2 size={12} />
-                            <span>Edit</span>
+                            <span>{lang === "bn" ? "এডিট" : "Edit"}</span>
                           </Link>
 
                           <Link
@@ -576,7 +648,11 @@ export function AdminProductsManager({
                             target="_blank"
                             rel="noopener noreferrer"
                             className={styles.btnActionPreview}
-                            title="View product in live store"
+                            title={
+                              lang === "bn"
+                                ? "লাইভ স্টোরে প্রোডাক্ট দেখুন"
+                                : "View product in live store"
+                            }
                           >
                             <ExternalLink size={13} />
                           </Link>
@@ -585,10 +661,14 @@ export function AdminProductsManager({
                             type="button"
                             onClick={() => setProductToDelete(product)}
                             className={styles.btnActionDelete}
-                            title="Delete or archive product"
+                            title={
+                              lang === "bn"
+                                ? "প্রোডাক্ট মুছুন বা আর্কাইভ করুন"
+                                : "Delete or archive product"
+                            }
                           >
                             <Trash2 size={12} />
-                            <span>Delete</span>
+                            <span>{lang === "bn" ? "মুছুন" : "Delete"}</span>
                           </button>
                         </div>
                       </td>
@@ -643,10 +723,10 @@ export function AdminProductsManager({
                     </Link>
 
                     <div className={styles.priceCol}>
-                      ৳{product.price.toLocaleString("en-BD")}
+                      {formatCurrency(product.price)}
                       {product.originalPrice && product.originalPrice > product.price && (
                         <span className={styles.originalPriceStrikethrough}>
-                          ৳{product.originalPrice.toLocaleString("en-BD")}
+                          {formatCurrency(product.originalPrice)}
                         </span>
                       )}
                     </div>
@@ -662,7 +742,13 @@ export function AdminProductsManager({
                         isOut ? styles.stockOut : styles.stockIn
                       }`}
                     >
-                      {isOut ? "Out of Stock" : "In Stock"}
+                      {isOut
+                        ? lang === "bn"
+                          ? "স্টক আউট"
+                          : "Out of Stock"
+                        : lang === "bn"
+                        ? "স্টকে আছে"
+                        : "In Stock"}
                     </button>
 
                     <button
@@ -672,7 +758,13 @@ export function AdminProductsManager({
                         isActive ? styles.stockIn : styles.stockOut
                       }`}
                     >
-                      {product.status}
+                      {product.status === "ACTIVE"
+                        ? lang === "bn"
+                          ? "সক্রিয়"
+                          : "ACTIVE"
+                        : lang === "bn"
+                        ? "ড্রাফট"
+                        : product.status}
                     </button>
                   </div>
 
@@ -681,9 +773,10 @@ export function AdminProductsManager({
                       href={`/admin/products/${product.id}/edit`}
                       className={styles.btnActionEdit}
                       prefetch={false}
+                      title={lang === "bn" ? "প্রোডাক্ট এডিট করুন" : "Edit product details"}
                     >
                       <Edit2 size={12} />
-                      <span>Edit</span>
+                      <span>{lang === "bn" ? "এডিট" : "Edit"}</span>
                     </Link>
 
                     <Link
@@ -691,6 +784,11 @@ export function AdminProductsManager({
                       target="_blank"
                       rel="noopener noreferrer"
                       className={styles.btnActionPreview}
+                      title={
+                        lang === "bn"
+                          ? "লাইভ স্টোরে প্রোডাক্ট দেখুন"
+                          : "View product in live store"
+                      }
                     >
                       <ExternalLink size={13} />
                     </Link>
@@ -699,6 +797,11 @@ export function AdminProductsManager({
                       type="button"
                       onClick={() => setProductToDelete(product)}
                       className={styles.btnActionDelete}
+                      title={
+                        lang === "bn"
+                          ? "প্রোডাক্ট মুছুন বা আর্কাইভ করুন"
+                          : "Delete or archive product"
+                      }
                     >
                       <Trash2 size={12} />
                     </button>
@@ -720,16 +823,31 @@ export function AdminProductsManager({
               <div className={styles.modalIconWarn}>
                 <Trash2 size={20} />
               </div>
-              <h3 className={styles.modalTitle}>Confirm Delete Product</h3>
+              <h3 className={styles.modalTitle}>
+                {lang === "bn" ? "প্রোডাক্ট ডিলিট নিশ্চিত করুন" : "Confirm Delete Product"}
+              </h3>
             </div>
 
             <p className={styles.modalBody}>
-              Are you sure you want to delete <strong>{productToDelete.name}</strong>?
-              <br />
-              <span style={{ fontSize: "12px", opacity: 0.8, marginTop: 4, display: "block" }}>
-                If this item has existing orders, it will be safely archived to preserve customer
-                records.
-              </span>
+              {lang === "bn" ? (
+                <>
+                  আপনি কি নিশ্চিতভাবে <strong>{productToDelete.name}</strong> মুছতে চান?
+                  <br />
+                  <span style={{ fontSize: "12px", opacity: 0.8, marginTop: 4, display: "block" }}>
+                    যদি এই আইটেমের পূর্ববর্তী কোনো অর্ডার থাকে, তবে কাস্টমার হিস্ট্রি রক্ষার জন্য
+                    এটি নিরাপদে আর্কাইভ করা হবে।
+                  </span>
+                </>
+              ) : (
+                <>
+                  Are you sure you want to delete <strong>{productToDelete.name}</strong>?
+                  <br />
+                  <span style={{ fontSize: "12px", opacity: 0.8, marginTop: 4, display: "block" }}>
+                    If this item has existing orders, it will be safely archived to preserve
+                    customer records.
+                  </span>
+                </>
+              )}
             </p>
 
             <form action={deleteProductAction} className={styles.modalActions}>
@@ -739,10 +857,10 @@ export function AdminProductsManager({
                 onClick={() => setProductToDelete(null)}
                 className={styles.btnModalCancel}
               >
-                Cancel
+                {lang === "bn" ? "বাতিল" : "Cancel"}
               </button>
               <button type="submit" className={styles.btnModalDelete}>
-                Delete Product
+                {lang === "bn" ? "প্রোডাক্ট মুছুন" : "Delete Product"}
               </button>
             </form>
           </div>
