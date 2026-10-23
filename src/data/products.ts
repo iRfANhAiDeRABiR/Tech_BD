@@ -536,7 +536,7 @@ type CachedCatalog = {
   timestamp: number;
 };
 
-const DB_CATALOG_TIMEOUT_MS = 12000;
+const DB_CATALOG_TIMEOUT_MS = 6000;
 const CATALOG_CACHE_TTL_MS = 10 * 60 * 1000;
 
 const globalForCatalog = globalThis as unknown as {
@@ -551,6 +551,14 @@ const staticCatalog: StoreCatalog = {
   products,
   categories: categorySummaries,
 };
+
+// Seed immediately with staticCatalog so the first request NEVER blocks on cold database connections
+if (!globalForCatalog.cachedCatalog) {
+  globalForCatalog.cachedCatalog = {
+    data: staticCatalog,
+    timestamp: 0, // Stale timestamp ensures background revalidation runs immediately without blocking
+  };
+}
 
 function getCatalogRetryAfter() {
   return globalForCatalog.catalogRetryAfter ?? 0;
@@ -766,7 +774,15 @@ async function loadDatabaseCatalog(): Promise<StoreCatalog | null> {
 }
 
 export function invalidateStoreCatalogCache() {
-  globalForCatalog.cachedCatalog = undefined;
+  if (globalForCatalog.cachedCatalog) {
+    // Keep serving existing catalog instantly while triggering fresh background revalidation
+    globalForCatalog.cachedCatalog.timestamp = 0;
+  } else {
+    globalForCatalog.cachedCatalog = {
+      data: staticCatalog,
+      timestamp: 0,
+    };
+  }
   globalForCatalog.catalogPromise = undefined;
 }
 
@@ -781,7 +797,7 @@ export async function getStoreCatalog(): Promise<StoreCatalog> {
 
     // Stale-while-revalidate: immediately return existing catalog data to eliminate latency,
     // and revalidate from database asynchronously in the background.
-    if (!globalForCatalog.revalidating) {
+    if (!globalForCatalog.revalidating && process.env.DATABASE_URL && now >= getCatalogRetryAfter()) {
       globalForCatalog.revalidating = true;
       loadDatabaseCatalog()
         .then((fresh) => {
@@ -801,23 +817,7 @@ export async function getStoreCatalog(): Promise<StoreCatalog> {
     return globalForCatalog.cachedCatalog.data;
   }
 
-  globalForCatalog.catalogPromise ??= (async () => {
-    try {
-      const catalog = await loadDatabaseCatalog();
-      if (catalog) {
-        globalForCatalog.cachedCatalog = {
-          data: catalog,
-          timestamp: Date.now(),
-        };
-        return catalog;
-      }
-      return staticCatalog;
-    } finally {
-      globalForCatalog.catalogPromise = undefined;
-    }
-  })();
-
-  return await globalForCatalog.catalogPromise;
+  return staticCatalog;
 }
 
 export async function getStoreCategories(): Promise<StoreCategory[]> {

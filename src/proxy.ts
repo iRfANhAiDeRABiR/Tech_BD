@@ -42,38 +42,61 @@ async function getActiveBans(
     return cachedActiveBans;
   }
 
-  if (bansFetchPromise) {
-    return bansFetchPromise;
+  // If a fetch is already in flight and we have existing cache, return immediately to eliminate latency
+  if (cachedActiveBans && bansFetchPromise) {
+    return cachedActiveBans;
   }
 
-  bansFetchPromise = (async () => {
-    try {
-      const res = await fetch(
-        `${supabaseUrl}/rest/v1/AccessBan?select=id,type,target,targetUserId,targetEmail,reason,expiresAt&isActive=eq.true`,
-        {
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${supabaseKey}`,
-          },
+  if (!bansFetchPromise) {
+    bansFetchPromise = (async () => {
+      try {
+        const res = await fetch(
+          `${supabaseUrl}/rest/v1/AccessBan?select=id,type,target,targetUserId,targetEmail,reason,expiresAt&isActive=eq.true`,
+          {
+            headers: {
+              apikey: supabaseKey,
+              Authorization: `Bearer ${supabaseKey}`,
+            },
+            signal: AbortSignal.timeout(1500),
+          }
+        );
+
+        if (!res.ok) {
+          return cachedActiveBans ?? [];
         }
-      );
 
-      if (!res.ok) {
+        const data = await res.json();
+        cachedActiveBans = Array.isArray(data) ? (data as CachedBan[]) : [];
+        lastBansFetchTime = Date.now();
+        return cachedActiveBans;
+      } catch {
         return cachedActiveBans ?? [];
+      } finally {
+        bansFetchPromise = null;
       }
+    })();
+  }
 
-      const data = await res.json();
-      cachedActiveBans = Array.isArray(data) ? (data as CachedBan[]) : [];
-      lastBansFetchTime = Date.now();
-      return cachedActiveBans;
-    } catch {
-      return cachedActiveBans ?? [];
-    } finally {
-      bansFetchPromise = null;
-    }
-  })();
+  // If we already have cached active bans, don't block the request on background refresh
+  if (cachedActiveBans) {
+    return cachedActiveBans;
+  }
 
   return bansFetchPromise;
+}
+
+// Background pre-warm on proxy module load to eliminate 1st-request latency
+if (
+  typeof window === "undefined" &&
+  process.env.NEXT_PUBLIC_SUPABASE_URL &&
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+) {
+  setTimeout(() => {
+    getActiveBans(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    ).catch(() => {});
+  }, 50);
 }
 
 function getClientIp(request: NextRequest): string {
