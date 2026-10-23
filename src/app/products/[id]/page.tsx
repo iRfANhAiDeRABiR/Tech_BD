@@ -181,7 +181,7 @@ export default async function ProductPage({
               width={700}
               height={520}
               priority
-              sizes="(max-width: 900px) 100vw, 55vw"
+              sizes="(max-width: 1000px) 100vw, 50vw"
               className={styles.productImage}
             />
           </div>
