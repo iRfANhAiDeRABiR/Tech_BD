@@ -168,7 +168,7 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Adm
       </div>
     </section>
 
-    <section className={styles.panel}>
+    <section className={styles.panel} style={{ marginTop: 22 }}>
       <div className={styles.orderHeader}>
         <div>
           <h2>Purchased items</h2>
@@ -203,15 +203,46 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Adm
           </tbody>
         </table>
       </div>
-    </section>
 
-    <section className={styles.summaryPanel}>
-      <h2>Order summary</h2>
-      <div className={styles.summaryRow}><span>Subtotal</span><strong>{formatPrice(order.subtotal, order.currency)}</strong></div>
-      <div className={styles.summaryRow}><span>Discount {order.couponCode ? `(${order.couponCode})` : ""}</span><strong>-{formatPrice(order.discount, order.currency)}</strong></div>
-      <div className={styles.summaryTotal}><span>Total</span><strong>{formatPrice(order.total, order.currency)}</strong></div>
-      <div className={styles.summaryRow}><span>Created</span><span>{formatDateTime(order.createdAt)}</span></div>
-      <div className={styles.summaryRow}><span>Last updated</span><span>{formatDateTime(order.updatedAt)}</span></div>
+      <div className={styles.orderFooterGrid}>
+        <div className={styles.orderTimelineBox}>
+          <h3>Order timeline & fulfillment</h3>
+          <div className={styles.summaryRow}>
+            <span>Order placed</span>
+            <strong>{formatDateTime(order.createdAt)}</strong>
+          </div>
+          <div className={styles.summaryRow}>
+            <span>Last updated</span>
+            <strong>{formatDateTime(order.updatedAt)}</strong>
+          </div>
+          <div className={styles.summaryRow}>
+            <span>Payment method</span>
+            <strong>{order.payment?.method ?? "Not specified"}</strong>
+          </div>
+          <div className={styles.summaryRow}>
+            <span>Payment status</span>
+            <span className={styles.statusBadge}>{order.payment?.status ?? "Unpaid"}</span>
+          </div>
+        </div>
+
+        <div className={styles.orderSummaryBox}>
+          <h3>Order summary</h3>
+          <div className={styles.summaryRow}>
+            <span>Subtotal</span>
+            <strong>{formatPrice(order.subtotal, order.currency)}</strong>
+          </div>
+          <div className={styles.summaryRow}>
+            <span>Discount {order.couponCode ? `(${order.couponCode})` : ""}</span>
+            <strong style={{ color: order.discount > 0 ? "#10b981" : "inherit" }}>
+              -{formatPrice(order.discount, order.currency)}
+            </strong>
+          </div>
+          <div className={styles.summaryTotal}>
+            <span>Total amount</span>
+            <strong>{formatPrice(order.total, order.currency)}</strong>
+          </div>
+        </div>
+      </div>
     </section>
   </>;
 }
