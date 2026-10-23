@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { updateSession } from "@/lib/supabase/middleware";
 import { createServerClient } from "@supabase/ssr";
-import { normalizeIp } from "@/lib/ip-utils";
+import { normalizeIp, isIpInCidr } from "@/lib/ip-utils";
 
 // Paths that require admin authentication
 const ADMIN_PATHS = ["/admin", "/api/admin"];
@@ -11,6 +11,70 @@ const ADMIN_PATHS = ["/admin", "/api/admin"];
 const AUTH_PATHS = ["/admin/login"];
 // Paths that require customer authentication (Supabase)
 const CUSTOMER_AUTH_PATHS = ["/account"];
+
+interface CachedBan {
+  id: string;
+  type: "IP" | "USER";
+  target: string;
+  targetUserId: string | null;
+  targetEmail: string | null;
+  reason: string;
+  expiresAt: string | null;
+}
+
+// In-memory cache for active bans to eliminate remote database queries on every request
+let cachedActiveBans: CachedBan[] | null = null;
+let lastBansFetchTime = 0;
+let bansFetchPromise: Promise<CachedBan[]> | null = null;
+const BANS_CACHE_TTL_MS = 30_000; // 30 seconds
+
+export function invalidateProxyBanCache() {
+  cachedActiveBans = null;
+  lastBansFetchTime = 0;
+}
+
+async function getActiveBans(
+  supabaseUrl: string,
+  supabaseKey: string
+): Promise<CachedBan[]> {
+  const now = Date.now();
+  if (cachedActiveBans && now - lastBansFetchTime < BANS_CACHE_TTL_MS) {
+    return cachedActiveBans;
+  }
+
+  if (bansFetchPromise) {
+    return bansFetchPromise;
+  }
+
+  bansFetchPromise = (async () => {
+    try {
+      const res = await fetch(
+        `${supabaseUrl}/rest/v1/AccessBan?select=id,type,target,targetUserId,targetEmail,reason,expiresAt&isActive=eq.true`,
+        {
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        return cachedActiveBans ?? [];
+      }
+
+      const data = await res.json();
+      cachedActiveBans = Array.isArray(data) ? (data as CachedBan[]) : [];
+      lastBansFetchTime = Date.now();
+      return cachedActiveBans;
+    } catch {
+      return cachedActiveBans ?? [];
+    } finally {
+      bansFetchPromise = null;
+    }
+  })();
+
+  return bansFetchPromise;
+}
 
 function getClientIp(request: NextRequest): string {
   const cf = request.headers.get("cf-connecting-ip");
@@ -25,49 +89,94 @@ function getClientIp(request: NextRequest): string {
   return "127.0.0.1";
 }
 
-export async function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+/**
+ * Fast in-memory extraction of user ID and email from Supabase session cookie
+ * Avoids slow remote HTTP auth calls on every request.
+ */
+function extractSupabaseUser(
+  request: NextRequest
+): { id: string | null; email: string | null } | null {
+  try {
+    const cookies = request.cookies.getAll();
+    const tokenCookies = cookies
+      .filter((c) => c.name.startsWith("sb-") && c.name.includes("-auth-token"))
+      .sort((a, b) => a.name.localeCompare(b.name));
 
-  // 1. Handle Supabase Session Refreshing (Customer Auth)
-  // This must run early to ensure cookies are updated before any redirects.
-  // Note: updateSession returns a new NextResponse with updated cookies.
-  const supabaseResponse = await updateSession(request);
+    if (!tokenCookies.length) return null;
 
-  // Security Headers for all responses
-  const response = supabaseResponse;
-  
-  // Prevent MIME sniffing
-  response.headers.set("X-Content-Type-Options", "nosniff");
-  // Clickjacking protection
-  response.headers.set("X-Frame-Options", "DENY");
-  // Referrer policy to prevent leakage
-  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-  // Permissions policy (restrict sensitive APIs)
-  response.headers.set(
+    let payloadStr = tokenCookies.map((c) => c.value).join("");
+    if (!payloadStr) return null;
+
+    if (payloadStr.startsWith("base64-")) {
+      payloadStr = Buffer.from(payloadStr.slice(7), "base64").toString("utf-8");
+    }
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(payloadStr);
+    } catch {
+      parsed = payloadStr;
+    }
+
+    const accessToken = Array.isArray(parsed)
+      ? parsed[0]
+      : typeof parsed === "object" && parsed !== null
+      ? (parsed as Record<string, unknown>).access_token
+      : typeof parsed === "string"
+      ? parsed
+      : null;
+
+    if (typeof accessToken !== "string" || !accessToken.includes(".")) {
+      return null;
+    }
+
+    const jwtPayload = JSON.parse(
+      Buffer.from(accessToken.split(".")[1], "base64").toString("utf-8")
+    );
+
+    return {
+      id: jwtPayload.sub ? String(jwtPayload.sub) : null,
+      email: jwtPayload.email ? String(jwtPayload.email).toLowerCase() : null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function applySecurityHeaders(res: NextResponse): NextResponse {
+  res.headers.set("X-Content-Type-Options", "nosniff");
+  res.headers.set("X-Frame-Options", "DENY");
+  res.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.headers.set(
     "Permissions-Policy",
     "camera=(), microphone=(), geolocation=(), payment=(self)"
   );
-  
-  // HSTS (only if HTTPS is guaranteed in production)
   if (process.env.NODE_ENV === "production") {
-    response.headers.set(
+    res.headers.set(
       "Strict-Transport-Security",
       "max-age=31536000; includeSubDomains"
     );
   }
+  return res;
+}
 
-  // Skip proxy for static assets, api routes (except auth), banned page, etc.
+export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // 1. Fast bypass for static files, public assets, and Next.js internals (<0.01ms)
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api/auth") ||
     pathname === "/banned" ||
     pathname.startsWith("/banned/") ||
+    pathname.startsWith("/img_content") ||
+    pathname.startsWith("/icons") ||
     pathname.includes(".")
   ) {
-    return response;
+    return NextResponse.next();
   }
 
-  // Check if path requires admin auth
+  // 2. Route classification
   const isAuthPath = AUTH_PATHS.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`)
   );
@@ -77,113 +186,95 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith(p)
   );
 
-  // --- ADMIN AUTHENTICATION (NextAuth) ---
-  const isSecure = request.nextUrl.protocol === "https:";
-  const adminToken = await getToken({
-    req: request,
-    secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
-    secureCookie: isSecure,
-  });
+  // 3. Admin Authentication (NextAuth) - only executed for admin paths
+  let adminToken = null;
+  if (isAdminPath || isAuthPath) {
+    const isSecure = request.nextUrl.protocol === "https:";
+    adminToken = await getToken({
+      req: request,
+      secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
+      secureCookie: isSecure,
+    });
 
-  if (isAdminPath && !adminToken) {
-    if (pathname.startsWith("/api/")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (isAdminPath && !adminToken) {
+      if (pathname.startsWith("/api/")) {
+        return applySecurityHeaders(
+          NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        );
+      }
+      const loginUrl = new URL("/admin/login", request.url);
+      loginUrl.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(loginUrl);
     }
-    // Redirect unauthenticated users to admin login
-    const loginUrl = new URL("/admin/login", request.url);
-    loginUrl.searchParams.set("callbackUrl", pathname);
-    return NextResponse.redirect(loginUrl);
+
+    if (isAuthPath && adminToken) {
+      return NextResponse.redirect(new URL("/admin", request.url));
+    }
   }
 
-  if (isAuthPath && adminToken) {
-    // Redirect authenticated admins away from login page
-    return NextResponse.redirect(new URL("/admin", request.url));
-  }
-
-  // --- ACCESS BAN ENFORCEMENT (IP & USER) ---
-  // Authenticated admins accessing /admin are exempt to prevent admin lockout
+  // 4. Access Ban Enforcement (IP & User) with in-memory caching
+  // Authenticated admins accessing /admin are exempt to prevent lockout
   const isAdminSession = Boolean(adminToken && pathname.startsWith("/admin"));
   if (!isAdminSession) {
     try {
-      const clientIp = getClientIp(request);
-      const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-          cookies: {
-            getAll() {
-              return request.cookies.getAll();
-            },
-            setAll() {},
-          },
-        }
-      );
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-      // Check for active IP ban
-      const { data: ipBans } = await supabase
-        .from("AccessBan")
-        .select("id, type, target, reason, expiresAt")
-        .eq("isActive", true)
-        .eq("type", "IP")
-        .eq("target", clientIp)
-        .limit(1);
+      if (supabaseUrl && supabaseKey) {
+        const activeBans = await getActiveBans(supabaseUrl, supabaseKey);
 
-      let activeBan = ipBans && ipBans.length > 0 ? ipBans[0] : null;
+        if (activeBans.length > 0) {
+          const clientIp = getClientIp(request);
+          const now = new Date();
 
-      // If not IP banned, check if customer user session is banned
-      if (!activeBan) {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+          // IP Check (<0.01ms memory scan)
+          let activeBan = activeBans.find(
+            (b) =>
+              b.type === "IP" &&
+              (!b.expiresAt || new Date(b.expiresAt) > now) &&
+              (b.target === clientIp ||
+                (b.target.includes("/") && isIpInCidr(clientIp, b.target)))
+          );
 
-        if (user) {
-          const userFilters: string[] = [];
-          if (user.id) {
-            userFilters.push(`target.eq.${user.id}`, `targetUserId.eq.${user.id}`);
-          }
-          if (user.email) {
-            userFilters.push(`target.eq.${user.email}`, `targetEmail.eq.${user.email}`);
-          }
-
-          if (userFilters.length > 0) {
-            const { data: userBans } = await supabase
-              .from("AccessBan")
-              .select("id, type, target, reason, expiresAt")
-              .eq("isActive", true)
-              .eq("type", "USER")
-              .or(userFilters.join(","))
-              .limit(1);
-
-            if (userBans && userBans.length > 0) {
-              activeBan = userBans[0];
+          // User Check (<0.01ms JWT memory scan, only if USER bans exist)
+          if (!activeBan && activeBans.some((b) => b.type === "USER")) {
+            const userPayload = extractSupabaseUser(request);
+            if (userPayload) {
+              activeBan = activeBans.find(
+                (b) =>
+                  b.type === "USER" &&
+                  (!b.expiresAt || new Date(b.expiresAt) > now) &&
+                  ((userPayload.id &&
+                    (b.target === userPayload.id ||
+                      b.targetUserId === userPayload.id)) ||
+                    (userPayload.email &&
+                      (b.target.toLowerCase() === userPayload.email ||
+                        b.targetEmail?.toLowerCase() === userPayload.email)))
+              );
             }
           }
-        }
-      }
 
-      if (activeBan) {
-        const isExpired =
-          activeBan.expiresAt && new Date(activeBan.expiresAt) <= new Date();
+          if (activeBan) {
+            if (pathname.startsWith("/api/")) {
+              return applySecurityHeaders(
+                NextResponse.json(
+                  {
+                    error: "Access Denied",
+                    message:
+                      "Your IP address or user account has been suspended.",
+                    reason: activeBan.reason,
+                    banId: activeBan.id,
+                  },
+                  { status: 403 }
+                )
+              );
+            }
 
-        if (!isExpired) {
-          // If API route, return 403 JSON
-          if (pathname.startsWith("/api/")) {
-            return NextResponse.json(
-              {
-                error: "Access Denied",
-                message: "Your IP address or user account has been suspended.",
-                reason: activeBan.reason,
-                banId: activeBan.id,
-              },
-              { status: 403 }
-            );
+            const bannedUrl = new URL("/banned", request.url);
+            bannedUrl.searchParams.set("reason", activeBan.reason);
+            bannedUrl.searchParams.set("id", activeBan.id);
+            return NextResponse.redirect(bannedUrl);
           }
-
-          // If Page route, redirect to /banned
-          const bannedUrl = new URL("/banned", request.url);
-          bannedUrl.searchParams.set("reason", activeBan.reason);
-          bannedUrl.searchParams.set("id", activeBan.id);
-          return NextResponse.redirect(bannedUrl);
         }
       }
     } catch (banErr) {
@@ -192,9 +283,26 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // --- CUSTOMER AUTHENTICATION (Supabase) ---
-  // For customer routes, we properly validate the session using the Supabase server client.
+  // 5. Customer Session Management (Supabase)
+  // Only execute session update when Supabase cookies actually exist
+  const cookies = request.cookies.getAll();
+  const hasSupabaseSession = cookies.some(
+    (c) => c.name.startsWith("sb-") && c.name.includes("-auth-token")
+  );
+
+  let response: NextResponse;
+  if (hasSupabaseSession && !isAdminPath) {
+    response = await updateSession(request);
+  } else {
+    response = NextResponse.next({ request });
+  }
+
+  // 6. Customer Protected Route Validation (e.g. /account)
   if (isCustomerAuthPath) {
+    if (!hasSupabaseSession) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -208,25 +316,28 @@ export async function proxy(request: NextRequest) {
       }
     );
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
-      // Redirect unauthenticated users to home where the auth modal can be opened
       return NextResponse.redirect(new URL("/", request.url));
     }
   }
 
-  return response;
+  return applySecurityHeaders(response);
 }
 
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
+     * Match all request paths except:
      * - _next/static (static files)
      * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
+     * - favicon.ico, sitemap.xml, robots.txt, manifest.json
+     * - /img_content/, /icons/
+     * - static file extensions (svg, png, jpg, jpeg, gif, webp, ico, mjs, css, js, map, woff, woff2, ttf)
      */
-    "/((?!_next/static|_next/image|favicon.ico).*)",
+    "/((?!_next/static|_next/image|favicon\\.ico|sitemap\\.xml|robots\\.txt|manifest\\.json|img_content/|icons/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mjs|css|js|map|woff|woff2|ttf)$).*)",
   ],
 };

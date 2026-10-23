@@ -79,3 +79,31 @@ export function extractClientIp(
   return normalizeIp(fallback);
 }
 
+export function isIpInCidr(ip: string, cidr: string): boolean {
+  try {
+    const [range, bitsStr] = cidr.split("/");
+    const bits = parseInt(bitsStr, 10);
+    if (isNaN(bits) || bits < 0 || bits > 32) return false;
+
+    const ipParts = ip.split(".").map(Number);
+    const rangeParts = range.split(".").map(Number);
+    if (ipParts.length !== 4 || rangeParts.length !== 4) return false;
+
+    const ipNum =
+      (ipParts[0] << 24) |
+      (ipParts[1] << 16) |
+      (ipParts[2] << 8) |
+      ipParts[3];
+    const rangeNum =
+      (rangeParts[0] << 24) |
+      (rangeParts[1] << 16) |
+      (rangeParts[2] << 8) |
+      rangeParts[3];
+
+    const mask = bits === 0 ? 0 : ~0 << (32 - bits);
+    return (ipNum & mask) === (rangeNum & mask);
+  } catch {
+    return false;
+  }
+}
+

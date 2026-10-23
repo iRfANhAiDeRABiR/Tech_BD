@@ -140,6 +140,7 @@ model Order {
 
   @@index([status, createdAt])
   @@index([customerPhone])
+  @@index([createdAt(sort: Desc)])
 }
 
 model OrderItem {

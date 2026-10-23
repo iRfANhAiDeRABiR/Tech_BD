@@ -20,10 +20,16 @@ function createPrismaClient(): PrismaClient {
     globalForPrisma.pool ??
     new Pool({
       connectionString,
-      connectionTimeoutMillis: 8000,
-      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000,
+      idleTimeoutMillis: 300000, // 5 minutes to keep pool warm across requests
       max: 10,
+      keepAlive: true,
     });
+
+  pool.on("error", (err) => {
+    // Prevent unhandled errors from dropping the pool
+    console.warn("Prisma pool client connection warning:", err.message);
+  });
 
   if (process.env.NODE_ENV !== "production") {
     globalForPrisma.pool = pool;

@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { invalidateProxyBanCache } from "@/proxy";
 
 export type BanType = "IP" | "USER";
 
@@ -90,6 +91,11 @@ export async function ensureBanTable(): Promise<boolean> {
 export function invalidateBanCache() {
   cachedBans = null;
   lastCacheTime = 0;
+  try {
+    invalidateProxyBanCache();
+  } catch {
+    // Non-blocking
+  }
 }
 
 export async function getAllBans(options?: {

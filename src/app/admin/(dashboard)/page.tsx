@@ -34,13 +34,32 @@ async function getDashboardStats(): Promise<DashboardStats> {
         options: number;
       }[]
     >`
+      WITH order_counts AS (
+        SELECT
+          COUNT(*)::int AS orders,
+          COUNT(*) FILTER (WHERE status = 'PAYMENT_SUBMITTED')::int AS payment_submitted_orders
+        FROM "Order"
+      ),
+      product_counts AS (
+        SELECT
+          COUNT(*)::int AS products,
+          COUNT(*) FILTER (WHERE status = 'ACTIVE')::int AS active_products
+        FROM "Product"
+      ),
+      category_counts AS (
+        SELECT COUNT(*)::int AS categories FROM "Category"
+      ),
+      option_counts AS (
+        SELECT COUNT(*)::int AS options FROM "ProductOption"
+      )
       SELECT
-        (SELECT COUNT(*)::int FROM "Order") AS orders,
-        (SELECT COUNT(*)::int FROM "Order" WHERE status = 'PAYMENT_SUBMITTED') AS payment_submitted_orders,
-        (SELECT COUNT(*)::int FROM "Product") AS products,
-        (SELECT COUNT(*)::int FROM "Product" WHERE status = 'ACTIVE') AS active_products,
-        (SELECT COUNT(*)::int FROM "Category") AS categories,
-        (SELECT COUNT(*)::int FROM "ProductOption") AS options
+        o.orders,
+        o.payment_submitted_orders,
+        p.products,
+        p.active_products,
+        c.categories,
+        opt.options
+      FROM order_counts o, product_counts p, category_counts c, option_counts opt;
     `;
 
     return {
