@@ -389,8 +389,13 @@ export async function updateOrderStatusAction(formData: FormData) {
 
   if (status === "COMPLETED") {
     await prisma.paymentSubmission.updateMany({
-      where: { orderId, status: "PENDING" },
-      data: { status: "VERIFIED" },
+      where: { orderId, status: { in: ["PENDING", "SUBMITTED"] } },
+      data: { status: "VERIFIED", verifiedAt: new Date() },
+    }).catch(() => {});
+  } else if (status === "CANCELLED") {
+    await prisma.paymentSubmission.updateMany({
+      where: { orderId, status: { in: ["PENDING", "SUBMITTED"] } },
+      data: { status: "REJECTED" },
     }).catch(() => {});
   }
 
@@ -409,6 +414,92 @@ export async function updateOrderStatusAction(formData: FormData) {
     adminEmail: session?.user?.email || "Admin",
     severity: status === "COMPLETED" ? "SUCCESS" : status === "CANCELLED" ? "WARNING" : "INFO",
   });
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/orders");
+  revalidatePath(`/admin/orders/${orderId}`);
+  revalidatePath("/account");
+  revalidatePath("/account/orders");
+  revalidatePath("/account/licenses");
+  redirect(returnTo.startsWith("/admin/orders") ? `${returnTo}${returnTo.includes("?") ? "&" : "?"}updated=1` : "/admin/orders?updated=1");
+}
+
+export async function updatePaymentStatusAction(formData: FormData) {
+  const session = await requireAdmin();
+  const orderId = parseRequiredText(formData.get("orderId"), "Order", 1, 120);
+  const paymentStatus = String(formData.get("paymentStatus") ?? "").trim();
+  const returnTo = String(formData.get("returnTo") ?? `/admin/orders/${orderId}`);
+
+  if (paymentStatus !== "VERIFIED" && paymentStatus !== "REJECTED") {
+    throw new Error("Invalid payment status.");
+  }
+
+  const existingOrder = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: { payment: true },
+  });
+
+  if (!existingOrder || !existingOrder.payment) {
+    throw new Error("Order or payment submission not found.");
+  }
+
+  if (paymentStatus === "REJECTED") {
+    await prisma.$transaction([
+      prisma.paymentSubmission.update({
+        where: { orderId },
+        data: { status: "REJECTED" },
+      }),
+      prisma.order.update({
+        where: { id: orderId },
+        data: { status: "CANCELLED" },
+      }),
+    ]);
+
+    await logAdminEvent({
+      action: "PAYMENT_REJECTED",
+      category: "ORDERS",
+      entityType: "PaymentSubmission",
+      entityId: existingOrder.payment.id,
+      entityName: existingOrder.orderNumber,
+      details: {
+        orderNumber: existingOrder.orderNumber,
+        previousPaymentStatus: existingOrder.payment.status,
+        newPaymentStatus: "REJECTED",
+        autoOrderStatus: "CANCELLED",
+        adminEmail: session?.user?.email || "Admin",
+      },
+      adminEmail: session?.user?.email || "Admin",
+      severity: "WARNING",
+    });
+  } else if (paymentStatus === "VERIFIED") {
+    await prisma.$transaction([
+      prisma.paymentSubmission.update({
+        where: { orderId },
+        data: { status: "VERIFIED", verifiedAt: new Date() },
+      }),
+      prisma.order.update({
+        where: { id: orderId },
+        data: { status: "COMPLETED" },
+      }),
+    ]);
+
+    await logAdminEvent({
+      action: "PAYMENT_VERIFIED",
+      category: "ORDERS",
+      entityType: "PaymentSubmission",
+      entityId: existingOrder.payment.id,
+      entityName: existingOrder.orderNumber,
+      details: {
+        orderNumber: existingOrder.orderNumber,
+        previousPaymentStatus: existingOrder.payment.status,
+        newPaymentStatus: "VERIFIED",
+        autoOrderStatus: "COMPLETED",
+        adminEmail: session?.user?.email || "Admin",
+      },
+      adminEmail: session?.user?.email || "Admin",
+      severity: "SUCCESS",
+    });
+  }
 
   revalidatePath("/admin");
   revalidatePath("/admin/orders");

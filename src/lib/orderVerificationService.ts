@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { sendOrderStatusEmail, type OrderStatusAction } from "@/lib/orderStatusEmail";
+import { logAdminEvent } from "@/lib/audit-logs-store";
 
 export interface ProcessTelegramOrderActionResult {
   success: boolean;
@@ -69,10 +70,25 @@ export async function processTelegramOrderAction({
       });
 
       shouldSendEmail = !wasAlreadyConfirmed;
+
+      void logAdminEvent({
+        action: "ORDER_CONFIRMED",
+        category: "ORDERS",
+        entityType: "Order",
+        entityId: updatedOrder.id,
+        entityName: updatedOrder.orderNumber,
+        details: {
+          reason: "Payment verified",
+          customerEmail: updatedOrder.customerEmail,
+          paymentMethod: updatedOrder.payment?.method,
+        },
+        severity: "SUCCESS",
+      });
     } else {
       updatedOrder = await prisma.order.update({
         where: { orderNumber: cleanRef },
         data: {
+          status: "CANCELLED",
           payment: {
             update: {
               status: "REJECTED",
@@ -92,6 +108,20 @@ export async function processTelegramOrderAction({
       });
 
       shouldSendEmail = !wasAlreadyInvalid;
+
+      void logAdminEvent({
+        action: "ORDER_CANCELLED",
+        category: "ORDERS",
+        entityType: "Order",
+        entityId: updatedOrder.id,
+        entityName: updatedOrder.orderNumber,
+        details: {
+          reason: "Payment rejected (Invalid TrxID)",
+          customerEmail: updatedOrder.customerEmail,
+          paymentMethod: updatedOrder.payment?.method,
+        },
+        severity: "WARNING",
+      });
     }
 
     // 2. Dispatch status update email to customer asynchronously

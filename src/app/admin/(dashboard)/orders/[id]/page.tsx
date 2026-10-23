@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { updateOrderStatusAction } from "../../../actions";
+import { updateOrderStatusAction, updatePaymentStatusAction } from "../../../actions";
 import prisma from "@/lib/prisma";
 import { formatDisplayIp, normalizeIp } from "@/lib/ip-utils";
 import styles from "../../../admin.module.css";
@@ -152,7 +152,43 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Adm
       </div>
 
       <div className={styles.panel}>
-        <h2>Payment details</h2>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14, flexWrap: "wrap", gap: 10 }}>
+          <h2 style={{ margin: 0 }}>Payment details</h2>
+          {order.payment && (
+            <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+              {order.payment.status !== "VERIFIED" && (
+                <form action={updatePaymentStatusAction} style={{ margin: 0 }}>
+                  <input type="hidden" name="orderId" value={order.id} />
+                  <input type="hidden" name="paymentStatus" value="VERIFIED" />
+                  <input type="hidden" name="returnTo" value={`/admin/orders/${order.id}`} />
+                  <button
+                    type="submit"
+                    className={styles.buttonSecondary}
+                    style={{ color: "#10b981", borderColor: "rgba(16, 185, 129, 0.35)", padding: "4px 10px", fontSize: "0.8rem", cursor: "pointer" }}
+                    title="Mark payment as VERIFIED and auto-complete order"
+                  >
+                    ✓ Verify
+                  </button>
+                </form>
+              )}
+              {order.payment.status !== "REJECTED" && (
+                <form action={updatePaymentStatusAction} style={{ margin: 0 }}>
+                  <input type="hidden" name="orderId" value={order.id} />
+                  <input type="hidden" name="paymentStatus" value="REJECTED" />
+                  <input type="hidden" name="returnTo" value={`/admin/orders/${order.id}`} />
+                  <button
+                    type="submit"
+                    className={styles.buttonSecondary}
+                    style={{ color: "#ef4444", borderColor: "rgba(239, 68, 68, 0.35)", padding: "4px 10px", fontSize: "0.8rem", cursor: "pointer" }}
+                    title="Reject payment and automatically mark order as CANCELLED"
+                  >
+                    ✕ Reject (Auto Cancel)
+                  </button>
+                </form>
+              )}
+            </div>
+          )}
+        </div>
         {order.payment ? (
           <dl className={styles.metaList}>
             <div><dt>Method</dt><dd>{order.payment.method}</dd></div>
