@@ -1,4 +1,7 @@
+"use client";
+
 import styles from "@/app/admin/admin.module.css";
+import { useAdminLanguage } from "@/context/AdminLanguageContext";
 
 type StatusBadgeProps = {
   status: string;
@@ -25,18 +28,17 @@ const statusClassMap: Record<string, string> = {
   ARCHIVED: styles.statusArchived,
 };
 
-function formatStatusLabel(status: string): string {
-  return status.replace(/_/g, " ").toLowerCase();
-}
-
 export function StatusBadge({ status }: StatusBadgeProps) {
+  const { statusLabel } = useAdminLanguage();
   const normalized = status.toUpperCase();
   const className = statusClassMap[normalized] || styles.statusDraft;
+
+  const label = statusLabel ? statusLabel(status) : status.replace(/_/g, " ").toLowerCase();
 
   return (
     <span className={`${styles.statusBadgeModern} ${className}`}>
       <span className={styles.statusDot} />
-      {formatStatusLabel(status)}
+      {label}
     </span>
   );
 }

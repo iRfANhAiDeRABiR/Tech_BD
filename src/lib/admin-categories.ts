@@ -41,3 +41,4 @@ export async function getAdminCategoryOptions(): Promise<AdminCategoryOption[]> 
 export function invalidateCategoryOptionsCache(): void {
   globalForCategories.adminCategoryOptions = undefined;
 }
+

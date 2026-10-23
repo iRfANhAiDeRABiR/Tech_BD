@@ -9,6 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { useAdminLanguage } from "@/context/AdminLanguageContext";
 import styles from "@/app/admin/admin.module.css";
 
 type ChartDataPoint = {
@@ -20,7 +21,7 @@ type OrdersChartProps = {
   data: ChartDataPoint[];
 };
 
-function CustomTooltip({ active, payload, label }: any) {
+function CustomTooltip({ active, payload, label, t, formatNumber }: any) {
   if (active && payload && payload.length) {
     return (
       <div
@@ -50,7 +51,8 @@ function CustomTooltip({ active, payload, label }: any) {
             fontWeight: 700,
           }}
         >
-          {payload[0].value} Orders
+          {formatNumber ? formatNumber(payload[0].value) : payload[0].value}{" "}
+          {t ? t.chart_tooltip_orders : "Orders"}
         </p>
       </div>
     );
@@ -59,13 +61,13 @@ function CustomTooltip({ active, payload, label }: any) {
 }
 
 export function OrdersChart({ data }: OrdersChartProps) {
+  const { t, formatNumber } = useAdminLanguage();
+
   if (!data || data.length === 0) {
     return (
       <div className={styles.emptyState}>
-        <p className={styles.emptyStateText}>No order data available</p>
-        <p className={styles.emptyStateSub}>
-          Chart will appear once orders are placed.
-        </p>
+        <p className={styles.emptyStateText}>{t.chart_empty_title}</p>
+        <p className={styles.emptyStateSub}>{t.chart_empty_sub}</p>
       </div>
     );
   }
@@ -103,7 +105,7 @@ export function OrdersChart({ data }: OrdersChartProps) {
             axisLine={false}
             allowDecimals={false}
           />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip content={<CustomTooltip t={t} formatNumber={formatNumber} />} />
           <Area
             type="monotone"
             dataKey="orders"

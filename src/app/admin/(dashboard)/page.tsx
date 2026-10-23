@@ -1,48 +1,10 @@
-import Link from "next/link";
 import prisma from "@/lib/prisma";
-import styles from "../admin.module.css";
-import { StatCard } from "@/components/admin/StatCard";
-import { StatusBadge } from "@/components/admin/StatusBadge";
-import { OrdersChart } from "@/components/admin/OrdersChart";
 import {
-  ShoppingCart,
-  CreditCard,
-  Package,
-  Layers,
-  Plus,
-  ListOrdered,
-  Box,
-  DownloadCloud,
-  ChevronRight,
-  ArrowUpRight,
-} from "lucide-react";
-
-// --- Types ---
-
-type DashboardStats = {
-  orders: number;
-  paymentSubmittedOrders: number;
-  products: number;
-  activeProducts: number;
-  categories: number;
-  options: number;
-};
-
-type RecentOrder = {
-  id: string;
-  orderNumber: string;
-  customerName: string;
-  total: number;
-  status: string;
-  createdAt: Date;
-};
-
-type ChartDataPoint = {
-  date: string;
-  orders: number;
-};
-
-// --- Helpers ---
+  AdminDashboardView,
+  type DashboardStats,
+  type RecentOrder,
+  type ChartDataPoint,
+} from "@/components/admin/AdminDashboardView";
 
 const emptyStats: DashboardStats = {
   orders: 0,
@@ -53,30 +15,12 @@ const emptyStats: DashboardStats = {
   options: 0,
 };
 
-function formatDateTime(date: Date) {
-  return new Intl.DateTimeFormat("en-BD", {
-    dateStyle: "medium",
-    timeStyle: "medium",
-    timeZone: "Asia/Dhaka",
-  }).format(date);
-}
-
 function formatDateShort(date: Date) {
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",
   }).format(date);
 }
-
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat("en-BD", {
-    style: "currency",
-    currency: "BDT",
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
-
-// --- Data Fetching ---
 
 async function getDashboardStats(): Promise<DashboardStats> {
   try {
@@ -114,7 +58,7 @@ async function getDashboardStats(): Promise<DashboardStats> {
 }
 
 async function getRecentOrders(): Promise<RecentOrder[]> {
-  return prisma.order.findMany({
+  const orders = await prisma.order.findMany({
     take: 7,
     orderBy: { createdAt: "desc" },
     select: {
@@ -126,6 +70,11 @@ async function getRecentOrders(): Promise<RecentOrder[]> {
       createdAt: true,
     },
   });
+
+  return orders.map((o) => ({
+    ...o,
+    createdAt: o.createdAt.toISOString(),
+  }));
 }
 
 async function getOrderChartData(): Promise<ChartDataPoint[]> {
@@ -159,259 +108,18 @@ async function getOrderChartData(): Promise<ChartDataPoint[]> {
   }
 }
 
-// --- Component ---
-
 export default async function AdminDashboard() {
-  const [stats, recentOrders, chartData] =
-    await Promise.all([
-      getDashboardStats().catch(() => emptyStats),
-      getRecentOrders().catch(() => []),
-      getOrderChartData().catch(() => []),
-    ]);
-
-  const total7DayOrders = chartData.reduce((acc, curr) => acc + curr.orders, 0);
+  const [stats, recentOrders, chartData] = await Promise.all([
+    getDashboardStats().catch(() => emptyStats),
+    getRecentOrders().catch(() => []),
+    getOrderChartData().catch(() => []),
+  ]);
 
   return (
-    <div className={styles.dashboardContainer}>
-      {/* Header */}
-      <header className={styles.dashHeader}>
-        <div className={styles.dashHeaderContent}>
-          <div className={styles.dashHeaderBadge}>
-            <span className={styles.dashHeaderBadgeDot} />
-            Store Management
-          </div>
-          <h1 className={styles.dashTitle}>Store Overview</h1>
-          <p className={styles.dashSubtitle}>
-            Real-time performance, order stream, and catalog status.
-          </p>
-        </div>
-        <div className={styles.dashHeaderActions}>
-          <Link href="/admin/orders" className={styles.buttonSecondary}>
-            <ListOrdered size={16} />
-            <span>Manage Orders</span>
-          </Link>
-          <Link href="/admin/products/new" className={styles.button}>
-            <Plus size={16} strokeWidth={2.5} />
-            <span>Add Product</span>
-          </Link>
-        </div>
-      </header>
-
-      {/* KPI Stats Grid - Balanced 4 Columns */}
-      <section className={styles.statsGrid} aria-label="Key Performance Indicators">
-        <StatCard
-          title="Total Orders"
-          value={stats.orders}
-          icon={ShoppingCart}
-          accent="blue"
-          subtext="Lifetime customer purchases"
-          href="/admin/orders"
-        />
-        <StatCard
-          title="Pending Verification"
-          value={stats.paymentSubmittedOrders}
-          icon={CreditCard}
-          accent="orange"
-          subtext={
-            stats.paymentSubmittedOrders > 0
-              ? "Requires payment check"
-              : "All submitted payments handled"
-          }
-          badge={
-            stats.paymentSubmittedOrders > 0
-              ? { text: "Action required", variant: "warning" }
-              : undefined
-          }
-          href="/admin/orders?status=PAYMENT_SUBMITTED"
-        />
-        <StatCard
-          title="Active Products"
-          value={stats.activeProducts}
-          icon={Package}
-          accent="green"
-          subtext={`Out of ${stats.products} total products`}
-          href="/admin/products"
-        />
-        <StatCard
-          title="Categories & Options"
-          value={stats.categories}
-          icon={Layers}
-          accent="purple"
-          subtext={`${stats.options} license pricing options`}
-          href="/admin/categories"
-        />
-      </section>
-
-      {/* Main Content Grid: Chart (68%) + Operations & Health (32%) */}
-      <div className={styles.dashGrid}>
-        {/* Orders Overview Chart Card */}
-        <section className={styles.dashSection}>
-          <div className={styles.dashSectionHeader}>
-            <div>
-              <h2 className={styles.dashSectionTitle}>Orders Volume</h2>
-              <p className={styles.dashSectionSubtitle}>
-                {total7DayOrders} {total7DayOrders === 1 ? "order" : "orders"} placed in the past 7 days
-              </p>
-            </div>
-            <span className={styles.dashPill}>Last 7 Days</span>
-          </div>
-
-          <div className={styles.chartWrapper}>
-            <OrdersChart data={chartData} />
-          </div>
-        </section>
-
-        {/* Right Operations Column: Quick Actions + System Health */}
-        <div className={styles.dashSideColumn}>
-          {/* Quick Actions Card */}
-          <section className={styles.dashSection}>
-            <div className={styles.dashSectionHeader}>
-              <h2 className={styles.dashSectionTitle}>Quick Operations</h2>
-            </div>
-            <nav className={styles.quickActionsList} aria-label="Quick operations">
-              <Link href="/admin/products/new" className={styles.quickActionItem}>
-                <div className={styles.quickActionIcon}>
-                  <Plus size={16} />
-                </div>
-                <div className={styles.quickActionInfo}>
-                  <span className={styles.quickActionTitle}>Add Product</span>
-                  <span className={styles.quickActionSub}>Create new license entry</span>
-                </div>
-                <ChevronRight size={14} className={styles.quickActionChevron} />
-              </Link>
-
-              <Link href="/admin/orders" className={styles.quickActionItem}>
-                <div className={styles.quickActionIcon}>
-                  <ListOrdered size={16} />
-                </div>
-                <div className={styles.quickActionInfo}>
-                  <span className={styles.quickActionTitle}>Review Orders</span>
-                  <span className={styles.quickActionSub}>Process & deliver keys</span>
-                </div>
-                <ChevronRight size={14} className={styles.quickActionChevron} />
-              </Link>
-
-              <Link href="/admin/products" className={styles.quickActionItem}>
-                <div className={styles.quickActionIcon}>
-                  <Box size={16} />
-                </div>
-                <div className={styles.quickActionInfo}>
-                  <span className={styles.quickActionTitle}>Product Catalog</span>
-                  <span className={styles.quickActionSub}>Manage pricing & stock</span>
-                </div>
-                <ChevronRight size={14} className={styles.quickActionChevron} />
-              </Link>
-
-              <Link href="/admin/categories" className={styles.quickActionItem}>
-                <div className={styles.quickActionIcon}>
-                  <Layers size={16} />
-                </div>
-                <div className={styles.quickActionInfo}>
-                  <span className={styles.quickActionTitle}>Categories</span>
-                  <span className={styles.quickActionSub}>Organize store groups</span>
-                </div>
-                <ChevronRight size={14} className={styles.quickActionChevron} />
-              </Link>
-
-              <Link href="/admin/downloads" className={styles.quickActionItem}>
-                <div className={styles.quickActionIcon}>
-                  <DownloadCloud size={16} />
-                </div>
-                <div className={styles.quickActionInfo}>
-                  <span className={styles.quickActionTitle}>Downloads</span>
-                  <span className={styles.quickActionSub}>Installer mirror links</span>
-                </div>
-                <ChevronRight size={14} className={styles.quickActionChevron} />
-              </Link>
-            </nav>
-          </section>
-        </div>
-      </div>
-
-      {/* Recent Orders Section */}
-      <section className={styles.dashSection}>
-        <div className={styles.dashSectionHeader}>
-          <div>
-            <h2 className={styles.dashSectionTitle}>Recent Orders</h2>
-            <p className={styles.dashSectionSubtitle}>
-              Latest customer purchases and order fulfillment requests
-            </p>
-          </div>
-          <Link href="/admin/orders" className={styles.dashSectionAction}>
-            <span>View All Orders</span>
-            <ArrowUpRight size={15} />
-          </Link>
-        </div>
-
-        {recentOrders.length === 0 ? (
-          <div className={styles.emptyState}>
-            <div className={styles.emptyStateIconBox}>
-              <ShoppingCart size={28} />
-            </div>
-            <p className={styles.emptyStateText}>No orders received yet</p>
-            <p className={styles.emptyStateSub}>
-              When customers complete checkout, their orders will appear here automatically.
-            </p>
-          </div>
-        ) : (
-          <div className={styles.ordersTableWrap}>
-            <table className={styles.ordersTable}>
-              <thead>
-                <tr>
-                  <th>Order</th>
-                  <th>Customer</th>
-                  <th>Total Amount</th>
-                  <th>Status</th>
-                  <th>Placed Date</th>
-                  <th style={{ textAlign: "right" }}>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentOrders.map((order) => (
-                  <tr key={order.id}>
-                    <td>
-                      <Link
-                        href={`/admin/orders/${order.id}`}
-                        className={styles.orderIdLink}
-                      >
-                        #{order.orderNumber}
-                      </Link>
-                    </td>
-                    <td>
-                      <span className={styles.customerNameCell}>
-                        {order.customerName}
-                      </span>
-                    </td>
-                    <td>
-                      <span className={styles.amountCell}>
-                        {formatCurrency(order.total)}
-                      </span>
-                    </td>
-                    <td>
-                      <StatusBadge status={order.status} />
-                    </td>
-                    <td>
-                      <span className={styles.dateCell}>
-                        {formatDateShort(order.createdAt)}
-                      </span>
-                    </td>
-                    <td style={{ textAlign: "right" }}>
-                      <Link
-                        href={`/admin/orders/${order.id}`}
-                        className={styles.rowActionBtn}
-                        title="View order details"
-                      >
-                        <span>Details</span>
-                        <ChevronRight size={13} />
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
-    </div>
+    <AdminDashboardView
+      stats={stats}
+      recentOrders={recentOrders}
+      chartData={chartData}
+    />
   );
 }

@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { Suspense } from "react";
 import { AdminToastListener } from "@/components/admin/AdminToastListener";
 import { AdminLayoutClient } from "@/components/admin/AdminLayoutClient";
+import { AdminLanguageProvider } from "@/context/AdminLanguageContext";
 import { logoutAction } from "../actions";
 
 export default async function AdminLayout({
@@ -14,7 +15,7 @@ export default async function AdminLayout({
   if (!session?.user) redirect("/admin/login");
 
   return (
-    <>
+    <AdminLanguageProvider>
       <Suspense fallback={null}>
         <AdminToastListener />
       </Suspense>
@@ -24,6 +25,6 @@ export default async function AdminLayout({
       >
         {children}
       </AdminLayoutClient>
-    </>
+    </AdminLanguageProvider>
   );
 }
