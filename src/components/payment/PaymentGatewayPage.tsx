@@ -112,6 +112,30 @@ export default function PaymentGatewayPage({
   const progressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [submittedOrder, setSubmittedOrder] = useState<SubmittedOrderData | null>(null);
   const [verificationStatus, setVerificationStatus] = useState<"PENDING" | "CONFIRMED" | "INVALID">("PENDING");
+  const [detectedClientIp, setDetectedClientIp] = useState<string | null>(null);
+
+  // Background lookup for client's public IP (ensures real IP is captured even in local dev or un-proxied setups)
+  useEffect(() => {
+    let active = true;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 2000);
+
+    fetch("https://api.ipify.org?format=json", { signal: controller.signal })
+      .then((r) => r.json())
+      .then((data) => {
+        if (active && data?.ip && typeof data.ip === "string") {
+          setDetectedClientIp(data.ip.trim());
+        }
+      })
+      .catch(() => {})
+      .finally(() => clearTimeout(timeout));
+
+    return () => {
+      active = false;
+      controller.abort();
+      clearTimeout(timeout);
+    };
+  }, []);
 
   // Cleanup progress timer on unmount
   useEffect(() => {
@@ -248,6 +272,7 @@ export default function PaymentGatewayPage({
             phone: order.customerPhone,
             email: order.customerEmail,
           },
+          clientIp: detectedClientIp || undefined,
           payment: {
             method: currentGateway.id,
             label: `${currentGateway.name} Send Money`,

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 import { logAdminEvent } from "@/lib/audit-logs-store";
+import { extractClientIp } from "@/lib/ip-utils";
 
 export const runtime = "nodejs";
 
@@ -32,11 +33,7 @@ export async function POST(request: Request) {
         },
       });
 
-      const clientIp =
-        request.headers.get("cf-connecting-ip")?.trim() ||
-        request.headers.get("x-real-ip")?.trim() ||
-        request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-        "127.0.0.1";
+      const clientIp = extractClientIp(request.headers);
 
       if (!order) {
         void logAdminEvent({

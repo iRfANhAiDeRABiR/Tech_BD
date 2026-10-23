@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { normalizeIp, formatDisplayIp } from "@/lib/ip-utils";
 
 export type EventCategory =
   | "ORDERS"
@@ -196,6 +197,7 @@ export async function getAdminEventLogs(options?: {
 
 export interface RecentIpActivityItem {
   ip: string;
+  displayIp?: string;
   count: number;
   lastSeenAt: string;
   lastAction: string;
@@ -249,10 +251,13 @@ export async function getRecentIpActivityList(): Promise<RecentIpActivityItem[]>
       if (ord.notes) {
         const match = ord.notes.match(/\[IP:\s*([^\]]+)\]/i);
         if (match && match[1]) {
-          const ip = match[1].trim();
+          const rawIp = match[1].trim();
+          const ip = normalizeIp(rawIp);
+          const displayIp = formatDisplayIp(rawIp);
           if (ip && ip !== "unknown") {
             ipMap.set(ip, {
               ip,
+              displayIp,
               count: 1,
               lastSeenAt: new Date(ord.createdAt).toISOString(),
               lastAction: `অর্ডার সম্পন্ন: ${ord.orderNumber}`,
@@ -269,7 +274,9 @@ export async function getRecentIpActivityList(): Promise<RecentIpActivityItem[]>
 
     // Process event logs
     for (const row of rows || []) {
-      const ip = String(row.ip).trim();
+      const rawIp = String(row.ip).trim();
+      const ip = normalizeIp(rawIp);
+      const displayIp = formatDisplayIp(rawIp);
       if (!ip || ip === "unknown") continue;
 
       let name: string | null = null;
@@ -294,6 +301,7 @@ export async function getRecentIpActivityList(): Promise<RecentIpActivityItem[]>
       } else {
         ipMap.set(ip, {
           ip,
+          displayIp,
           count: 1,
           lastSeenAt: new Date(row.createdAt).toISOString(),
           lastAction: String(row.action),

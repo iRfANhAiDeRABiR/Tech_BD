@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { updateOrderStatusAction } from "../../../actions";
 import prisma from "@/lib/prisma";
+import { formatDisplayIp, normalizeIp } from "@/lib/ip-utils";
 import styles from "../../../admin.module.css";
 
 interface AdminOrderDetailPageProps {
@@ -66,7 +67,9 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Adm
   if (!order) notFound();
 
   const ipMatch = order.notes?.match(/\[IP:\s*([^\]]+)\]/i);
-  const customerIp = ipMatch ? ipMatch[1].trim() : null;
+  const rawCustomerIp = ipMatch ? ipMatch[1].trim() : null;
+  const customerIp = rawCustomerIp ? normalizeIp(rawCustomerIp) : null;
+  const displayCustomerIp = rawCustomerIp ? formatDisplayIp(rawCustomerIp) : null;
 
   return <>
     <div className={styles.header}>
@@ -116,7 +119,7 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Adm
               <dt>IP Address (গ্রাহকের আইপি)</dt>
               <dd style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                 <code style={{ fontSize: "0.88rem", fontWeight: 700, padding: "3px 8px", borderRadius: 6, background: "var(--bg-primary)" }}>
-                  {customerIp}
+                  {displayCustomerIp}
                 </code>
                 <Link
                   href={`/admin/bans?target=${encodeURIComponent(customerIp)}&type=IP&reason=${encodeURIComponent(`Fraudulent order #${order.orderNumber}`)}`}

@@ -703,7 +703,7 @@ export function AccessBansClient({
                         {/* IP */}
                         <td>
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <span className={styles.targetValue}>{item.ip}</span>
+                            <span className={styles.targetValue}>{item.displayIp || item.ip}</span>
                             <button
                               type="button"
                               className={styles.copyCodeBtn}

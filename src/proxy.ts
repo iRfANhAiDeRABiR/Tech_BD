@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { updateSession } from "@/lib/supabase/middleware";
 import { createServerClient } from "@supabase/ssr";
+import { normalizeIp } from "@/lib/ip-utils";
 
 // Paths that require admin authentication
 const ADMIN_PATHS = ["/admin", "/api/admin"];
@@ -13,13 +14,13 @@ const CUSTOMER_AUTH_PATHS = ["/account"];
 
 function getClientIp(request: NextRequest): string {
   const cf = request.headers.get("cf-connecting-ip");
-  if (cf) return cf.trim();
+  if (cf) return normalizeIp(cf);
   const real = request.headers.get("x-real-ip");
-  if (real) return real.trim();
+  if (real) return normalizeIp(real);
   const fwd = request.headers.get("x-forwarded-for");
   if (fwd) {
     const first = fwd.split(",")[0]?.trim();
-    if (first) return first;
+    if (first) return normalizeIp(first);
   }
   return "127.0.0.1";
 }

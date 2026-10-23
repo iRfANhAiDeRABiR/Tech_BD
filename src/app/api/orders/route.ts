@@ -9,6 +9,8 @@ import { logAdminEvent } from "@/lib/audit-logs-store";
 
 export const runtime = "nodejs";
 
+import { extractClientIp } from "@/lib/ip-utils";
+
 const checkoutOrderItemSchema = z.object({
   productId: z.string().trim().min(1).max(120),
   optionId: z.string().trim().min(1).max(120).optional(),
@@ -30,6 +32,7 @@ const checkoutOrderSchema = z.object({
   }),
   notes: z.string().trim().max(1000).optional().nullable(),
   couponCode: z.string().trim().max(50).optional().nullable(),
+  clientIp: z.string().trim().max(100).optional().nullable(),
   items: z.array(checkoutOrderItemSchema).min(1).max(50),
 });
 
@@ -67,19 +70,6 @@ async function getUniqueOrderNumber() {
 }
 
 export async function POST(request: Request) {
-  // Basic abuse protection on this public endpoint.
-  const ip =
-    request.headers.get("cf-connecting-ip")?.trim() ||
-    request.headers.get("x-real-ip")?.trim() ||
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    "127.0.0.1";
-  if (!rateLimit(`orders:${ip}`, 10, 60_000)) {
-    return NextResponse.json(
-      { message: "Too many requests. Please try again shortly." },
-      { status: 429 },
-    );
-  }
-
   try {
     const body: unknown = await request.json();
     const parsed = checkoutOrderSchema.safeParse(body);
@@ -92,6 +82,15 @@ export async function POST(request: Request) {
     }
 
     const data = parsed.data;
+    const ip = extractClientIp(request.headers, data.clientIp);
+
+    // Basic abuse protection on this public endpoint.
+    if (!rateLimit(`orders:${ip}`, 10, 60_000)) {
+      return NextResponse.json(
+        { message: "Too many requests. Please try again shortly." },
+        { status: 429 },
+      );
+    }
 
     // SECURITY: Never trust browser-supplied prices or totals.
     // Resolve every item against the database and use trusted pricing only.

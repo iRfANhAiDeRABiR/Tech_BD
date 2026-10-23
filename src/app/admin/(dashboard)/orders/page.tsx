@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { updateOrderStatusAction } from "../../actions";
 import prisma from "@/lib/prisma";
+import { formatDisplayIp } from "@/lib/ip-utils";
 import styles from "../../admin.module.css";
 
 interface AdminOrdersPageProps {
@@ -114,7 +115,7 @@ export default async function AdminOrdersPage({ searchParams }: AdminOrdersPageP
             <tr><td colSpan={6} className={styles.emptyCell}>{search ? "No orders matched your search." : "No website orders have been received yet."}</td></tr>
           ) : orders.map((order) => {
             const ipMatch = order.notes?.match(/\[IP:\s*([^\]]+)\]/i);
-            const customerIp = ipMatch ? ipMatch[1].trim() : null;
+            const customerIp = ipMatch ? formatDisplayIp(ipMatch[1]) : null;
 
             return (
               <tr key={order.id}>
