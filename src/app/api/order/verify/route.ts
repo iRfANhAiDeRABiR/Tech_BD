@@ -3,12 +3,22 @@ import prisma from "@/lib/prisma";
 import { answerTelegramCallbackQuery, updateTelegramMessageStatus } from "@/lib/telegram";
 import { processTelegramOrderAction } from "@/lib/orderVerificationService";
 import { rateLimit } from "@/lib/rateLimit";
+import { extractClientIp } from "@/lib/ip-utils";
 
 export const runtime = "nodejs";
+
+let lastTelegramSync = 0;
+const TELEGRAM_SYNC_THROTTLE_MS = 6000;
 
 async function syncTelegramUpdates() {
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   if (!botToken) return;
+
+  const now = Date.now();
+  if (now - lastTelegramSync < TELEGRAM_SYNC_THROTTLE_MS) {
+    return;
+  }
+  lastTelegramSync = now;
 
   try {
     const teleRes = await fetch(`https://api.telegram.org/bot${botToken}/getUpdates`);
@@ -45,7 +55,7 @@ async function syncTelegramUpdates() {
           const senderId = String(cb.from?.id ?? "");
           const chatId = String(cb.message?.chat?.id ?? "");
 
-          if (adminChatId && senderId !== adminChatId && chatId !== adminChatId) {
+          if (!adminChatId || (senderId !== adminChatId && chatId !== adminChatId)) {
             console.warn(`[Security Alert] Ignored unauthorized Telegram polling update from sender: ${senderId}`);
             continue;
           }
@@ -88,11 +98,8 @@ async function syncTelegramUpdates() {
 }
 
 export async function GET(request: Request) {
-  // Security Abuse Protection: Rate limit verification queries
-  const ip =
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    request.headers.get("x-real-ip") ||
-    "unknown";
+  // Security Abuse Protection: Rate limit verification queries using reliable client IP
+  const ip = extractClientIp(request.headers);
   if (!rateLimit(`order-verify:${ip}`, 30, 60_000)) {
     return NextResponse.json(
       { status: "PENDING", error: "Too many status check requests. Please try again in a moment." },

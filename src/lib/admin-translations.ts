@@ -99,6 +99,7 @@ export interface AdminTranslations {
   nav_products: string;
   nav_categories: string;
   nav_downloads: string;
+  nav_coupons: string;
   nav_bans: string;
   nav_logs: string;
   nav_system_health: string;
@@ -116,6 +117,7 @@ export interface AdminTranslations {
   bc_edit_product: string;
   bc_categories: string;
   bc_downloads: string;
+  bc_coupons: string;
   bc_bans: string;
   bc_logs: string;
   bc_system_health: string;
@@ -310,6 +312,7 @@ export const adminTranslations: Record<AdminLanguage, AdminTranslations> = {
     nav_products: "Products",
     nav_categories: "Categories",
     nav_downloads: "Downloads",
+    nav_coupons: "Coupons",
     nav_bans: "Access Bans",
     nav_logs: "Event Logs",
     nav_system_health: "System Health",
@@ -326,6 +329,7 @@ export const adminTranslations: Record<AdminLanguage, AdminTranslations> = {
     bc_edit_product: "Edit Product",
     bc_categories: "Categories",
     bc_downloads: "Software Downloads",
+    bc_coupons: "Discount Coupons",
     bc_bans: "Access Control & Bans",
     bc_logs: "Event & Audit Logs",
     bc_system_health: "System Health & Diagnostics",
@@ -513,6 +517,7 @@ export const adminTranslations: Record<AdminLanguage, AdminTranslations> = {
     nav_products: "প্রোডাক্টস",
     nav_categories: "ক্যাটাগরি",
     nav_downloads: "ডাউনলোড",
+    nav_coupons: "কুপন ও ডিসকাউন্ট",
     nav_bans: "অ্যাক্সেস ব্যান",
     nav_logs: "ইভেন্ট লগ",
     nav_system_health: "সিস্টেম হেলথ",
@@ -529,6 +534,7 @@ export const adminTranslations: Record<AdminLanguage, AdminTranslations> = {
     bc_edit_product: "প্রোডাক্ট সম্পাদনা",
     bc_categories: "ক্যাটাগরি সমূহ",
     bc_downloads: "সফটওয়্যার ডাউনলোড",
+    bc_coupons: "ডিসকাউন্ট কুপন",
     bc_bans: "অ্যাক্সেস নিয়ন্ত্রণ ও ব্যান",
     bc_logs: "ইভেন্ট ও অডিট লগ",
     bc_system_health: "সিস্টেম হেলথ ও ডায়াগনস্টিক",

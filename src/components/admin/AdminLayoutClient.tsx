@@ -19,6 +19,7 @@ import {
   ShieldAlert,
   ClipboardList,
   Activity,
+  TicketPercent,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { AdminLanguageDropdown } from "@/components/admin/AdminLanguageDropdown";
@@ -59,6 +60,9 @@ function getBreadcrumb(
   }
   if (pathname.startsWith("/admin/downloads")) {
     return { title: t.bc_downloads, subtitle: t.nav_downloads };
+  }
+  if (pathname.startsWith("/admin/coupons")) {
+    return { title: t.bc_coupons, subtitle: t.nav_group_management };
   }
   if (pathname.startsWith("/admin/bans")) {
     return { title: t.bc_bans, subtitle: t.nav_group_system };
@@ -113,6 +117,12 @@ export function AdminLayoutClient({
         label: t.nav_downloads,
         href: "/admin/downloads",
         icon: DownloadCloud,
+        exact: false,
+      },
+      {
+        label: t.nav_coupons,
+        href: "/admin/coupons",
+        icon: TicketPercent,
         exact: false,
       },
       {

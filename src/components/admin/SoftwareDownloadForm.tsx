@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { AVAILABLE_IMG_CONTENT } from "@/lib/available-images";
 import { saveSoftwareDownloadAction } from "@/app/admin/actions";
 import { SoftwareIconTile } from "@/components/downloads/SoftwareIconTile";
 import type { SoftwareDownloadItem, SoftwareDownloadVariant, SoftwareVersionOption } from "@/data/software-downloads";
@@ -242,14 +243,21 @@ export function SoftwareDownloadForm({
 
         {/* Or Image URL */}
         <div className={styles.field}>
-          <label>Or Image URL (Cloudinary / External)</label>
+          <label>Or Image URL (Cloudinary / Local /img_content)</label>
           <input
             name="imageUrl"
             type="text"
+            list="download-img-content-datalist"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            placeholder="https://res.cloudinary.com/... or /img_content/..."
+            placeholder="/img_content/win11pro.png or https://..."
+            autoComplete="on"
           />
+          <datalist id="download-img-content-datalist">
+            {AVAILABLE_IMG_CONTENT.map((path) => (
+              <option key={path} value={path} />
+            ))}
+          </datalist>
         </div>
 
         {/* Clear Image checkbox if image exists */}

@@ -437,12 +437,14 @@
 .paymentRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   flex-wrap: wrap;
-  gap: 16px;
-  padding: 14px 0;
+  gap: 28px;
+  padding: 16px 0;
   border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
+  /* Clear the fixed floating WhatsApp button (30px offset + 60px size = 90px safe zone) */
+  padding-right: 90px;
 }
 
 .paymentCopy {
@@ -450,6 +452,7 @@
   gap: 4px;
   color: var(--text-muted);
   font-size: 0.73rem;
+  flex-shrink: 0;
 }
 
 .paymentLabel {
@@ -461,41 +464,94 @@
 .paymentMethods {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
 }
 
+/* Modern High-End Pill Badges */
 .paymentChip {
-  display: inline-grid;
-  min-width: 64px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   height: 36px;
-  place-items: center;
-  padding: 0 12px;
-  background: rgb(255 255 255 / 92%);
-  border: 1px solid rgb(255 255 255 / 75%);
-  border-radius: 10px;
-  box-shadow: 0 5px 16px rgb(0 0 0 / 10%);
-  font-size: 0.73rem;
-  font-weight: 900;
+  padding: 0 13px;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 9px;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  cursor: default;
+  user-select: none;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.paymentChip:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.16);
+  border-color: rgba(203, 213, 225, 1);
+}
+
+.visaLogo {
+  height: 13px;
+  width: auto;
+  display: block;
+}
+
+.mastercardCircles {
+  height: 17px;
+  width: auto;
+  display: block;
+}
+
+.brandTextMastercard {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #1e293b;
+}
+
+.bkashBird {
+  height: 18px;
+  width: auto;
+  display: block;
+}
+
+.brandTextBkash {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #e2136e;
   letter-spacing: -0.02em;
 }
 
-.visa {
-  color: #16236c;
-  font-style: italic;
-  letter-spacing: 0.04em;
+.nagadIcon {
+  height: 18px;
+  width: auto;
+  display: block;
 }
 
-.mastercard {
-  color: #e45422;
+.brandTextNagad {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #e31837;
+  letter-spacing: -0.01em;
 }
 
-.bKash {
-  color: #d92363;
+.rocketIcon {
+  height: 18px;
+  width: auto;
+  display: block;
 }
 
-.nagad {
-  color: #d12631;
+.brandTextRocket {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #8c3494;
+  letter-spacing: -0.01em;
 }
 
 .deliveryNote {
@@ -581,7 +637,8 @@
   }
 
   .paymentRow {
-    justify-content: space-between;
+    justify-content: flex-start;
+    padding-right: 90px;
   }
 }
 
@@ -635,6 +692,7 @@
     align-items: flex-start;
     gap: 12px;
     padding: 12px 0;
+    padding-right: 80px;
   }
 
   .paymentMethods {

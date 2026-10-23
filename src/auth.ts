@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import crypto from "crypto";
 import { compare } from "bcryptjs";
 import { z } from "zod";
 import prisma from "@/lib/prisma";
@@ -51,18 +52,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const envEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
         const envPassword = process.env.ADMIN_PASSWORD;
 
-        if (
-          envEmail &&
-          envPassword &&
-          parsed.data.email === envEmail &&
-          parsed.data.password === envPassword
-        ) {
-          return {
-            id: "env-admin-owner",
-            email: envEmail,
-            name: process.env.ADMIN_NAME || "Store Owner",
-            role: "OWNER" as const,
-          };
+        if (envEmail && envPassword && parsed.data.email === envEmail) {
+          const inputPasswordBuf = crypto.createHash("sha256").update(parsed.data.password).digest();
+          const envPasswordBuf = crypto.createHash("sha256").update(envPassword).digest();
+
+          if (crypto.timingSafeEqual(inputPasswordBuf, envPasswordBuf)) {
+            return {
+              id: "env-admin-owner",
+              email: envEmail,
+              name: process.env.ADMIN_NAME || "Store Owner",
+              role: "OWNER" as const,
+            };
+          }
         }
 
         return null;

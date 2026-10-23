@@ -52,31 +52,24 @@ export function formatDisplayIp(rawIp: string | null | undefined): string {
 }
 
 export function extractClientIp(
-  headers: Headers | { get(name: string): string | null },
-  clientSuppliedIp?: string | null
+  headers: Headers | { get(name: string): string | null }
 ): string {
+  // 1. CF-Connecting-IP (set by Cloudflare edge proxy)
   const cf = headers.get("cf-connecting-ip")?.trim();
-  if (cf && !isLocalhostIp(cf)) return normalizeIp(cf);
+  if (cf) return normalizeIp(cf);
 
+  // 2. X-Real-IP (set by reverse proxy)
   const real = headers.get("x-real-ip")?.trim();
-  if (real && !isLocalhostIp(real)) return normalizeIp(real);
+  if (real) return normalizeIp(real);
 
-  const fwd = headers.get("x-forwarded-for")?.split(",")[0]?.trim();
-  if (fwd && !isLocalhostIp(fwd)) return normalizeIp(fwd);
-
-  // If request is from localhost / test dev server, but client browser detected public internet IP:
-  if (clientSuppliedIp && typeof clientSuppliedIp === "string") {
-    const trimmed = clientSuppliedIp.trim();
-    if (
-      /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$|^[a-fA-F0-9:]{3,39}$/.test(trimmed) &&
-      !isLocalhostIp(trimmed)
-    ) {
-      return normalizeIp(trimmed);
-    }
+  // 3. X-Forwarded-For (client IP is the leftmost entry in standard proxy chains)
+  const fwd = headers.get("x-forwarded-for");
+  if (fwd) {
+    const first = fwd.split(",")[0]?.trim();
+    if (first) return normalizeIp(first);
   }
 
-  const fallback = cf || real || fwd || "127.0.0.1";
-  return normalizeIp(fallback);
+  return "127.0.0.1";
 }
 
 export function isIpInCidr(ip: string, cidr: string): boolean {

@@ -6,6 +6,7 @@ import { sendOrderConfirmationEmail } from "@/lib/orderConfirmationEmail";
 import { sendTelegramOrderNotification } from "@/lib/telegram";
 import { rateLimit } from "@/lib/rateLimit";
 import { logAdminEvent } from "@/lib/audit-logs-store";
+import { validateCoupon, incrementCouponUsage } from "@/lib/coupons-store";
 
 export const runtime = "nodejs";
 
@@ -82,7 +83,7 @@ export async function POST(request: Request) {
     }
 
     const data = parsed.data;
-    const ip = extractClientIp(request.headers, data.clientIp);
+    const ip = extractClientIp(request.headers);
 
     // Basic abuse protection on this public endpoint.
     if (!rateLimit(`orders:${ip}`, 10, 60_000)) {
@@ -187,9 +188,12 @@ export async function POST(request: Request) {
     let discount = 0;
     let validatedCoupon: string | null = null;
     const cleanCoupon = data.couponCode?.trim().toUpperCase();
-    if (cleanCoupon === "TECHBD10" || cleanCoupon === "SAVE10" || cleanCoupon === "SAFE10") {
-      discount = Math.min(subtotal, Math.round(subtotal * 0.10));
-      validatedCoupon = cleanCoupon;
+    if (cleanCoupon) {
+      const couponValidation = await validateCoupon(cleanCoupon, subtotal);
+      if (couponValidation.valid) {
+        discount = couponValidation.discountAmount;
+        validatedCoupon = couponValidation.code;
+      }
     }
 
     const total = Math.max(0, subtotal - discount);
@@ -244,6 +248,10 @@ export async function POST(request: Request) {
         total: true,
       },
     });
+
+    if (validatedCoupon) {
+      void incrementCouponUsage(validatedCoupon);
+    }
 
     // Dispatch background notifications asynchronously without blocking the client response
     void logAdminEvent({

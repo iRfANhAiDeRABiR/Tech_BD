@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 import type { ProductOption } from "@/types/product";
 import { saveProductAction } from "@/app/admin/actions";
+import { AVAILABLE_IMG_CONTENT } from "@/lib/available-images";
 import styles from "@/app/admin/admin.module.css";
 
 type EditableOption = ProductOption & {
@@ -74,6 +75,7 @@ export function ProductForm({
   product?: ProductValue;
 }) {
   const [options, setOptions] = useState<EditableOption[]>(product.options ?? []);
+  const [imageUrl, setImageUrl] = useState<string>(product.image ?? "");
   const update = (
     index: number,
     key: keyof EditableOption,
@@ -213,13 +215,69 @@ export function ProductForm({
           )}
         </div>
         <div className={styles.field}>
-          <label>Or image URL</label>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <label>Or image URL</label>
+            <span style={{ fontSize: "11px", color: "#10b981", fontWeight: 600 }}>
+              {AVAILABLE_IMG_CONTENT.length} images available in /img_content
+            </span>
+          </div>
           <input
             name="imageUrl"
             type="text"
-            defaultValue={product.image ?? ""}
+            list="product-img-content-datalist"
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
             placeholder="/img_content/win11pro.png"
+            autoComplete="on"
           />
+          <datalist id="product-img-content-datalist">
+            {AVAILABLE_IMG_CONTENT.map((path) => (
+              <option key={path} value={path}>
+                {path}
+              </option>
+            ))}
+          </datalist>
+
+          {imageUrl && (
+            <div
+              style={{
+                marginTop: "8px",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                padding: "6px 10px",
+                background: "rgba(255, 255, 255, 0.04)",
+                borderRadius: "8px",
+                border: "1px solid var(--border-subtle, rgba(255, 255, 255, 0.1))",
+              }}
+            >
+              <img
+                src={imageUrl}
+                alt="Selected preview"
+                style={{
+                  width: "38px",
+                  height: "38px",
+                  objectFit: "contain",
+                  borderRadius: "6px",
+                  background: "rgba(0, 0, 0, 0.3)",
+                }}
+                onError={(e) => {
+                  (e.target as HTMLElement).style.display = "none";
+                }}
+              />
+              <div
+                style={{
+                  fontSize: "12px",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                <span style={{ color: "#10b981", fontWeight: 700 }}>✓ Selected: </span>
+                <span style={{ color: "var(--text-secondary, #94a3b8)" }}>{imageUrl}</span>
+              </div>
+            </div>
+          )}
         </div>
         <div className={styles.field}>
           <label>Icon / emoji</label>

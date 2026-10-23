@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import crypto from "crypto";
 import { answerTelegramCallbackQuery, updateTelegramMessageStatus } from "@/lib/telegram";
 import { processTelegramOrderAction } from "@/lib/orderVerificationService";
 
@@ -6,28 +7,53 @@ export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
     const cb = body?.callback_query;
 
     if (!cb || !cb.data) {
       return NextResponse.json({ ok: true, ignored: "No callback_query" });
     }
 
-    // Security Authorization: Verify that callback query is from authorized Telegram Admin
+    const secretToken = process.env.TELEGRAM_WEBHOOK_SECRET;
     const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
+
+    // Security Gate: Ensure authorization credentials are configured
+    if (!secretToken && !adminChatId) {
+      console.error(
+        "[Security Alert] Telegram webhook rejected: Neither TELEGRAM_WEBHOOK_SECRET nor TELEGRAM_ADMIN_CHAT_ID is configured."
+      );
+      return NextResponse.json(
+        { error: "Forbidden: Security authorization credentials not configured on server" },
+        { status: 503 }
+      );
+    }
+
+    // Verify secret token header if configured using constant-time comparison
+    if (secretToken) {
+      const headerToken = request.headers.get("x-telegram-bot-api-secret-token") || "";
+      const secretBuf = Buffer.from(secretToken);
+      const headerBuf = Buffer.from(headerToken);
+
+      const isValidToken =
+        secretBuf.length === headerBuf.length &&
+        crypto.timingSafeEqual(secretBuf, headerBuf);
+
+      if (!isValidToken) {
+        console.warn("[Security Alert] Unauthorized Telegram webhook callback attempt: Invalid secret token header");
+        return NextResponse.json({ error: "Forbidden: Invalid secret token" }, { status: 403 });
+      }
+    }
+
+    // Verify sender ID or chat ID matches authorized Telegram admin
     const senderId = String(cb.from?.id ?? "");
     const chatId = String(cb.message?.chat?.id ?? "");
 
-    if (adminChatId && senderId !== adminChatId && chatId !== adminChatId) {
-      console.warn(`[Security Alert] Unauthorized Telegram webhook callback attempt from sender: ${senderId}, chat: ${chatId}`);
-      return NextResponse.json({ error: "Forbidden: Unauthorized Telegram sender" }, { status: 403 });
-    }
-
-    const secretToken = process.env.TELEGRAM_WEBHOOK_SECRET;
-    if (secretToken) {
-      const headerToken = request.headers.get("x-telegram-bot-api-secret-token");
-      if (headerToken !== secretToken) {
-        return NextResponse.json({ error: "Forbidden: Invalid secret token" }, { status: 403 });
+    if (adminChatId) {
+      if (senderId !== adminChatId && chatId !== adminChatId) {
+        console.warn(
+          `[Security Alert] Unauthorized Telegram webhook callback attempt from sender: ${senderId}, chat: ${chatId}`
+        );
+        return NextResponse.json({ error: "Forbidden: Unauthorized Telegram sender" }, { status: 403 });
       }
     }
 

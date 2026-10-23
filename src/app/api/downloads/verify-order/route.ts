@@ -3,13 +3,45 @@ import prisma from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 import { logAdminEvent } from "@/lib/audit-logs-store";
 import { extractClientIp } from "@/lib/ip-utils";
+import { rateLimit } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 
+function maskCustomerName(name: string | null | undefined): string {
+  if (!name) return "Valued Customer";
+  const parts = name.trim().split(/\s+/);
+  return parts
+    .map((p) => {
+      if (p.length <= 2) return `${p[0]}*`;
+      return `${p[0]}${"*".repeat(Math.min(p.length - 2, 4))}${p[p.length - 1]}`;
+    })
+    .join(" ");
+}
+
 export async function POST(request: Request) {
   try {
+    const clientIp = extractClientIp(request.headers);
+
+    // Rate limit verification queries to protect against brute-force enumeration
+    if (!rateLimit(`download-verify:${clientIp}`, 10, 60_000)) {
+      return NextResponse.json(
+        {
+          success: false,
+          valid: false,
+          message: "খুব বেশি যাচাই করার চেষ্টা করা হয়েছে। অনুগ্রহ করে ১ মিনিট পর আবার চেষ্টা করুন।",
+        },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json().catch(() => ({}));
     const rawOrderId = typeof body.orderId === "string" ? body.orderId.trim() : "";
+    const rawContact =
+      typeof body.contact === "string"
+        ? body.contact.trim()
+        : typeof body.phoneOrEmail === "string"
+        ? body.phoneOrEmail.trim()
+        : "";
 
     // 1. If an explicit order ID is submitted
     if (rawOrderId) {
@@ -33,8 +65,6 @@ export async function POST(request: Request) {
         },
       });
 
-      const clientIp = extractClientIp(request.headers);
-
       if (!order) {
         void logAdminEvent({
           action: "DOWNLOAD_VERIFY_FAILED",
@@ -57,6 +87,33 @@ export async function POST(request: Request) {
         );
       }
 
+      // If contact verification is provided, ensure phone or email matches
+      if (rawContact) {
+        const cleanContact = rawContact.toLowerCase();
+        const dbEmail = (order.customerEmail || "").toLowerCase();
+        const dbPhoneDigits = (order.customerPhone || "").replace(/\D/g, "");
+        const inputDigits = rawContact.replace(/\D/g, "");
+
+        const emailMatches = Boolean(dbEmail && dbEmail === cleanContact);
+        const phoneMatches = Boolean(
+          inputDigits &&
+            dbPhoneDigits &&
+            (dbPhoneDigits.endsWith(inputDigits.slice(-8)) || inputDigits.endsWith(dbPhoneDigits.slice(-8)))
+        );
+
+        if (!emailMatches && !phoneMatches) {
+          return NextResponse.json(
+            {
+              success: false,
+              valid: false,
+              reason: "CONTACT_MISMATCH",
+              message: "প্রদত্ত ফোন নম্বর বা ইমেইলের সাথে এই অর্ডারের তথ্য মিলছে না।",
+            },
+            { status: 403 }
+          );
+        }
+      }
+
       const isConfirmed =
         order.status === "COMPLETED" ||
         order.status === "PAID" ||
@@ -67,7 +124,7 @@ export async function POST(request: Request) {
           success: true,
           valid: true,
           orderNumber: order.orderNumber,
-          customerName: order.customerName,
+          customerName: maskCustomerName(order.customerName),
           status: "CONFIRMED",
           message: "অর্ডার ভেরিফিকেশন সফল হয়েছে! ডাউনলোড লিঙ্ক আনলক করা হয়েছে।",
         });

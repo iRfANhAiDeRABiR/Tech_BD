@@ -262,15 +262,100 @@ export function Footer() {
           </div>
 
           <div className={styles.paymentMethods} aria-label="Payment methods">
-            <span className={`${styles.paymentChip} ${styles.visa}`}>VISA</span>
-            <span className={`${styles.paymentChip} ${styles.mastercard}`}>
-              mastercard
+            <span className={`${styles.paymentChip} ${styles.visaChip}`} title="Visa">
+              <svg
+                className={styles.visaLogo}
+                viewBox="0 0 48 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-label="Visa"
+              >
+                <path
+                  d="M19.467 1.156L13.111 15.244H8.978L5.422 3.867C5.2 2.978 4.978 2.667 4.267 2.267C3.156 1.644 1.511 1.067 0 0.711L0.089 0.311H7.022C7.911 0.311 8.667 0.933 8.844 1.956L10.533 10.978L14.711 0.311H19.467V1.156ZM36.578 10.578C36.622 6.578 30.933 6.356 31.022 4.622C31.067 4.089 31.556 3.511 32.711 3.378C33.289 3.289 34.889 3.244 36.622 4.044L37.289 0.978C36.356 0.622 35.156 0.311 33.644 0.311C29.467 0.311 26.533 2.533 26.489 5.689C26.444 8.044 28.578 9.333 30.222 10.133C31.867 10.933 32.444 11.467 32.444 12.178C32.444 13.289 31.111 13.778 29.867 13.778C27.778 13.778 26.578 13.156 25.644 12.711L24.978 15.867C25.956 16.311 27.733 16.711 29.6 16.711C34.044 16.711 36.533 14.533 36.578 10.578ZM47.467 15.244H51.2L47.911 0.311H44.444C43.644 0.311 42.978 0.756 42.667 1.467L36.444 15.244H40.578L41.422 12.933H46.489L47.467 15.244ZM42.533 9.911L44.622 4.178L45.822 9.911H42.533ZM25.422 0.311L22.178 15.244H18.267L21.511 0.311H25.422Z"
+                  fill="#1434CB"
+                />
+              </svg>
             </span>
-            <span className={`${styles.paymentChip} ${styles.bKash}`}>
-              bKash
+
+            <span className={`${styles.paymentChip} ${styles.mastercardChip}`} title="Mastercard">
+              <svg
+                className={styles.mastercardCircles}
+                viewBox="0 0 32 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-label="Mastercard"
+              >
+                <circle cx="10" cy="10" r="9" fill="#EB001B" />
+                <circle cx="22" cy="10" r="9" fill="#F79E1B" />
+                <path
+                  d="M16 3.65a8.96 8.96 0 0 0-3.4 6.35 8.96 8.96 0 0 0 3.4 6.35 8.96 8.96 0 0 0 3.4-6.35 8.96 8.96 0 0 0-3.4-6.35Z"
+                  fill="#FF5F00"
+                />
+              </svg>
+              <span className={styles.brandTextMastercard}>mastercard</span>
             </span>
-            <span className={`${styles.paymentChip} ${styles.nagad}`}>
-              Nagad
+
+            <span className={`${styles.paymentChip} ${styles.bkashChip}`} title="bKash">
+              <svg
+                className={styles.bkashBird}
+                viewBox="240 8 235 215"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-label="bKash"
+              >
+                <path d="M327.99 110.75l12.99 58.4 85.01-43.04z" fill="#D12053" />
+                <path d="M352.16 23.48L328 110.76l98.01 15.35z" fill="#E2136E" />
+                <path d="M248.31 10.7l101.38 12.11-23.97 86.76z" fill="#D12053" />
+                <path d="M247.52 27.76h11.29l31.67 40.5z" fill="#9E1638" />
+                <path d="M428.69 125.55l-29.46-40.77 47.66-8.53z" fill="#D12053" />
+                <path d="M423.77 137.5l3.04-9.07-74.39 37.74z" fill="#E2136E" />
+                <path d="M325.91 113.05l15.52 69.77-46.06 37.46z" fill="#9E1638" />
+                <path d="M442.25 96.97l27.05-.46-19.55-19.89z" fill="#E2136E" />
+              </svg>
+              <span className={styles.brandTextBkash}>bKash</span>
+            </span>
+
+            <span className={`${styles.paymentChip} ${styles.nagadChip}`} title="Nagad">
+              <svg
+                className={styles.nagadIcon}
+                viewBox="0 0 40 40"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-label="Nagad"
+              >
+                <circle cx="20" cy="20" r="18" fill="#F7941D" />
+                <path
+                  d="M20 5C11.716 5 5 11.716 5 20C5 28.284 11.716 35 20 35C28.284 35 35 28.284 35 20"
+                  stroke="#ED1C24"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M20 12C15.582 12 12 15.582 12 20C12 24.418 15.582 28 20 28"
+                  stroke="#FFFFFF"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                />
+                <circle cx="23" cy="18" r="2.8" fill="#FFFFFF" />
+                <path d="M20 20L27 27" stroke="#FFFFFF" strokeWidth="3" strokeLinecap="round" />
+              </svg>
+              <span className={styles.brandTextNagad}>Nagad</span>
+            </span>
+
+            <span className={`${styles.paymentChip} ${styles.rocketChip}`} title="Rocket">
+              <svg
+                className={styles.rocketIcon}
+                viewBox="0 0 40 40"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-label="Rocket"
+              >
+                <path d="M4 28L23 8L36 5L32 17L12 36L15 25L4 28Z" fill="#8C3494" />
+                <path d="M23 8L18 22L32 17L23 8Z" fill="#6A1B7B" />
+                <path d="M18 22L12 36L15 25L18 22Z" fill="#AB47BC" />
+                <circle cx="28" cy="12" r="2" fill="#FFFFFF" />
+              </svg>
+              <span className={styles.brandTextRocket}>Rocket</span>
             </span>
           </div>
 

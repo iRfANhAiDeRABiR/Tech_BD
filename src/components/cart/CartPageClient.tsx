@@ -33,13 +33,13 @@ interface CartPageClientProps {
   products: ProductSummary[];
 }
 
-const COUPONS = {
-  TECHBD10: { rate: 0.1, label: "10% off" },
-  SAVE10: { rate: 0.1, label: "10% off" },
-  SAFE10: { rate: 0.1, label: "10% off" },
-} as const;
-
-type CouponCode = keyof typeof COUPONS;
+interface AppliedCouponInfo {
+  code: string;
+  discountType: "PERCENTAGE" | "FIXED";
+  discountValue: number;
+  discountAmount: number;
+  label?: string;
+}
 
 interface CouponFeedback {
   tone: "success" | "error";
@@ -168,10 +168,6 @@ const PAYMENT_CONFIGS: Record<PaymentProviderKey, PaymentConfig> = {
   },
 };
 
-function isCouponCode(value: string): value is CouponCode {
-  return Object.prototype.hasOwnProperty.call(COUPONS, value);
-}
-
 
 
 function isValidBdPhone(phone: string): boolean {
@@ -211,7 +207,7 @@ export function CartPageClient({ products }: CartPageClientProps) {
 
   // Coupon state
   const [couponInput, setCouponInput] = useState("");
-  const [appliedCoupon, setAppliedCoupon] = useState<CouponCode | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCouponInfo | null>(null);
   const [couponFeedback, setCouponFeedback] = useState<CouponFeedback | null>(null);
 
   // Form submission state
@@ -393,7 +389,9 @@ export function CartPageClient({ products }: CartPageClientProps) {
   const productSavings = Math.max(0, originalSubtotal - subtotal);
 
   const couponDiscount = appliedCoupon
-    ? Math.min(subtotal, Math.round(subtotal * COUPONS[appliedCoupon].rate))
+    ? appliedCoupon.discountType === "PERCENTAGE"
+      ? Math.min(subtotal, Math.round(subtotal * (appliedCoupon.discountValue / 100)))
+      : Math.min(subtotal, Math.round(appliedCoupon.discountAmount))
     : 0;
 
   const total = Math.max(0, subtotal - couponDiscount);
@@ -402,7 +400,7 @@ export function CartPageClient({ products }: CartPageClientProps) {
   const currentPayment = PAYMENT_CONFIGS[selectedMethod];
 
   // Coupon handlers
-  const handleApplyCoupon = (e: FormEvent<HTMLFormElement>) => {
+  const handleApplyCoupon = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const cleanCode = couponInput.trim().toUpperCase();
 
@@ -411,28 +409,68 @@ export function CartPageClient({ products }: CartPageClientProps) {
       return;
     }
 
-    if (!isCouponCode(cleanCode)) {
-      setAppliedCoupon(null);
-      setCouponFeedback({
-        tone: "error",
-        message: "Invalid or expired coupon code.",
+    try {
+      const res = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: cleanCode, subtotal }),
       });
-      notify.error("Invalid coupon", {
-        description: "That coupon code is not recognized.",
-        id: "coupon-err",
-      });
-      return;
-    }
+      const data = await res.json();
 
-    setAppliedCoupon(cleanCode);
-    setCouponFeedback({
-      tone: "success",
-      message: `${cleanCode} applied! 10% discount added.`,
-    });
-    notify.success("Coupon applied", {
-      description: `${cleanCode} gave you 10% discount on your order.`,
-      id: "coupon-ok",
-    });
+      if (res.ok && data.valid) {
+        setAppliedCoupon({
+          code: data.code,
+          discountType: data.discountType || "PERCENTAGE",
+          discountValue: data.discountValue || 10,
+          discountAmount: data.discountAmount || Math.round(subtotal * 0.1),
+          label: data.label,
+        });
+        setCouponFeedback({
+          tone: "success",
+          message: data.message || `${cleanCode} applied! Discount added.`,
+        });
+        notify.success("Coupon applied", {
+          description: `${cleanCode} applied to your order.`,
+          id: "coupon-ok",
+        });
+      } else {
+        setAppliedCoupon(null);
+        setCouponFeedback({
+          tone: "error",
+          message: data.message || "Invalid or inactive coupon code.",
+        });
+        notify.error("Invalid coupon", {
+          description: data.message || "That coupon code is not recognized or is inactive.",
+          id: "coupon-err",
+        });
+      }
+    } catch {
+      // Offline fallback
+      if (cleanCode === "TECHBD10" || cleanCode === "SAVE10" || cleanCode === "SAFE10") {
+        const discountAmount = Math.round(subtotal * 0.1);
+        setAppliedCoupon({
+          code: cleanCode,
+          discountType: "PERCENTAGE",
+          discountValue: 10,
+          discountAmount,
+          label: "10% off storewide",
+        });
+        setCouponFeedback({
+          tone: "success",
+          message: `${cleanCode} applied! 10% discount added.`,
+        });
+        notify.success("Coupon applied", {
+          description: `${cleanCode} gave you 10% discount on your order.`,
+          id: "coupon-ok",
+        });
+      } else {
+        setAppliedCoupon(null);
+        setCouponFeedback({
+          tone: "error",
+          message: "Invalid or expired coupon code.",
+        });
+      }
+    }
   };
 
   const handleRemoveCoupon = () => {
@@ -488,7 +526,7 @@ export function CartPageClient({ products }: CartPageClientProps) {
       totalPrice: formatPrice(total),
       paymentMethod: selectedMethod,
       notes: requirements.trim() || null,
-      couponCode: appliedCoupon || null,
+      couponCode: appliedCoupon ? appliedCoupon.code : null,
       items: cartProducts.map(({ line, product, quantity, unitPrice, originalPrice, optionLabel }) => ({
         productId: product.id,
         optionId: line.optionId,
@@ -1055,7 +1093,7 @@ export function CartPageClient({ products }: CartPageClientProps) {
                 {appliedCoupon ? (
                   <div className={styles.couponAppliedBadge}>
                     <span className={styles.couponAppliedText}>
-                      <span>✓ {appliedCoupon} ({COUPONS[appliedCoupon].label})</span>
+                      <span>✓ {appliedCoupon.code} ({appliedCoupon.label || (appliedCoupon.discountType === "PERCENTAGE" ? `${appliedCoupon.discountValue}% off` : `৳${appliedCoupon.discountValue} off`)})</span>
                     </span>
                     <button
                       type="button"
@@ -1122,7 +1160,7 @@ export function CartPageClient({ products }: CartPageClientProps) {
 
                 {couponDiscount > 0 && appliedCoupon && (
                   <div className={styles.priceRow}>
-                    <span>Coupon ({appliedCoupon})</span>
+                    <span>Coupon ({appliedCoupon.code})</span>
                     <span className={`${styles.priceRowValue} ${styles.priceRowSavings}`}>
                       −{formatPrice(couponDiscount)}
                     </span>

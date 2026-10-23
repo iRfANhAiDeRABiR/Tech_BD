@@ -45,6 +45,15 @@ async function requireAdmin() {
   return session;
 }
 
+async function requireRole(allowedRoles: ("OWNER" | "ADMIN" | "SUPPORT")[]) {
+  const session = await requireAdmin();
+  const role = session.user.role as "OWNER" | "ADMIN" | "SUPPORT" | undefined;
+  if (!role || !allowedRoles.includes(role)) {
+    throw new Error(`Forbidden: Role '${role || "UNKNOWN"}' does not have permission for this action.`);
+  }
+  return session;
+}
+
 export async function loginAction(formData: FormData) {
   try {
     const { signIn } = await import("@/auth");
@@ -300,7 +309,7 @@ export async function saveProductAction(formData: FormData) {
 }
 
 export async function deleteProductAction(formData: FormData) {
-  const session = await requireAdmin();
+  const session = await requireRole(["OWNER", "ADMIN"]);
   const id = parseOptionalProductId(formData.get("productId"));
   if (!id) throw new Error("Invalid product.");
 
@@ -785,7 +794,7 @@ export async function removeProductFromCategoryAction(formData: FormData) {
 }
 
 export async function deleteCategoryAction(formData: FormData) {
-  const session = await requireAdmin();
+  const session = await requireRole(["OWNER", "ADMIN"]);
   const id = Number(formData.get("categoryId"));
   const category = await prisma.category.findUnique({ where: { id }, include: { _count: { select: { products: true } } } });
   if (!category) return;
@@ -925,7 +934,7 @@ export async function saveSoftwareDownloadAction(formData: FormData) {
 }
 
 export async function deleteSoftwareDownloadAction(formData: FormData) {
-  const session = await requireAdmin();
+  const session = await requireRole(["OWNER", "ADMIN"]);
 
   const id = String(formData.get("downloadId") ?? "").trim();
   if (!id) throw new Error("Invalid software download id.");
@@ -1087,7 +1096,7 @@ export async function reactivateBanAction(banId: string) {
 }
 
 export async function deleteBanAction(banId: string) {
-  const session = await requireAdmin();
+  const session = await requireRole(["OWNER", "ADMIN"]);
   const { deleteBan } = await import("@/lib/bans-store");
   await deleteBan(banId);
 
@@ -1106,7 +1115,7 @@ export async function deleteBanAction(banId: string) {
 }
 
 export async function clearEventLogsAction() {
-  const session = await requireAdmin();
+  const session = await requireRole(["OWNER"]);
   const { clearAllLogs } = await import("@/lib/audit-logs-store");
   await clearAllLogs();
 
@@ -1119,4 +1128,153 @@ export async function clearEventLogsAction() {
   });
 
   revalidatePath("/admin/logs");
+}
+
+export async function createCouponAction(formData: FormData) {
+  const session = await requireRole(["OWNER", "ADMIN"]);
+  const { createCoupon } = await import("@/lib/coupons-store");
+
+  const code = String(formData.get("code") || "").trim().toUpperCase();
+  if (!code) throw new Error("Coupon code is required.");
+
+  const discountType = (formData.get("discountType") === "FIXED" ? "FIXED" : "PERCENTAGE") as "FIXED" | "PERCENTAGE";
+  const discountValue = Number(formData.get("discountValue") || 0);
+  const minOrderAmount = Number(formData.get("minOrderAmount") || 0);
+  const rawMaxDiscount = formData.get("maxDiscount");
+  const maxDiscount = rawMaxDiscount ? Number(rawMaxDiscount) : null;
+  const isActive = formData.get("isActive") === "true" || formData.get("isActive") === "on";
+  const expiresAt = formData.get("expiresAt") ? String(formData.get("expiresAt")) : null;
+  const rawUsageLimit = formData.get("usageLimit");
+  const usageLimit = rawUsageLimit ? Number(rawUsageLimit) : null;
+  const description = formData.get("description") ? String(formData.get("description")).trim() : null;
+
+  const coupon = await createCoupon({
+    code,
+    discountType,
+    discountValue,
+    minOrderAmount,
+    maxDiscount,
+    isActive,
+    expiresAt,
+    usageLimit,
+    description,
+  });
+
+  await logAdminEvent({
+    action: "COUPON_CREATED",
+    category: "ORDERS",
+    entityType: "Coupon",
+    entityId: coupon.id,
+    entityName: coupon.code,
+    details: {
+      code: coupon.code,
+      discountType: coupon.discountType,
+      discountValue: coupon.discountValue,
+      isActive: coupon.isActive,
+    },
+    adminEmail: session?.user?.email || "Admin",
+    severity: "INFO",
+  });
+
+  revalidatePath("/admin/coupons");
+  revalidatePath("/cart");
+}
+
+export async function updateCouponAction(formData: FormData) {
+  const session = await requireRole(["OWNER", "ADMIN"]);
+  const { updateCoupon } = await import("@/lib/coupons-store");
+
+  const id = String(formData.get("id") || "").trim();
+  if (!id) throw new Error("Coupon ID is required.");
+
+  const code = String(formData.get("code") || "").trim().toUpperCase();
+  const discountType = (formData.get("discountType") === "FIXED" ? "FIXED" : "PERCENTAGE") as "FIXED" | "PERCENTAGE";
+  const discountValue = Number(formData.get("discountValue") || 0);
+  const minOrderAmount = Number(formData.get("minOrderAmount") || 0);
+  const rawMaxDiscount = formData.get("maxDiscount");
+  const maxDiscount = rawMaxDiscount ? Number(rawMaxDiscount) : null;
+  const isActive = formData.get("isActive") === "true" || formData.get("isActive") === "on";
+  const expiresAt = formData.get("expiresAt") ? String(formData.get("expiresAt")) : null;
+  const rawUsageLimit = formData.get("usageLimit");
+  const usageLimit = rawUsageLimit ? Number(rawUsageLimit) : null;
+  const description = formData.get("description") ? String(formData.get("description")).trim() : null;
+
+  const coupon = await updateCoupon(id, {
+    code,
+    discountType,
+    discountValue,
+    minOrderAmount,
+    maxDiscount,
+    isActive,
+    expiresAt,
+    usageLimit,
+    description,
+  });
+
+  await logAdminEvent({
+    action: "COUPON_UPDATED",
+    category: "ORDERS",
+    entityType: "Coupon",
+    entityId: coupon.id,
+    entityName: coupon.code,
+    details: {
+      code: coupon.code,
+      isActive: coupon.isActive,
+    },
+    adminEmail: session?.user?.email || "Admin",
+    severity: "INFO",
+  });
+
+  revalidatePath("/admin/coupons");
+  revalidatePath("/cart");
+}
+
+export async function toggleCouponActiveAction(couponId: string, isActive: boolean) {
+  const session = await requireRole(["OWNER", "ADMIN"]);
+  const { toggleCouponActive, getCouponById } = await import("@/lib/coupons-store");
+
+  const coupon = await getCouponById(couponId);
+  await toggleCouponActive(couponId, isActive);
+
+  await logAdminEvent({
+    action: isActive ? "COUPON_ACTIVATED" : "COUPON_DEACTIVATED",
+    category: "ORDERS",
+    entityType: "Coupon",
+    entityId: couponId,
+    entityName: coupon?.code || couponId,
+    details: {
+      isActive,
+      code: coupon?.code,
+    },
+    adminEmail: session?.user?.email || "Admin",
+    severity: "INFO",
+  });
+
+  revalidatePath("/admin/coupons");
+  revalidatePath("/cart");
+}
+
+export async function deleteCouponAction(couponId: string) {
+  const session = await requireRole(["OWNER", "ADMIN"]);
+  const { deleteCoupon, getCouponById } = await import("@/lib/coupons-store");
+
+  const coupon = await getCouponById(couponId);
+  await deleteCoupon(couponId);
+
+  await logAdminEvent({
+    action: "COUPON_DELETED",
+    category: "ORDERS",
+    entityType: "Coupon",
+    entityId: couponId,
+    entityName: coupon?.code || couponId,
+    details: {
+      deleted: true,
+      code: coupon?.code,
+    },
+    adminEmail: session?.user?.email || "Admin",
+    severity: "WARNING",
+  });
+
+  revalidatePath("/admin/coupons");
+  revalidatePath("/cart");
 }
