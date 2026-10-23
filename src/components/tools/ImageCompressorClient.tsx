@@ -257,7 +257,7 @@ export function ImageCompressorClient({
 
           {/* PNG Color Reduction Toggle */}
           {outputFormat === "image/png" && (
-            <div style={{ display: "flex", alignItems: "center", gap: 10, padding: 12, borderRadius: 8, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+            <label className={styles.checkboxCard}>
               <input
                 type="checkbox"
                 id="png-quantize"
@@ -266,12 +266,12 @@ export function ImageCompressorClient({
                   setReduceColors(e.target.checked);
                   setResult(null);
                 }}
-                style={{ width: 16, height: 16, accentColor: "#6366f1", cursor: "pointer" }}
+                className={styles.checkboxInput}
               />
-              <label htmlFor="png-quantize" style={{ fontSize: 13, color: "#cbd5e1", cursor: "pointer" }}>
+              <span className={styles.checkboxLabel}>
                 Enable Palette Quantization (Cuts PNG size up to 70% with transparency)
-              </label>
-            </div>
+              </span>
+            </label>
           )}
 
           {/* Action buttons */}

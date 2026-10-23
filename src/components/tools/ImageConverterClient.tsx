@@ -220,7 +220,7 @@ export function ImageConverterClient({
             ) : imageData.format === "HEIC" ? (
               <div style={{ textAlign: "center", padding: 30, color: "#94a3b8" }}>
                 <div style={{ fontSize: 40, marginBottom: 8 }}>📷</div>
-                <div style={{ fontWeight: 700, color: "#ffffff" }}>Apple HEIC Image Selected</div>
+                <div style={{ fontWeight: 700, color: "var(--text-primary, #1e293b)" }}>Apple HEIC Image Selected</div>
                 <div style={{ fontSize: 12, marginTop: 4 }}>
                   Ready to convert to high-compatibility {targetExt}
                 </div>
@@ -300,7 +300,7 @@ export function ImageConverterClient({
           )}
 
           {outputFormat === "image/svg+xml" && (
-            <div style={{ padding: "12px 14px", borderRadius: 8, background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.2)", fontSize: 12, color: "#818cf8" }}>
+            <div className={styles.infoBanner}>
               Vectorizes raster pixels into scalable SVG vector shapes that can be infinitely enlarged without pixelation.
             </div>
           )}

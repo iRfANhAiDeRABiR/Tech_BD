@@ -378,61 +378,217 @@
 }
 
 .primaryButton,
+.buttonPrimary,
 .successButton,
-.secondaryButton {
-  padding: 12px 24px;
+.secondaryButton,
+.buttonSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 22px;
   font-size: 0.95rem;
   font-weight: 600;
   border-radius: 12px;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
+  user-select: none;
+  text-decoration: none;
 }
 
-.primaryButton {
+.primaryButton,
+.buttonPrimary {
   background: #6366f1;
   color: #ffffff;
   flex: 1;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
 }
 
-.primaryButton:hover:not(:disabled) {
+.primaryButton:hover:not(:disabled),
+.buttonPrimary:hover:not(:disabled) {
   background: #4f46e5;
   transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
 }
 
-.primaryButton:disabled {
+.primaryButton:disabled,
+.buttonPrimary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .successButton {
   background: #10b981;
   color: #ffffff;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
 }
 
 .successButton:hover {
   background: #059669;
   transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
 }
 
-.secondaryButton {
+.secondaryButton,
+.buttonSecondary {
   background: var(--bg-glass, rgba(99, 102, 241, 0.08));
   color: var(--text-primary, #1e293b);
   border: 1px solid var(--border-color, rgba(0, 0, 0, 0.12));
 }
 
-.secondaryButton:hover {
+.secondaryButton:hover,
+.buttonSecondary:hover {
   background: var(--bg-glass-hover, rgba(99, 102, 241, 0.15));
+  transform: translateY(-1px);
 }
 
-[data-theme="dark"] .secondaryButton {
+[data-theme="dark"] .secondaryButton,
+[data-theme="dark"] .buttonSecondary {
   background: rgba(99, 102, 241, 0.1);
   color: #f5f7ff;
   border-color: rgba(255, 255, 255, 0.1);
 }
 
-[data-theme="dark"] .secondaryButton:hover {
+[data-theme="dark"] .secondaryButton:hover,
+[data-theme="dark"] .buttonSecondary:hover {
   background: rgba(99, 102, 241, 0.18);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+/* Format Grid & Format Buttons */
+.formatGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  width: 100%;
+}
+
+.formatButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 12px;
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.12));
+  background: var(--bg-card, #ffffff);
+  color: var(--text-primary, #1e293b);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+  user-select: none;
+}
+
+.formatButton:hover {
+  background: var(--bg-glass-hover, rgba(99, 102, 241, 0.08));
+  border-color: rgba(99, 102, 241, 0.35);
+  transform: translateY(-1px);
+}
+
+.formatButtonActive {
+  background: #6366f1 !important;
+  border-color: #6366f1 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+}
+
+[data-theme="dark"] .formatButton {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .formatButton:hover {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+/* Slider Header, Value, and Helper */
+.sliderHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.sliderValue {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #6366f1;
+  background: rgba(99, 102, 241, 0.1);
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.helperText {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #64748b);
+  margin-top: 6px;
+  display: block;
+}
+
+/* Checkbox Card */
+.checkboxCard {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.checkboxCard:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+[data-theme="dark"] .checkboxCard {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.checkboxInput {
+  width: 17px;
+  height: 17px;
+  accent-color: #6366f1;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.checkboxLabel {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary, #1e293b);
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+[data-theme="dark"] .checkboxLabel {
+  color: #e2e8f0;
+}
+
+/* Info Banner */
+.infoBanner {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  font-size: 0.85rem;
+  color: var(--text-primary, #4338ca);
+  line-height: 1.5;
+}
+
+[data-theme="dark"] .infoBanner {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.3);
+  color: #c7d2fe;
 }
 
 /* Replace Upload (shown below editor) */
@@ -548,8 +704,10 @@
   }
 
   .primaryButton,
+  .buttonPrimary,
   .successButton,
-  .secondaryButton {
+  .secondaryButton,
+  .buttonSecondary {
     width: 100%;
     text-align: center;
   }
