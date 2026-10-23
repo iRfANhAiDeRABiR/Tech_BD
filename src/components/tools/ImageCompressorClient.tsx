@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { Scissors, Download, RotateCcw } from "lucide-react";
+import { useState, useCallback, useEffect } from "react";
+import { Scissors, Download, RotateCcw, Sparkles } from "lucide-react";
 import { ImageUploader, type ImageFileData } from "./ImageUploader";
 import { notify } from "@/lib/toast";
 import {
@@ -14,6 +14,76 @@ import {
 } from "@/lib/imageProcessing";
 import styles from "./ImageTool.module.css";
 
+export interface CompressionPreset {
+  id: string;
+  name: string;
+  shortLabel: string;
+  fromDesc: string;
+  targetFormat: ImageFormat;
+  accept?: string;
+  defaultQuality: number;
+  reduceColors?: boolean;
+  badge?: string;
+  hint: string;
+}
+
+export const COMPRESSION_PRESETS: CompressionPreset[] = [
+  {
+    id: "auto",
+    name: "Any Image (Auto)",
+    shortLabel: "Any Format",
+    fromDesc: "Any Image",
+    targetFormat: "image/jpeg",
+    defaultQuality: 75,
+    hint: "Upload any JPG, PNG, WebP, or GIF image to compress and reduce file size.",
+  },
+  {
+    id: "compress-jpeg",
+    name: "Compress JPEG",
+    shortLabel: "JPG / JPEG",
+    fromDesc: "JPG Photo",
+    targetFormat: "image/jpeg",
+    accept: "image/jpeg,.jpg,.jpeg",
+    defaultQuality: 70,
+    badge: "Popular",
+    hint: "Compress JPG / JPEG photos with smart quality preservation and file size reduction.",
+  },
+  {
+    id: "png-compressor",
+    name: "Compress PNG",
+    shortLabel: "PNG",
+    fromDesc: "PNG Image",
+    targetFormat: "image/png",
+    accept: "image/png,.png",
+    defaultQuality: 80,
+    reduceColors: true,
+    badge: "Palette",
+    hint: "Compress PNG files up to 70% using 8-bit palette quantization while keeping transparency.",
+  },
+  {
+    id: "webp-compressor",
+    name: "Compress WebP",
+    shortLabel: "WebP",
+    fromDesc: "WebP Image",
+    targetFormat: "image/webp",
+    accept: "image/webp,.webp",
+    defaultQuality: 72,
+    badge: "Modern",
+    hint: "Compress modern WebP images with high efficiency compression for lightning fast web loading.",
+  },
+  {
+    id: "gif-compressor",
+    name: "Compress GIF",
+    shortLabel: "GIF",
+    fromDesc: "GIF Animation",
+    targetFormat: "image/webp",
+    accept: "image/gif,.gif",
+    defaultQuality: 65,
+    badge: "Optimized",
+    hint: "Optimize GIF animation or image files to dramatically reduce payload size.",
+  },
+];
+
 const OUTPUT_FORMATS: { label: string; value: ImageFormat }[] = [
   { label: "JPG (High Compression)", value: "image/jpeg" },
   { label: "WebP (Ultra-Efficient)", value: "image/webp" },
@@ -21,6 +91,7 @@ const OUTPUT_FORMATS: { label: string; value: ImageFormat }[] = [
 ];
 
 export interface ImageCompressorClientProps {
+  initialPreset?: string;
   initialFormat?: ImageFormat;
   targetFormatLock?: ImageFormat;
   toolTitle?: string;
@@ -30,6 +101,7 @@ export interface ImageCompressorClientProps {
 }
 
 export function ImageCompressorClient({
+  initialPreset,
   initialFormat = "image/jpeg",
   targetFormatLock,
   toolTitle,
@@ -37,12 +109,56 @@ export function ImageCompressorClient({
   defaultQuality = 75,
   allowedAccept,
 }: ImageCompressorClientProps = {}) {
+  // Determine starting preset
+  const getStartingPreset = (): CompressionPreset => {
+    if (initialPreset) {
+      const match = COMPRESSION_PRESETS.find((p) => p.id === initialPreset);
+      if (match) return match;
+    }
+    if (targetFormatLock === "image/png" || initialFormat === "image/png") {
+      return COMPRESSION_PRESETS.find((p) => p.id === "png-compressor")!;
+    }
+    if (targetFormatLock === "image/webp" || initialFormat === "image/webp") {
+      return COMPRESSION_PRESETS.find((p) => p.id === "webp-compressor")!;
+    }
+    return COMPRESSION_PRESETS[0];
+  };
+
+  const [activePreset, setActivePreset] = useState<CompressionPreset>(getStartingPreset);
   const [imageData, setImageData] = useState<ImageFileData | null>(null);
-  const [outputFormat, setOutputFormat] = useState<ImageFormat>(targetFormatLock || initialFormat);
-  const [quality, setQuality] = useState(defaultQuality);
-  const [reduceColors, setReduceColors] = useState(true);
+  const [outputFormat, setOutputFormat] = useState<ImageFormat>(
+    targetFormatLock || activePreset.targetFormat
+  );
+  const [quality, setQuality] = useState(activePreset.defaultQuality || defaultQuality);
+  const [reduceColors, setReduceColors] = useState(activePreset.reduceColors ?? true);
   const [processing, setProcessing] = useState(false);
   const [result, setResult] = useState<{ blob: Blob; url: string } | null>(null);
+
+  // Sync client-side URL params if present (e.g. ?preset=png-compressor)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const presetParam = params.get("preset");
+    if (presetParam) {
+      const match = COMPRESSION_PRESETS.find((p) => p.id === presetParam);
+      if (match) {
+        setActivePreset(match);
+        setOutputFormat(match.targetFormat);
+        setQuality(match.defaultQuality);
+        if (match.reduceColors !== undefined) setReduceColors(match.reduceColors);
+      }
+    }
+  }, []);
+
+  const handleSelectPreset = useCallback((preset: CompressionPreset) => {
+    setActivePreset(preset);
+    setOutputFormat(preset.targetFormat);
+    setQuality(preset.defaultQuality);
+    if (preset.reduceColors !== undefined) {
+      setReduceColors(preset.reduceColors);
+    }
+    setResult(null);
+  }, []);
 
   const handleImageSelect = useCallback(
     (data: ImageFileData) => {
@@ -50,14 +166,15 @@ export function ImageCompressorClient({
       setResult(null);
       if (targetFormatLock) {
         setOutputFormat(targetFormatLock);
+      } else if (activePreset.id !== "auto") {
+        setOutputFormat(activePreset.targetFormat);
       } else if (data.format === "PNG") {
         setOutputFormat("image/png");
       } else {
         setOutputFormat("image/jpeg");
       }
-      setQuality(defaultQuality);
     },
-    [defaultQuality, targetFormatLock]
+    [activePreset, targetFormatLock]
   );
 
   const handleClear = useCallback(() => {
@@ -127,22 +244,64 @@ export function ImageCompressorClient({
       ? (((imageData.file.size - result.blob.size) / imageData.file.size) * 100).toFixed(1)
       : null;
 
+  // Presets Bar Component
+  const renderPresetsBar = () => (
+    <div className={styles.formatPresetBar}>
+      <div className={styles.formatPresetHeader}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Sparkles size={15} style={{ color: "#6366f1" }} />
+          <h4 className={styles.formatPresetTitle}>Compression Formats</h4>
+        </div>
+        <p className={styles.presetHint}>{activePreset.hint}</p>
+      </div>
+      <div className={styles.formatPresetGrid}>
+        {COMPRESSION_PRESETS.map((preset) => {
+          const isActive = activePreset.id === preset.id;
+          return (
+            <button
+              key={preset.id}
+              type="button"
+              className={`${styles.presetChip} ${isActive ? styles.presetChipActive : ""}`}
+              onClick={() => handleSelectPreset(preset)}
+            >
+              <span>{preset.shortLabel}</span>
+              {preset.badge && <span className={styles.presetChipBadge}>{preset.badge}</span>}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+
   if (!imageData) {
+    const uploadLabel =
+      activePreset.id === "auto"
+        ? "Upload Image to Compress"
+        : `Upload ${activePreset.fromDesc} to Compress`;
+
+    const uploadAccept = activePreset.accept || allowedAccept;
+
     return (
       <div className={styles.toolContainer}>
         {toolTitle && (
           <div style={{ textAlign: "center", marginBottom: 20 }}>
             <h2 style={{ fontSize: 22, fontWeight: 800, margin: 0 }}>{toolTitle}</h2>
             {toolSubtitle && (
-              <p style={{ fontSize: 13, color: "#94a3b8", margin: "6px 0 0" }}>{toolSubtitle}</p>
+              <p style={{ fontSize: 13, color: "var(--text-secondary, #94a3b8)", margin: "6px 0 0" }}>
+                {toolSubtitle}
+              </p>
             )}
           </div>
         )}
+
+        {/* Format Selector Pills Bar */}
+        {renderPresetsBar()}
+
         <ImageUploader
           onImageSelect={handleImageSelect}
           onClear={handleClear}
-          accept={allowedAccept}
-          label="Upload Image to Compress"
+          accept={uploadAccept}
+          label={uploadLabel}
         />
         <p className={styles.privacyNote}>
           Your images are processed 100% locally in your browser. No files are uploaded to any server.
@@ -153,6 +312,9 @@ export function ImageCompressorClient({
 
   return (
     <div className={styles.toolContainer}>
+      {/* Format Selector Pills Bar */}
+      {renderPresetsBar()}
+
       <div className={styles.editorLayout}>
         {/* Preview Section */}
         <div className={styles.previewSection}>
@@ -249,7 +411,7 @@ export function ImageCompressorClient({
               }}
               className={styles.slider}
             />
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#64748b", marginTop: 4 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "var(--text-secondary, #64748b)", marginTop: 4 }}>
               <span>High Compression (Smaller)</span>
               <span>High Quality (Clearer)</span>
             </div>

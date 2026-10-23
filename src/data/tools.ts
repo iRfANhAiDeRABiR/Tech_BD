@@ -132,7 +132,7 @@ export const TOOLS: ToolConfig[] = [
   {
     id: 'image-compressor',
     name: 'Image Compressor',
-    description: 'Reduce image size, keep quality',
+    description: 'Compress JPG, PNG, WebP & GIF with size & quality controls',
     category: 'Image',
     icon: 'Scissors',
     accentColor: '#F59E0B',
@@ -217,7 +217,7 @@ export const TOOLS: ToolConfig[] = [
   {
     id: 'crop-image',
     name: 'Crop Image',
-    description: 'Crop images with custom aspect ratios & precision handles',
+    description: 'Crop images with custom aspect ratios, precision handles & formats',
     category: 'Image',
     icon: 'Crop',
     accentColor: '#6366F1',
@@ -226,6 +226,9 @@ export const TOOLS: ToolConfig[] = [
     badge: 'New',
     href: '/tools/crop-image',
   },
+];
+
+export const TOOL_ALIAS_LIST: ToolConfig[] = [
   {
     id: 'crop-png',
     name: 'Crop PNG',
@@ -298,10 +301,8 @@ export const TOOLS: ToolConfig[] = [
     backgroundColor: 'rgba(139, 92, 246, 0.08)',
     badge: 'New',
     href: '/tools/gif-compressor',
-  }
-];
+  },
 
-export const CONVERTER_ALIAS_TOOLS: ToolConfig[] = [
   {
     id: 'svg-converter',
     name: 'SVG Converter',
@@ -412,4 +413,4 @@ export const CONVERTER_ALIAS_TOOLS: ToolConfig[] = [
   },
 ];
 
-export const ALL_TOOLS: ToolConfig[] = [...TOOLS, ...CONVERTER_ALIAS_TOOLS];
+export const ALL_TOOLS: ToolConfig[] = [...TOOLS, ...TOOL_ALIAS_LIST];

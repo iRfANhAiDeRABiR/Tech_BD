@@ -117,6 +117,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
     case "crop-png":
       ToolComponent = (
         <ImageCropperClient
+          initialPreset="crop-png"
           defaultFormat="image/png"
           lockFormat={true}
           allowedAccept="image/png,.png"
@@ -128,6 +129,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
     case "crop-webp":
       ToolComponent = (
         <ImageCropperClient
+          initialPreset="crop-webp"
           defaultFormat="image/webp"
           lockFormat={true}
           allowedAccept="image/webp,.webp"
@@ -139,6 +141,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
     case "crop-jpg":
       ToolComponent = (
         <ImageCropperClient
+          initialPreset="crop-jpg"
           defaultFormat="image/jpeg"
           lockFormat={true}
           allowedAccept="image/jpeg,.jpg,.jpeg"
@@ -260,6 +263,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
     case "compress-jpeg":
       ToolComponent = (
         <ImageCompressorClient
+          initialPreset="compress-jpeg"
           initialFormat="image/jpeg"
           targetFormatLock="image/jpeg"
           defaultQuality={70}
@@ -272,6 +276,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
     case "png-compressor":
       ToolComponent = (
         <ImageCompressorClient
+          initialPreset="png-compressor"
           initialFormat="image/png"
           targetFormatLock="image/png"
           toolTitle="PNG Compressor"
@@ -283,6 +288,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
     case "gif-compressor":
       ToolComponent = (
         <ImageCompressorClient
+          initialPreset="gif-compressor"
           initialFormat="image/webp"
           defaultQuality={65}
           toolTitle="GIF Compressor"

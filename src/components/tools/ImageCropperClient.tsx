@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Crop, Download, RefreshCw, RotateCw, Check, ArrowLeft } from "lucide-react";
+import { Crop, Download, RefreshCw, RotateCw, Check, ArrowLeft, Sparkles } from "lucide-react";
 import { ImageUploader, type ImageFileData } from "./ImageUploader";
 import { notify } from "@/lib/toast";
 import {
@@ -27,7 +27,60 @@ const ASPECT_RATIOS: AspectOption[] = [
   { label: "3:2 Photo", ratio: 3 / 2 },
 ];
 
+export interface CropPreset {
+  id: string;
+  name: string;
+  shortLabel: string;
+  fromDesc: string;
+  targetFormat: ImageFormat;
+  accept?: string;
+  badge?: string;
+  hint: string;
+}
+
+export const CROP_PRESETS: CropPreset[] = [
+  {
+    id: "auto",
+    name: "Any Format",
+    shortLabel: "Any Image",
+    fromDesc: "Any Image",
+    targetFormat: "image/png",
+    hint: "Crop and trim any image with precision handles and custom aspect ratios.",
+  },
+  {
+    id: "crop-png",
+    name: "Crop PNG",
+    shortLabel: "PNG (Alpha)",
+    fromDesc: "PNG Image",
+    targetFormat: "image/png",
+    accept: "image/png,.png",
+    badge: "Transparent",
+    hint: "Crop PNG images while preserving full transparent alpha channels.",
+  },
+  {
+    id: "crop-jpg",
+    name: "Crop JPG",
+    shortLabel: "JPG Photo",
+    fromDesc: "JPG Photo",
+    targetFormat: "image/jpeg",
+    accept: "image/jpeg,.jpg,.jpeg",
+    badge: "High Quality",
+    hint: "Crop JPG photos with precision aspect ratios, quality, and file size controls.",
+  },
+  {
+    id: "crop-webp",
+    name: "Crop WebP",
+    shortLabel: "WebP",
+    fromDesc: "WebP Image",
+    targetFormat: "image/webp",
+    accept: "image/webp,.webp",
+    badge: "Modern",
+    hint: "Crop modern WebP images with high compression export.",
+  },
+];
+
 export interface ImageCropperClientProps {
+  initialPreset?: string;
   defaultFormat?: ImageFormat;
   lockFormat?: boolean;
   toolTitle?: string;
@@ -36,14 +89,31 @@ export interface ImageCropperClientProps {
 }
 
 export function ImageCropperClient({
+  initialPreset,
   defaultFormat = "image/png",
   lockFormat = false,
   toolTitle = "Crop Image",
   toolSubtitle = "Crop and trim your photos with precise dimensions and aspect ratios.",
   allowedAccept,
 }: ImageCropperClientProps) {
+  // Determine starting preset
+  const getStartingPreset = (): CropPreset => {
+    if (initialPreset) {
+      const match = CROP_PRESETS.find((p) => p.id === initialPreset);
+      if (match) return match;
+    }
+    if (defaultFormat === "image/jpeg") {
+      return CROP_PRESETS.find((p) => p.id === "crop-jpg")!;
+    }
+    if (defaultFormat === "image/webp") {
+      return CROP_PRESETS.find((p) => p.id === "crop-webp")!;
+    }
+    return CROP_PRESETS[0];
+  };
+
+  const [activePreset, setActivePreset] = useState<CropPreset>(getStartingPreset);
   const [imageData, setImageData] = useState<ImageFileData | null>(null);
-  const [outputFormat, setOutputFormat] = useState<ImageFormat>(defaultFormat);
+  const [outputFormat, setOutputFormat] = useState<ImageFormat>(activePreset.targetFormat || defaultFormat);
   const [selectedRatio, setSelectedRatio] = useState<number | null>(null);
   const [rotation, setRotation] = useState<number>(0);
   const [quality, setQuality] = useState<number>(90);
@@ -62,6 +132,26 @@ export function ImageCropperClient({
   });
 
   const [stageDims, setStageDims] = useState<{ w: number; h: number }>({ w: 0, h: 0 });
+
+  // Sync client-side URL params if present (e.g. ?preset=crop-png)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const presetParam = params.get("preset");
+    if (presetParam) {
+      const match = CROP_PRESETS.find((p) => p.id === presetParam);
+      if (match) {
+        setActivePreset(match);
+        setOutputFormat(match.targetFormat);
+      }
+    }
+  }, []);
+
+  const handleSelectPreset = useCallback((preset: CropPreset) => {
+    setActivePreset(preset);
+    setOutputFormat(preset.targetFormat);
+    setResult(null);
+  }, []);
 
   // Init crop box to 80% centered when image is loaded
   const initCropBox = useCallback((imgW: number, imgH: number, ratio: number | null) => {
@@ -93,10 +183,24 @@ export function ImageCropperClient({
       setImageData(data);
       setResult(null);
       setRotation(0);
-      if (defaultFormat) setOutputFormat(defaultFormat);
+      if (activePreset.id !== "auto") {
+        setOutputFormat(activePreset.targetFormat);
+      } else if (data.format === "PNG") {
+        setOutputFormat("image/png");
+      } else {
+        setOutputFormat("image/jpeg");
+      }
     },
-    [defaultFormat]
+    [activePreset]
   );
+
+  const handleClear = useCallback(() => {
+    if (result?.url) URL.revokeObjectURL(result.url);
+    setImageData(null);
+    setResult(null);
+    setStageDims({ w: 0, h: 0 });
+    setRotation(0);
+  }, [result]);
 
   const handleRatioChange = (ratio: number | null) => {
     setSelectedRatio(ratio);
@@ -249,9 +353,9 @@ export function ImageCropperClient({
       });
     } catch (err) {
       console.error("Crop error:", err);
-      notify.error("Crop failed", {
-        description: "Could not crop the image. Please try again.",
-        id: "crop-error",
+      notify.error("Cropping failed", {
+        description: "Could not crop image. Please adjust and try again.",
+        id: "crop-toast",
       });
     } finally {
       setProcessing(false);
@@ -265,83 +369,106 @@ export function ImageCropperClient({
     downloadBlob(result.blob, `${baseName}-cropped.${ext}`);
     notify.info("Download started", {
       description: `${baseName}-cropped.${ext} is downloading.`,
-      id: "crop-download",
+      id: "crop-toast",
     });
   };
 
-  const handleClear = () => {
+  const handleAdjustAgain = () => {
     if (result?.url) URL.revokeObjectURL(result.url);
-    setImageData(null);
     setResult(null);
-    setRotation(0);
   };
 
+  // Dimensions of output crop in natural pixels
+  const naturalScaleX = imageData ? imageData.width / (stageDims.w || 1) : 1;
+  const naturalScaleY = imageData ? imageData.height / (stageDims.h || 1) : 1;
+  const pixelW = Math.round(box.w * naturalScaleX);
+  const pixelH = Math.round(box.h * naturalScaleY);
+
+  // Presets Bar Component
+  const renderPresetsBar = () => (
+    <div className={styles.formatPresetBar}>
+      <div className={styles.formatPresetHeader}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Sparkles size={15} style={{ color: "#6366f1" }} />
+          <h4 className={styles.formatPresetTitle}>Crop Formats</h4>
+        </div>
+        <p className={styles.presetHint}>{activePreset.hint}</p>
+      </div>
+      <div className={styles.formatPresetGrid}>
+        {CROP_PRESETS.map((preset) => {
+          const isActive = activePreset.id === preset.id;
+          return (
+            <button
+              key={preset.id}
+              type="button"
+              className={`${styles.presetChip} ${isActive ? styles.presetChipActive : ""}`}
+              onClick={() => handleSelectPreset(preset)}
+            >
+              <span>{preset.shortLabel}</span>
+              {preset.badge && <span className={styles.presetChipBadge}>{preset.badge}</span>}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+
   if (!imageData) {
+    const uploadLabel =
+      activePreset.id === "auto"
+        ? "Upload Image to Crop"
+        : `Upload ${activePreset.fromDesc} to Crop`;
+
+    const uploadAccept = activePreset.accept || allowedAccept;
+
     return (
       <div className={styles.container}>
+        <div style={{ textAlign: "center", marginBottom: 20 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 800, margin: 0 }}>{toolTitle}</h2>
+          <p style={{ fontSize: 13, color: "var(--text-secondary, #94a3b8)", margin: "6px 0 0" }}>
+            {toolSubtitle}
+          </p>
+        </div>
+
+        {/* Format Selector Pills Bar */}
+        {renderPresetsBar()}
+
         <ImageUploader
           onImageSelect={handleImageSelect}
           onClear={handleClear}
-          accept={allowedAccept}
-          label="Upload Image to Crop"
+          accept={uploadAccept}
+          label={uploadLabel}
         />
         <p className={styles.privacyNote}>
-          All cropping happens 100% locally in your browser. No files are uploaded to any server.
+          Your images are cropped and processed 100% locally in your browser. Complete privacy.
         </p>
       </div>
     );
   }
 
-  // Calculate actual pixel dimensions of crop
-  const pixelW = Math.round(box.w * (imageData.width / (stageDims.w || 1)));
-  const pixelH = Math.round(box.h * (imageData.height / (stageDims.h || 1)));
-
   return (
     <div className={styles.container}>
+      {/* Format Selector Pills Bar */}
+      {renderPresetsBar()}
+
       <div className={styles.editorGrid}>
-        {/* Visual Crop Stage Area */}
-        <div>
+        {/* Left Viewport Stage */}
+        <div className={styles.stageCard}>
           {result ? (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 16,
-                padding: 24,
-                background: "rgba(255,255,255,0.02)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                borderRadius: 16,
-              }}
-            >
-              <img
-                src={result.url}
-                alt="Cropped Result"
-                style={{
-                  maxWidth: "100%",
-                  maxHeight: 440,
-                  borderRadius: 10,
-                  boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
-                }}
-              />
-              <div style={{ display: "flex", gap: 12, width: "100%", maxWidth: 360 }}>
-                <button
-                  type="button"
-                  className={styles.btnSecondary}
-                  onClick={() => setResult(null)}
-                >
-                  <ArrowLeft size={16} />
-                  <span>Adjust Crop</span>
-                </button>
-                <button
-                  type="button"
-                  className={styles.btnPrimary}
-                  onClick={handleDownload}
-                >
-                  <Download size={16} />
-                  <span>Download</span>
-                </button>
+            <div className={styles.resultArea}>
+              <img src={result.url} alt="Cropped Preview" className={styles.resultImage} />
+              <div className={styles.resultBar}>
+                <span>Crop Result: {pixelW} × {pixelH} px ({formatBytes(result.blob.size)})</span>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button type="button" className={styles.toolBtn} onClick={handleDownload}>
+                    <Download size={14} />
+                    <span>Download Crop</span>
+                  </button>
+                  <button type="button" className={styles.toolBtn} onClick={handleAdjustAgain}>
+                    <RefreshCw size={14} />
+                    <span>Adjust Crop</span>
+                  </button>
+                </div>
               </div>
             </div>
           ) : (
@@ -398,7 +525,7 @@ export function ImageCropperClient({
         <div className={styles.controlsPanel}>
           <div>
             <h2 className={styles.panelTitle}>{toolTitle}</h2>
-            <p style={{ fontSize: 12, color: "#94a3b8", margin: "4px 0 0" }}>
+            <p style={{ fontSize: 12, color: "var(--text-secondary, #94a3b8)", margin: "4px 0 0" }}>
               {toolSubtitle}
             </p>
           </div>
@@ -498,4 +625,3 @@ export function ImageCropperClient({
     </div>
   );
 }
-
