@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Download,
@@ -13,6 +13,10 @@ import {
   Copy,
   Check,
   X,
+  ShieldCheck,
+  AlertCircle,
+  Loader2,
+  Lock,
 } from "lucide-react";
 import {
   SOFTWARE_DOWNLOADS,
@@ -24,10 +28,18 @@ import styles from "./Downloads.module.css";
 
 interface DownloadsPageClientProps {
   initialItems?: SoftwareDownloadItem[];
+  initialUserVerified?: boolean;
+  initialVerifiedOrderNumber?: string | null;
+  initialUserLoggedIn?: boolean;
 }
+
+const STORAGE_KEY = "techbd_verified_download_order";
 
 export function DownloadsPageClient({
   initialItems = SOFTWARE_DOWNLOADS,
+  initialUserVerified = false,
+  initialVerifiedOrderNumber = null,
+  initialUserLoggedIn = false,
 }: DownloadsPageClientProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
@@ -35,9 +47,58 @@ export function DownloadsPageClient({
     useState<SoftwareDownloadItem | null>(null);
   const [copiedUrl, setCopiedUrl] = useState(false);
 
+  // Verification states
+  const [isVerified, setIsVerified] = useState<boolean>(initialUserVerified);
+  const [verifiedOrder, setVerifiedOrder] = useState<string | null>(
+    initialVerifiedOrderNumber
+  );
+  const [showOrderModal, setShowOrderModal] = useState(false);
+  const [pendingSoftware, setPendingSoftware] =
+    useState<SoftwareDownloadItem | null>(null);
+  const [orderInput, setOrderInput] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verifyError, setVerifyError] = useState<string | null>(null);
+
+  // Check sessionStorage and auto-check logged-in user on mount
+  useEffect(() => {
+    if (isVerified) {
+      if (verifiedOrder && typeof window !== "undefined") {
+        sessionStorage.setItem(STORAGE_KEY, verifiedOrder);
+      }
+      return;
+    }
+
+    if (typeof window !== "undefined") {
+      const cached = sessionStorage.getItem(STORAGE_KEY);
+      if (cached) {
+        setIsVerified(true);
+        setVerifiedOrder(cached);
+        return;
+      }
+    }
+
+    // Auto-check for logged-in user if not already verified on server
+    fetch("/api/downloads/verify-order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.valid) {
+          setIsVerified(true);
+          setVerifiedOrder(data.orderNumber || null);
+          if (typeof window !== "undefined" && data.orderNumber) {
+            sessionStorage.setItem(STORAGE_KEY, data.orderNumber);
+          }
+        }
+      })
+      .catch(() => {});
+  }, [isVerified, verifiedOrder]);
+
   const categories = useMemo(() => {
     const unique = Array.from(
-      new Set(initialItems.map((item) => item.category).filter(Boolean)),
+      new Set(initialItems.map((item) => item.category).filter(Boolean))
     );
     return [
       { label: "সবগুলো (All)", value: "All" },
@@ -46,8 +107,8 @@ export function DownloadsPageClient({
           cat === "Office"
             ? "Microsoft Office"
             : cat === "Windows"
-              ? "Windows OS"
-              : cat,
+            ? "Windows OS"
+            : cat,
         value: cat,
       })),
     ];
@@ -75,6 +136,71 @@ export function DownloadsPageClient({
       window.setTimeout(() => setCopiedUrl(false), 2000);
     } catch {
       // Fallback
+    }
+  };
+
+  const handleDownloadClick = (item: SoftwareDownloadItem) => {
+    if (isVerified) {
+      setActiveSoftware(item);
+      setCopiedUrl(false);
+    } else {
+      setPendingSoftware(item);
+      setOrderInput("");
+      setVerifyError(null);
+      setShowOrderModal(true);
+    }
+  };
+
+  const handleVerifySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const clean = orderInput.trim();
+    if (!clean) {
+      setVerifyError("অনুগ্রহ করে আপনার অর্ডার আইডি লিখুন।");
+      return;
+    }
+
+    setIsVerifying(true);
+    setVerifyError(null);
+
+    try {
+      const res = await fetch("/api/downloads/verify-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId: clean }),
+      });
+      const data = await res.json();
+
+      if (res.ok && data.valid) {
+        setIsVerified(true);
+        const resolvedOrderNumber = data.orderNumber || clean;
+        setVerifiedOrder(resolvedOrderNumber);
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem(STORAGE_KEY, resolvedOrderNumber);
+        }
+        setShowOrderModal(false);
+
+        // Unlock download immediately
+        if (pendingSoftware) {
+          setActiveSoftware(pendingSoftware);
+          setPendingSoftware(null);
+        }
+      } else {
+        setVerifyError(
+          data.message ||
+            "অর্ডার আইডি সঠিক নয় অথবা পেমেন্ট কনফার্ম করা হয়নি।"
+        );
+      }
+    } catch (err) {
+      setVerifyError("অর্ডার যাচাই করতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।");
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  const handleOpenAuth = () => {
+    setShowOrderModal(false);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("techbd:open-auth-modal"));
     }
   };
 
@@ -119,6 +245,16 @@ export function DownloadsPageClient({
           </div>
         </header>
 
+        {/* ── Verified Access Banner ── */}
+        {isVerified && (
+          <div className={styles.verifiedBanner}>
+            <span className={styles.verifiedBadgeDot} />
+            <span>
+              অর্ডার যাচাই সম্পন্ন হয়েছে {verifiedOrder ? `(#${verifiedOrder})` : ""} — সকল সফটওয়্যার ডাউনলোড লিঙ্ক সক্রিয়!
+            </span>
+          </div>
+        )}
+
         {/* ── Software Download Grid Section ── */}
         <section aria-labelledby="software-downloads-heading">
           <div className={styles.sectionHeaderRow}>
@@ -158,12 +294,9 @@ export function DownloadsPageClient({
                   <button
                     type="button"
                     className={styles.downloadBtn}
-                    onClick={() => {
-                      setActiveSoftware(item);
-                      setCopiedUrl(false);
-                    }}
+                    onClick={() => handleDownloadClick(item)}
                   >
-                    <Download size={15} />
+                    {isVerified ? <Download size={15} /> : <Lock size={15} />}
                     <span>ডাউনলোড</span>
                   </button>
                 </article>
@@ -246,6 +379,125 @@ export function DownloadsPageClient({
           </div>
         </section>
       </div>
+
+      {/* ── Order ID Verification Modal ── */}
+      {showOrderModal && (
+        <div
+          className={styles.verifyModalBackdrop}
+          onClick={() => setShowOrderModal(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="verify-modal-title"
+        >
+          <div
+            className={styles.verifyModalCard}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              className={styles.modalClose}
+              onClick={() => setShowOrderModal(false)}
+              aria-label="Close modal"
+            >
+              <X size={18} />
+            </button>
+
+            <div className={styles.verifyModalHeader}>
+              <div className={styles.verifyModalIconWrap}>
+                <ShieldCheck size={28} />
+              </div>
+              <h3 id="verify-modal-title" className={styles.verifyModalTitle}>
+                অর্ডার ভেরিফিকেশন
+              </h3>
+              <p className={styles.verifyModalSubtitle}>
+                সফটওয়্যার ডাউনলোড লিঙ্ক আনলক করতে আপনার কনফার্ম হওয়া অর্ডারের আইডি দিন
+              </p>
+
+              {pendingSoftware && (
+                <div className={styles.softwarePreviewChip}>
+                  <span>ডাউনলোড করবেন:</span>
+                  <strong>{pendingSoftware.title}</strong>
+                </div>
+              )}
+            </div>
+
+            <form onSubmit={handleVerifySubmit} className={styles.verifyForm}>
+              <div className={styles.verifyInputGroup}>
+                <label htmlFor="order-id-input" className={styles.verifyInputLabel}>
+                  অর্ডার নম্বর / আইডি (Order ID)
+                </label>
+                <div className={styles.verifyInputWrapper}>
+                  <Search size={16} className={styles.verifyInputIcon} />
+                  <input
+                    id="order-id-input"
+                    type="text"
+                    className={styles.verifyInput}
+                    placeholder="যেমন: TECHBD-ATD-XXXXXX বা #12345"
+                    value={orderInput}
+                    onChange={(e) => {
+                      setOrderInput(e.target.value);
+                      if (verifyError) setVerifyError(null);
+                    }}
+                    autoFocus
+                    required
+                  />
+                </div>
+              </div>
+
+              {verifyError && (
+                <div className={`${styles.verifyAlert} ${styles.verifyAlertError}`}>
+                  <AlertCircle size={18} style={{ flexShrink: 0, marginTop: 1 }} />
+                  <div>{verifyError}</div>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isVerifying || !orderInput.trim()}
+                className={styles.verifySubmitBtn}
+              >
+                {isVerifying ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    যাচাই করা হচ্ছে...
+                  </>
+                ) : (
+                  <>
+                    <Download size={16} />
+                    যাচাই ও ডাউনলোড করুন
+                  </>
+                )}
+              </button>
+            </form>
+
+            <div className={styles.verifyModalFooter}>
+              <p className={styles.verifyLoginPrompt}>
+                ইতিমধ্যেই অর্ডার করেছেন?{" "}
+                <button
+                  type="button"
+                  className={styles.verifyLoginBtn}
+                  onClick={handleOpenAuth}
+                >
+                  লগইন করুন
+                </button>{" "}
+                (আপনার একাউন্ট থেকে অটো যাচাই হবে)
+              </p>
+
+              <div className={styles.verifySupportRow}>
+                <a
+                  href="https://wa.me/message/7ZV3N6YFBF5ED1"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.verifySupportLink}
+                >
+                  <MessageCircle size={14} />
+                  অর্ডার আইডি খুঁজতে সাহায্য প্রয়োজন?
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Version & Direct Download Modal ── */}
       {activeSoftware && (

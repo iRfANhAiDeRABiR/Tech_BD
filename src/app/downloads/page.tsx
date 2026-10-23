@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { DownloadsPageClient } from "@/components/downloads/DownloadsPageClient";
 import { getSoftwareDownloads } from "@/lib/software-downloads-store";
+import { createClient } from "@/lib/supabase/server";
+import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +24,46 @@ export const metadata: Metadata = {
 
 export default async function DownloadsPage() {
   const items = await getSoftwareDownloads({ activeOnly: true });
-  return <DownloadsPageClient initialItems={items} />;
-}
 
+  let initialUserVerified = false;
+  let verifiedOrderNumber: string | null = null;
+  let userLoggedIn = false;
+
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user?.email) {
+      userLoggedIn = true;
+      const confirmedOrder = await prisma.order.findFirst({
+        where: {
+          customerEmail: { equals: user.email, mode: "insensitive" },
+          OR: [
+            { status: { in: ["COMPLETED", "PAID"] } },
+            { payment: { status: "VERIFIED" } },
+          ],
+        },
+        select: { orderNumber: true },
+        orderBy: { createdAt: "desc" },
+      });
+
+      if (confirmedOrder) {
+        initialUserVerified = true;
+        verifiedOrderNumber = confirmedOrder.orderNumber;
+      }
+    }
+  } catch (err) {
+    console.error("DownloadsPage user check error:", err);
+  }
+
+  return (
+    <DownloadsPageClient
+      initialItems={items}
+      initialUserVerified={initialUserVerified}
+      initialVerifiedOrderNumber={verifiedOrderNumber}
+      initialUserLoggedIn={userLoggedIn}
+    />
+  );
+}
