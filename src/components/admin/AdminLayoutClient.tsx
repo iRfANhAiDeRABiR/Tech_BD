@@ -17,6 +17,7 @@ import {
   Plus,
   ShieldCheck,
   ShieldAlert,
+  ClipboardList,
   Activity,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
@@ -65,6 +66,12 @@ const navItems = [
     icon: ShieldAlert,
     exact: false,
   },
+  {
+    label: "Event Logs",
+    href: "/admin/logs",
+    icon: ClipboardList,
+    exact: false,
+  },
 ];
 
 function getBreadcrumb(pathname: string): { title: string; subtitle?: string } {
@@ -94,6 +101,9 @@ function getBreadcrumb(pathname: string): { title: string; subtitle?: string } {
   }
   if (pathname.startsWith("/admin/bans")) {
     return { title: "Access Control & Bans", subtitle: "Security" };
+  }
+  if (pathname.startsWith("/admin/logs")) {
+    return { title: "Event & Audit Logs", subtitle: "System & Compliance" };
   }
   if (pathname.startsWith("/admin/system")) {
     return { title: "System Health & Diagnostics", subtitle: "System" };

@@ -14,6 +14,7 @@ import {
   updateSoftwareDownloadsOrder,
   upsertSoftwareDownload,
 } from "@/lib/software-downloads-store";
+import { logAdminEvent } from "@/lib/audit-logs-store";
 import type { SoftwareDownloadVariant, SoftwareVersionOption } from "@/data/software-downloads";
 
 function isCloudinaryConfigured() {
@@ -139,7 +140,7 @@ function parseCategoryForm(formData: FormData): ParsedCategoryForm {
 }
 
 export async function saveProductAction(formData: FormData) {
-  await requireAdmin();
+  const session = await requireAdmin();
   const data = parseProductForm(formData);
   const productId = parseOptionalProductId(formData.get("productId"));
   const existing = productId
@@ -246,6 +247,22 @@ export async function saveProductAction(formData: FormData) {
   }
 
   const savedId = (data.id ?? existing?.id ?? data.slug);
+  await logAdminEvent({
+    action: productId ? "PRODUCT_UPDATED" : "PRODUCT_CREATED",
+    category: "CATALOG",
+    entityType: "Product",
+    entityId: savedId,
+    entityName: data.name,
+    details: {
+      price: data.price,
+      slug: data.slug,
+      status: data.status,
+      optionsCount: data.options.length,
+    },
+    adminEmail: session?.user?.email || "Admin",
+    severity: "SUCCESS",
+  });
+
   revalidateStoreCatalog(savedId);
   if (existing && existing.id !== savedId) {
     revalidateStoreCatalog(existing.id);
@@ -254,7 +271,7 @@ export async function saveProductAction(formData: FormData) {
 }
 
 export async function deleteProductAction(formData: FormData) {
-  await requireAdmin();
+  const session = await requireAdmin();
   const id = parseOptionalProductId(formData.get("productId"));
   if (!id) throw new Error("Invalid product.");
 
@@ -267,18 +284,28 @@ export async function deleteProductAction(formData: FormData) {
     await deleteProductImage(product.imagePublicId);
   }
 
+  await logAdminEvent({
+    action: product._count.orderItems > 0 ? "PRODUCT_ARCHIVED" : "PRODUCT_DELETED",
+    category: "CATALOG",
+    entityType: "Product",
+    entityId: id,
+    entityName: product.name || id,
+    adminEmail: session?.user?.email || "Admin",
+    severity: "WARNING",
+  });
+
   revalidateStoreCatalog(id);
   redirect("/admin/products?deleted=1");
 }
 
 export async function toggleProductStockAction(formData: FormData) {
-  await requireAdmin();
+  const session = await requireAdmin();
   const id = parseOptionalProductId(formData.get("productId"));
   if (!id) throw new Error("Invalid product.");
 
   const product = await prisma.product.findUnique({
     where: { id },
-    select: { outOfStock: true },
+    select: { name: true, outOfStock: true },
   });
   if (!product) return;
 
@@ -287,17 +314,28 @@ export async function toggleProductStockAction(formData: FormData) {
     data: { outOfStock: !product.outOfStock },
   });
 
+  await logAdminEvent({
+    action: "STOCK_STATUS_TOGGLED",
+    category: "CATALOG",
+    entityType: "Product",
+    entityId: id,
+    entityName: product.name,
+    details: { outOfStock: !product.outOfStock },
+    adminEmail: session?.user?.email || "Admin",
+    severity: "INFO",
+  });
+
   revalidateStoreCatalog(id);
 }
 
 export async function toggleProductStatusAction(formData: FormData) {
-  await requireAdmin();
+  const session = await requireAdmin();
   const id = parseOptionalProductId(formData.get("productId"));
   if (!id) throw new Error("Invalid product.");
 
   const product = await prisma.product.findUnique({
     where: { id },
-    select: { status: true },
+    select: { name: true, status: true },
   });
   if (!product) return;
 
@@ -306,6 +344,17 @@ export async function toggleProductStatusAction(formData: FormData) {
   await prisma.product.update({
     where: { id },
     data: { status: nextStatus },
+  });
+
+  await logAdminEvent({
+    action: "PRODUCT_STATUS_TOGGLED",
+    category: "CATALOG",
+    entityType: "Product",
+    entityId: id,
+    entityName: product.name,
+    details: { previousStatus: product.status, nextStatus },
+    adminEmail: session?.user?.email || "Admin",
+    severity: "INFO",
   });
 
   revalidateStoreCatalog(id);
@@ -323,10 +372,15 @@ function parseEditableOrderStatus(value: FormDataEntryValue | null) {
 }
 
 export async function updateOrderStatusAction(formData: FormData) {
-  await requireAdmin();
+  const session = await requireAdmin();
   const orderId = parseRequiredText(formData.get("orderId"), "Order", 1, 120);
   const status = parseEditableOrderStatus(formData.get("status"));
   const returnTo = String(formData.get("returnTo") ?? "/admin/orders");
+
+  const existingOrder = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: { orderNumber: true, status: true, customerEmail: true, total: true },
+  });
 
   await prisma.order.update({
     where: { id: orderId },
@@ -340,6 +394,22 @@ export async function updateOrderStatusAction(formData: FormData) {
     }).catch(() => {});
   }
 
+  await logAdminEvent({
+    action: "ORDER_STATUS_UPDATED",
+    category: "ORDERS",
+    entityType: "Order",
+    entityId: orderId,
+    entityName: existingOrder?.orderNumber || orderId,
+    details: {
+      previousStatus: existingOrder?.status,
+      newStatus: status,
+      customerEmail: existingOrder?.customerEmail,
+      total: existingOrder?.total,
+    },
+    adminEmail: session?.user?.email || "Admin",
+    severity: status === "COMPLETED" ? "SUCCESS" : status === "CANCELLED" ? "WARNING" : "INFO",
+  });
+
   revalidatePath("/admin");
   revalidatePath("/admin/orders");
   revalidatePath(`/admin/orders/${orderId}`);
@@ -350,7 +420,7 @@ export async function updateOrderStatusAction(formData: FormData) {
 }
 
 export async function saveCategoryAction(formData: FormData) {
-  await requireAdmin();
+  const session = await requireAdmin();
   const data = parseCategoryForm(formData);
   const existing = data.id ? await prisma.category.findUnique({ where: { id: data.id } }) : null;
   const image = formData.get("image");
@@ -373,6 +443,22 @@ export async function saveCategoryAction(formData: FormData) {
 
   if (data.id) await prisma.category.update({ where: { id: data.id }, data: values });
   else await prisma.category.create({ data: values });
+
+  await logAdminEvent({
+    action: data.id ? "CATEGORY_UPDATED" : "CATEGORY_CREATED",
+    category: "CATEGORIES",
+    entityType: "Category",
+    entityId: String(data.id || data.slug),
+    entityName: data.name,
+    details: {
+      slug: data.slug,
+      isActive: data.isActive,
+      sortOrder: data.sortOrder,
+    },
+    adminEmail: session?.user?.email || "Admin",
+    severity: "SUCCESS",
+  });
+
   revalidateStoreCatalog();
   redirect("/admin/categories?saved=1");
 }
@@ -577,18 +663,29 @@ export async function removeProductFromCategoryAction(formData: FormData) {
 }
 
 export async function deleteCategoryAction(formData: FormData) {
-  await requireAdmin();
+  const session = await requireAdmin();
   const id = Number(formData.get("categoryId"));
   const category = await prisma.category.findUnique({ where: { id }, include: { _count: { select: { products: true } } } });
   if (!category) return;
   if (category._count.products > 0) await prisma.category.update({ where: { id }, data: { isActive: false } });
   else await prisma.category.delete({ where: { id } });
+
+  await logAdminEvent({
+    action: category._count.products > 0 ? "CATEGORY_DEACTIVATED" : "CATEGORY_DELETED",
+    category: "CATEGORIES",
+    entityType: "Category",
+    entityId: String(id),
+    entityName: category.name,
+    adminEmail: session?.user?.email || "Admin",
+    severity: "WARNING",
+  });
+
   revalidateStoreCatalog();
   redirect("/admin/categories?deleted=1");
 }
 
 export async function saveSoftwareDownloadAction(formData: FormData) {
-  await requireAdmin();
+  const session = await requireAdmin();
 
   const rawId = String(formData.get("downloadId") ?? "").trim();
   const title = parseRequiredText(formData.get("title"), "Title / Name", 2, 120);
@@ -682,6 +779,22 @@ export async function saveSoftwareDownloadAction(formData: FormData) {
     versions,
   });
 
+  await logAdminEvent({
+    action: rawId ? "DOWNLOAD_UPDATED" : "DOWNLOAD_CREATED",
+    category: "DOWNLOADS",
+    entityType: "SoftwareDownload",
+    entityId: slugId,
+    entityName: title,
+    details: {
+      category,
+      version,
+      versionsCount: versions.length,
+      isActive,
+    },
+    adminEmail: session?.user?.email || "Admin",
+    severity: "SUCCESS",
+  });
+
   revalidatePath("/downloads");
   revalidatePath("/admin/downloads");
   revalidatePath("/admin");
@@ -689,7 +802,7 @@ export async function saveSoftwareDownloadAction(formData: FormData) {
 }
 
 export async function deleteSoftwareDownloadAction(formData: FormData) {
-  await requireAdmin();
+  const session = await requireAdmin();
 
   const id = String(formData.get("downloadId") ?? "").trim();
   if (!id) throw new Error("Invalid software download id.");
@@ -700,6 +813,16 @@ export async function deleteSoftwareDownloadAction(formData: FormData) {
   }
 
   await deleteSoftwareDownloadById(id);
+
+  await logAdminEvent({
+    action: "DOWNLOAD_DELETED",
+    category: "DOWNLOADS",
+    entityType: "SoftwareDownload",
+    entityId: id,
+    entityName: existing?.title || id,
+    adminEmail: session?.user?.email || "Admin",
+    severity: "WARNING",
+  });
 
   revalidatePath("/downloads");
   revalidatePath("/admin/downloads");
@@ -767,7 +890,7 @@ export async function createBanAction(formData: FormData) {
   }
 
   const { createBan } = await import("@/lib/bans-store");
-  await createBan({
+  const newBan = await createBan({
     type,
     target,
     targetEmail,
@@ -780,27 +903,97 @@ export async function createBanAction(formData: FormData) {
     expiresAt,
   });
 
+  await logAdminEvent({
+    action: "BAN_CREATED",
+    category: "SECURITY",
+    entityType: type === "IP" ? "IP Address" : "User Account",
+    entityId: newBan.id,
+    entityName: target,
+    details: {
+      type,
+      reason,
+      duration,
+      notes,
+      targetEmail,
+    },
+    adminEmail: session?.user?.email || "Admin",
+    severity: "WARNING",
+  });
+
   revalidatePath("/admin/bans");
+  revalidatePath("/admin/logs");
   redirect("/admin/bans?saved=1");
 }
 
 export async function revokeBanAction(banId: string) {
-  await requireAdmin();
+  const session = await requireAdmin();
   const { revokeBan } = await import("@/lib/bans-store");
   await revokeBan(banId);
+
+  await logAdminEvent({
+    action: "BAN_REVOKED",
+    category: "SECURITY",
+    entityType: "Access Ban",
+    entityId: banId,
+    details: { unbanned: true },
+    adminEmail: session?.user?.email || "Admin",
+    severity: "INFO",
+  });
+
   revalidatePath("/admin/bans");
+  revalidatePath("/admin/logs");
 }
 
 export async function reactivateBanAction(banId: string) {
-  await requireAdmin();
+  const session = await requireAdmin();
   const { reactivateBan } = await import("@/lib/bans-store");
   await reactivateBan(banId);
+
+  await logAdminEvent({
+    action: "BAN_REACTIVATED",
+    category: "SECURITY",
+    entityType: "Access Ban",
+    entityId: banId,
+    details: { reactivated: true },
+    adminEmail: session?.user?.email || "Admin",
+    severity: "WARNING",
+  });
+
   revalidatePath("/admin/bans");
+  revalidatePath("/admin/logs");
 }
 
 export async function deleteBanAction(banId: string) {
-  await requireAdmin();
+  const session = await requireAdmin();
   const { deleteBan } = await import("@/lib/bans-store");
   await deleteBan(banId);
+
+  await logAdminEvent({
+    action: "BAN_DELETED",
+    category: "SECURITY",
+    entityType: "Access Ban",
+    entityId: banId,
+    details: { deleted: true },
+    adminEmail: session?.user?.email || "Admin",
+    severity: "INFO",
+  });
+
   revalidatePath("/admin/bans");
+  revalidatePath("/admin/logs");
+}
+
+export async function clearEventLogsAction() {
+  const session = await requireAdmin();
+  const { clearAllLogs } = await import("@/lib/audit-logs-store");
+  await clearAllLogs();
+
+  await logAdminEvent({
+    action: "LOGS_CLEARED",
+    category: "SYSTEM",
+    entityType: "AuditLogs",
+    adminEmail: session?.user?.email || "Admin",
+    severity: "WARNING",
+  });
+
+  revalidatePath("/admin/logs");
 }
