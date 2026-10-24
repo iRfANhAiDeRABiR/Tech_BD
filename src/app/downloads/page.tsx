@@ -1,3 +1,4 @@
+import { SITE_URL, SITE_NAME } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DownloadsPageClient } from "@/components/downloads/DownloadsPageClient";
 import { getSoftwareDownloads } from "@/lib/software-downloads-store";
@@ -7,19 +8,32 @@ import prisma from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Software Download Center | Tech Solutions BD",
+  title: "Official Software Download Center in Bangladesh | Tech Solutions BD",
   description:
     "অফিসিয়াল এবং নিরাপদ মাইক্রোসফট সফটওয়্যার ডাউনলোড লিঙ্কসমূহ। Office 2024, Office 365, Windows 11 Pro, Windows 10 Pro, Visio, Project সরাসরি অফিশিয়াল মাইক্রোসফট সিডিএন (CDN) থেকে ডাউনলোড করুন।",
   keywords: [
-    "Software download",
-    "Office 2024 download",
+    "Software download Bangladesh",
+    "Office 2024 download BD",
     "Office 365 download",
-    "Windows 11 Pro ISO download",
+    "Windows 11 Pro ISO download Bangladesh",
     "Windows 10 Pro ISO",
     "Visio download",
     "Project download",
     "Tech Solutions BD software download",
+    "সফটওয়্যার ডাউনলোড বাংলাদেশ",
   ],
+  alternates: {
+    canonical: `${SITE_URL}/downloads`,
+  },
+  openGraph: {
+    title: "Official Software Download Center in Bangladesh | Tech Solutions BD",
+    description:
+      "Safe, official Microsoft software download links in Bangladesh directly from official CDNs.",
+    url: `${SITE_URL}/downloads`,
+    siteName: SITE_NAME,
+    type: "website",
+    locale: "en_BD",
+  },
 };
 
 export default async function DownloadsPage() {

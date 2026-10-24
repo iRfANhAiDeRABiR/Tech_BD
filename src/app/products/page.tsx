@@ -8,11 +8,39 @@ import { getStoreCategories, getStoreProducts } from "@/data/products";
 import { scoreProductSearchMatch } from "@/lib/productSearch";
 import type { Product, ProductSummary, StoreCategory } from "@/types/product";
 import styles from "./products-page.module.css";
+import { SITE_URL, SITE_NAME, DEFAULT_BANGLADESH_KEYWORDS } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Products by Category | Tech Solutions BD",
+  title: "All Genuine Software & Digital Products in Bangladesh | Tech Solutions BD",
   description:
-    "Browse genuine software licenses and subscriptions from Tech Solutions BD, grouped row-wise by category.",
+    "Shop 100% genuine digital software licenses in Bangladesh: Windows 11/10 Pro keys, Microsoft Office 2024, Office 365, Antivirus, IDM & Adobe. Instant delivery via bKash, Nagad & Rocket.",
+  keywords: DEFAULT_BANGLADESH_KEYWORDS,
+  alternates: {
+    canonical: `${SITE_URL}/products`,
+  },
+  openGraph: {
+    title: "All Genuine Software & Digital Products in Bangladesh | Tech Solutions BD",
+    description:
+      "Shop 100% genuine digital software licenses in Bangladesh: Windows 11/10 Pro keys, Microsoft Office 2024, Office 365, Antivirus, IDM & Adobe.",
+    url: `${SITE_URL}/products`,
+    siteName: SITE_NAME,
+    type: "website",
+    locale: "en_BD",
+    images: [
+      {
+        url: "/logo.png",
+        width: 1200,
+        height: 630,
+        alt: "Tech Solutions BD - Genuine Digital Products Catalog",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "All Genuine Software & Digital Products in Bangladesh | Tech Solutions BD",
+    description:
+      "Buy Windows 11, Office 2024, Antivirus & IDM licenses in Bangladesh with instant bKash payment.",
+  },
 };
 
 interface CategoryProductGroup {

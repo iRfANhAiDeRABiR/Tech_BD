@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { SITE_URL, SITE_NAME, DEFAULT_BANGLADESH_KEYWORDS } from "@/lib/seo";
 import { ContactUs } from "@/components/home/ContactUs";
 import { ExclusiveDeals } from "@/components/home/ExclusiveDeals";
 import { Features } from "@/components/home/Features";
@@ -7,6 +9,40 @@ import { Marquee } from "@/components/home/Marquee";
 import { Reviews } from "@/components/home/Reviews";
 import { getStoreCategories, getStoreProducts } from "@/data/products";
 import type { ProductSummary } from "@/types/product";
+
+export const metadata: Metadata = {
+  title: "Tech Solutions BD | Buy Genuine Software & Digital Licenses in Bangladesh",
+  description:
+    "Buy genuine Microsoft Windows 11/10 Pro keys, Office 2024, Office 365, Antivirus, IDM & Adobe licenses in Bangladesh with bKash, Nagad & Rocket. 100% Genuine, Lifetime Activation with Instant Delivery.",
+  keywords: DEFAULT_BANGLADESH_KEYWORDS,
+  alternates: {
+    canonical: `${SITE_URL}/home`,
+  },
+  openGraph: {
+    title: "Tech Solutions BD | Genuine Software & Digital Licenses in Bangladesh",
+    description:
+      "Buy genuine Windows 11/10 Pro keys, Office 2024, Office 365, IDM & Antivirus licenses in Bangladesh with bKash & Nagad. Instant digital delivery guaranteed.",
+    url: `${SITE_URL}/home`,
+    siteName: SITE_NAME,
+    type: "website",
+    locale: "en_BD",
+    images: [
+      {
+        url: "/logo.png",
+        width: 1200,
+        height: 630,
+        alt: "Tech Solutions BD - Genuine Digital Products Bangladesh",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Tech Solutions BD | Genuine Software Licenses in Bangladesh",
+    description:
+      "Instant delivery of Windows 11, Office 2024, Antivirus & IDM licenses in Bangladesh via bKash, Nagad, Rocket.",
+    images: ["/logo.png"],
+  },
+};
 
 interface HomePageProps {
   searchParams: Promise<{

@@ -13,6 +13,12 @@ import { WhatsAppOrderButton } from "@/components/products/WhatsAppOrderButton";
 import { ProductMobileStickyBar } from "@/components/products/ProductMobileStickyBar";
 import { ProductOptionSelector } from "@/components/products/ProductOptionSelector";
 import { PriceDisplay } from "@/components/currency/PriceDisplay";
+import {
+  SITE_URL,
+  SITE_NAME,
+  generateProductJsonLd,
+  generateBreadcrumbJsonLd,
+} from "@/lib/seo";
 
 interface ProductPageProps {
   params: Promise<{
@@ -87,11 +93,65 @@ export async function generateMetadata({
   }
 
   const name = toPlainText(product.name);
-  const description = toPlainText(product.desc).slice(0, 160);
+  const plainDesc = toPlainText(product.desc).slice(0, 150);
+  const title = `${name} Price in Bangladesh | Buy Online with bKash - Tech Solutions BD`;
+  const description = `Buy genuine ${name} at lowest price in Bangladesh (BDT ${product.price.toLocaleString("en-US")}). 100% Genuine license key, lifetime activation, instant delivery. Pay via bKash, Nagad, Rocket. ${plainDesc}`;
+  const productUrl = `${SITE_URL}/products/${product.slug || product.id}`;
+  const imageUrl = product.image.startsWith("http")
+    ? product.image
+    : `${SITE_URL}${product.image.startsWith("/") ? "" : "/"}${product.image}`;
+
+  const categoryName = categoryLabels[product.category] ?? product.category;
 
   return {
-    title: `${name} | Tech Solutions BD`,
+    title,
     description,
+    keywords: [
+      `${name} price in Bangladesh`,
+      `Buy ${name} Bangladesh`,
+      `${name} key BD`,
+      `${name} bKash`,
+      `${name} retail key`,
+      `${name} activation price BD`,
+      `${categoryName} software Bangladesh`,
+      "buy genuine software key Bangladesh",
+      "digital license store BD",
+      "সফটওয়্যার লাইসেন্স বাংলাদেশ",
+    ],
+    alternates: {
+      canonical: productUrl,
+    },
+    openGraph: {
+      title,
+      description,
+      url: productUrl,
+      siteName: SITE_NAME,
+      type: "website",
+      locale: "en_BD",
+      images: [
+        {
+          url: imageUrl,
+          width: 800,
+          height: 800,
+          alt: `${name} - Genuine Digital Product in Bangladesh`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imageUrl],
+    },
+    other: {
+      "product:price:amount": String(product.price),
+      "product:price:currency": "BDT",
+      "product:availability": product.outOfStock ? "out of stock" : "in stock",
+      "product:condition": "new",
+      "product:retailer_item_id": product.id,
+      "geo.region": "BD",
+      "geo.placename": "Bangladesh",
+    },
   };
 }
 
@@ -166,8 +226,36 @@ export default async function ProductPage({
     </section>
   );
 
+  const productJsonLd = generateProductJsonLd({
+    id: product.id,
+    slug: product.slug,
+    name,
+    description: toPlainText(product.desc),
+    image: product.image,
+    price: product.price,
+    originalPrice: product.originalPrice,
+    category,
+    badge: product.badge,
+    outOfStock: product.outOfStock,
+  });
+
+  const breadcrumbsJsonLd = generateBreadcrumbJsonLd([
+    { name: "Home", url: "/" },
+    { name: "Digital Products", url: "/products" },
+    { name: category, url: `/products#${product.category}` },
+    { name, url: `/products/${product.slug || product.id}` },
+  ]);
+
   return (
     <main className={styles.page}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsJsonLd) }}
+      />
       <div className="container">
         <nav className={styles.breadcrumb} aria-label="Breadcrumb">
           <Link href="/home">Home</Link>
