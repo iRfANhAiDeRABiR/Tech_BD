@@ -67,40 +67,47 @@ export async function GET(
       );
     }
 
-    const pdfBytes = await generateInvoicePdf({
-      id: order.id,
-      orderNumber: order.orderNumber,
-      customerName: order.customerName,
-      customerEmail: order.customerEmail,
-      customerPhone: order.customerPhone,
-      customerWhatsApp: order.customerWhatsApp,
-      notes: order.notes,
-      couponCode: order.couponCode,
-      subtotal: order.subtotal,
-      discount: order.discount,
-      total: order.total,
-      currency: order.currency,
-      status: order.status,
-      createdAt: order.createdAt,
-      items: order.items.map((item) => ({
-        productName: item.productName,
-        productOptionName: item.productOptionName,
-        productOptionType: item.productOptionType,
-        quantity: item.quantity,
-        unitPrice: item.unitPrice,
-        lineTotal: item.lineTotal,
-      })),
-      payment: order.payment
-        ? {
-            method: order.payment.method,
-            transactionId: order.payment.transactionId,
-            senderNumber: order.payment.senderNumber,
-            amount: order.payment.amount,
-            status: order.payment.status,
-            verifiedAt: order.payment.verifiedAt,
-          }
-        : null,
-    });
+    const host = request.headers.get("x-forwarded-host") || request.headers.get("host");
+    const proto = request.headers.get("x-forwarded-proto") || (host?.includes("localhost") ? "http" : "https");
+    const siteUrl = host ? `${proto}://${host}` : undefined;
+
+    const pdfBytes = await generateInvoicePdf(
+      {
+        id: order.id,
+        orderNumber: order.orderNumber,
+        customerName: order.customerName,
+        customerEmail: order.customerEmail,
+        customerPhone: order.customerPhone,
+        customerWhatsApp: order.customerWhatsApp,
+        notes: order.notes,
+        couponCode: order.couponCode,
+        subtotal: order.subtotal,
+        discount: order.discount,
+        total: order.total,
+        currency: order.currency,
+        status: order.status,
+        createdAt: order.createdAt,
+        items: order.items.map((item) => ({
+          productName: item.productName,
+          productOptionName: item.productOptionName,
+          productOptionType: item.productOptionType,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          lineTotal: item.lineTotal,
+        })),
+        payment: order.payment
+          ? {
+              method: order.payment.method,
+              transactionId: order.payment.transactionId,
+              senderNumber: order.payment.senderNumber,
+              amount: order.payment.amount,
+              status: order.payment.status,
+              verifiedAt: order.payment.verifiedAt,
+            }
+          : null,
+      },
+      siteUrl
+    );
 
     const { searchParams } = new URL(request.url);
     const forceDownload = searchParams.get("download") === "true";

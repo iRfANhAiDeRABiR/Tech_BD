@@ -79,7 +79,10 @@ export function formatInvoiceDate(d?: Date | string | null): string {
 /**
  * Generates an executive, modern PDF invoice buffer for a confirmed order.
  */
-export async function generateInvoicePdf(order: InvoiceOrderData): Promise<Uint8Array> {
+export async function generateInvoicePdf(
+  order: InvoiceOrderData,
+  siteUrl?: string
+): Promise<Uint8Array> {
   const pdfDoc = await PDFDocument.create();
   
   // Standard A4 dimensions in points
@@ -411,8 +414,15 @@ export async function generateInvoicePdf(order: InvoiceOrderData): Promise<Uint8
   // 4. Totals Summary & QR Code Section
   const summaryY = tableY - 18;
 
-  // QR Code on Left
-  const qrUrl = `https://www.techsolutions.bd/order/verify?ref=${encodeURIComponent(order.orderNumber)}`;
+  // QR Code on Left (Official verification portal)
+  const cleanSiteUrl = (
+    siteUrl ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.SITE_URL ||
+    "https://www.techsolutions.bd"
+  ).replace(/\/+$/, "");
+
+  const qrUrl = `${cleanSiteUrl}/order/verify?ref=${encodeURIComponent(order.orderNumber)}`;
   const qrDataUrl = await QRCode.toDataURL(qrUrl, { margin: 1, width: 256 });
   const qrImage = await pdfDoc.embedPng(qrDataUrl);
   const qrSize = 64;
