@@ -5,6 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CategorySidebar } from "@/components/layout/CategorySidebar";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
+import { FirstOrderPromoBanner } from "@/components/layout/FirstOrderPromoBanner";
 import { AuthModal } from "@/components/layout/AuthModal";
 import { CartProvider } from "@/components/cart/CartProvider";
 import { CurrencyProvider } from "@/context/CurrencyContext";
@@ -59,6 +60,7 @@ export function StorefrontShell({ children, categories }: StorefrontShellProps) 
       <CurrencyProvider>
         <CartProvider>
           <CategorySidebar categories={categories} />
+          {!isCheckout && <FirstOrderPromoBanner />}
           <Header />
           <div className="main-content">
             {children}

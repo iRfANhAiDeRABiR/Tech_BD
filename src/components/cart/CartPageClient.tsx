@@ -400,6 +400,40 @@ export function CartPageClient({ products }: CartPageClientProps) {
 
   const currentPayment = PAYMENT_CONFIGS[selectedMethod];
 
+  // Auto-apply pending coupon from promo banner if present
+  useEffect(() => {
+    try {
+      const pending = sessionStorage.getItem("techbd_pending_coupon");
+      if (pending && !appliedCoupon && subtotal > 0) {
+        const clean = pending.trim().toUpperCase();
+        setCouponInput(clean);
+        fetch("/api/coupons/validate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code: clean, subtotal }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data?.valid) {
+              setAppliedCoupon({
+                code: data.code,
+                discountType: data.discountType || "PERCENTAGE",
+                discountValue: data.discountValue || 10,
+                discountAmount: data.discountAmount || Math.round(subtotal * 0.1),
+                label: data.label,
+              });
+              setCouponFeedback({
+                tone: "success",
+                message: `🎉 Promo ${data.code} auto-applied! 10% discount added.`,
+              });
+              sessionStorage.removeItem("techbd_pending_coupon");
+            }
+          })
+          .catch(() => {});
+      }
+    } catch {}
+  }, [subtotal, appliedCoupon]);
+
   // Coupon handlers
   const handleApplyCoupon = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
