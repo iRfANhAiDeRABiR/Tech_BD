@@ -182,6 +182,9 @@ export function Footer() {
 
             <ul className={styles.linkList}>
               <li>
+                <Link href="/support">Support Tickets (Help Desk)</Link>
+              </li>
+              <li>
                 <Link href="/downloads">Software Download</Link>
               </li>
               <li>

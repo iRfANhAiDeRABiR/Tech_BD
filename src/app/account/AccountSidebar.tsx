@@ -11,6 +11,7 @@ import {
   RefreshCw,
   Heart,
   Bell,
+  LifeBuoy,
   LogOut,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -23,6 +24,7 @@ const NAV_ITEMS = [
   { href: "/account/licenses", label: "My Licenses", icon: KeyRound },
   { href: "/account/downloads", label: "Downloads", icon: Download },
   { href: "/account/subscriptions", label: "Subscriptions", icon: RefreshCw },
+  { href: "/account/support", label: "Support Tickets", icon: LifeBuoy },
   { href: "/account/wishlist", label: "Wishlist", icon: Heart },
   { href: "/account/notifications", label: "Notifications", icon: Bell },
 ];

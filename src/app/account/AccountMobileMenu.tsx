@@ -12,6 +12,7 @@ import {
   RefreshCw,
   Heart,
   Bell,
+  LifeBuoy,
   Menu,
   X,
   LogOut,
@@ -26,6 +27,7 @@ const NAV_ITEMS = [
   { href: "/account/licenses", label: "My Licenses", icon: KeyRound },
   { href: "/account/downloads", label: "Downloads", icon: Download },
   { href: "/account/subscriptions", label: "Subscriptions", icon: RefreshCw },
+  { href: "/account/support", label: "Support Tickets", icon: LifeBuoy },
   { href: "/account/wishlist", label: "Wishlist", icon: Heart },
   { href: "/account/notifications", label: "Notifications", icon: Bell },
 ];

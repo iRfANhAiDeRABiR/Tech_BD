@@ -18,6 +18,7 @@ import {
   Loader2,
   Lock,
   FileDown,
+  LifeBuoy,
 } from "lucide-react";
 import {
   SOFTWARE_DOWNLOADS,
@@ -378,6 +379,26 @@ export function DownloadsPageClient({
             </p>
 
             <div className={styles.supportActions}>
+              <Link
+                href="/support"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "10px 16px",
+                  borderRadius: "10px",
+                  background: "#ea580c",
+                  color: "#ffffff",
+                  fontWeight: 650,
+                  fontSize: "13.5px",
+                  textDecoration: "none",
+                  boxShadow: "0 4px 12px rgba(234, 88, 12, 0.3)",
+                }}
+              >
+                <LifeBuoy size={18} />
+                <span>সাপোর্ট টিকেট খুলুন (Open Ticket)</span>
+              </Link>
+
               <a
                 href="https://wa.me/message/7ZV3N6YFBF5ED1"
                 target="_blank"
