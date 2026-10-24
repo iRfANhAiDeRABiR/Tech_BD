@@ -108,6 +108,14 @@ export default async function ProductPage({
   const category =
     categoryLabels[product.category] ?? product.category;
 
+  const rawBadge = product.badge?.trim();
+  const normalizedBadge = rawBadge
+    ? rawBadge.toLowerCase().replace(/[^a-z0-9]+/g, "_")
+    : "";
+  const hasEmoji = Boolean(
+    rawBadge && /^\p{Extended_Pictographic}/u.test(rawBadge),
+  );
+
   const originalPrice = product.originalPrice;
 
   const discount =
@@ -171,15 +179,26 @@ export default async function ProductPage({
 
         <section className={styles.detail}>
           <div className={styles.imageColumn}>
-            {product.badge && (
-              <span className={styles.badge}>{product.badge}</span>
+            {rawBadge && (
+              <span
+                className={`${styles.badge} ${
+                  normalizedBadge && styles[`badge_${normalizedBadge}`]
+                    ? styles[`badge_${normalizedBadge}`]
+                    : ""
+                }`}
+              >
+                {!hasEmoji && (
+                  <span className={styles.badgeDot} aria-hidden="true" />
+                )}
+                {rawBadge}
+              </span>
             )}
 
             <Image
               src={product.image}
               alt={name}
-              width={700}
-              height={520}
+              width={800}
+              height={800}
               priority
               sizes="(max-width: 1000px) 100vw, 55vw"
               className={styles.productImage}
