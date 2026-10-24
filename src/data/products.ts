@@ -536,7 +536,7 @@ type CachedCatalog = {
   timestamp: number;
 };
 
-const DB_CATALOG_TIMEOUT_MS = 6000;
+const DB_CATALOG_TIMEOUT_MS = 10000;
 const CATALOG_CACHE_TTL_MS = 10 * 60 * 1000;
 
 const globalForCatalog = globalThis as unknown as {
