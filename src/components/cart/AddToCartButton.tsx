@@ -11,6 +11,7 @@ interface AddToCartButtonProps {
   variant?: "detail" | "card";
   disabled?: boolean;
   cartItem?: CartItemInput;
+  className?: string;
 }
 
 export function AddToCartButton({
@@ -19,6 +20,7 @@ export function AddToCartButton({
   variant = "detail",
   disabled = false,
   cartItem,
+  className = "",
 }: AddToCartButtonProps) {
   const router = useRouter();
   const { addItem, getQuantity, isHydrated } = useCart();
@@ -61,11 +63,7 @@ export function AddToCartButton({
   return (
     <button
       type="button"
-      className={
-        variant === "card"
-          ? "product-action-button product-action-button--cart"
-          : "btn btn--primary btn--lg"
-      }
+      className={`${variant === "card" ? "product-action-button product-action-button--cart" : "btn btn--primary btn--lg"} ${className}`.trim()}
       disabled={!isHydrated || disabled}
       onClick={handleAddToCart}
       aria-label={buttonLabel}

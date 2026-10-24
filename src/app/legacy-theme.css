@@ -3905,6 +3905,10 @@ input, textarea, select {
 }
 
 @media screen and (max-width: 768px) {
+        body[data-sticky-visible="true"] .floating-whatsapp {
+        bottom: calc(84px + env(safe-area-inset-bottom, 0px)) !important;
+        transition: bottom 0.3s ease;
+    }
     .floating-whatsapp {
         bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important;
         right: 16px !important;

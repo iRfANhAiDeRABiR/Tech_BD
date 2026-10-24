@@ -3,6 +3,7 @@
 import { type ReactNode, useMemo, useState } from "react";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { BuyNowButton } from "@/components/cart/BuyNowButton";
+import { WhatsAppOrderButton } from "@/components/products/WhatsAppOrderButton";
 import type { ProductOption } from "@/types/product";
 import { useCurrency } from "@/context/CurrencyContext";
 import styles from "@/app/products/[id]/product.module.css";
@@ -128,7 +129,7 @@ export function ProductOptionSelector({
         <p className={styles.optionDescription}>{selectedOption.description}</p>
       )}
 
-      <div className={styles.actions}>
+      <div className={styles.actions} id="product-actions-trigger">
         <AddToCartButton
           productId={productId}
           productName={productName}
@@ -140,6 +141,12 @@ export function ProductOptionSelector({
           productName={productName}
           disabled={outOfStock}
           cartItem={selectedCartItem}
+        />
+        <WhatsAppOrderButton
+          productId={productId}
+          productName={productName}
+          price={currentPrice}
+          selectedOptionName={selectedOption?.name}
         />
       </div>
     </>

@@ -10,6 +10,7 @@ interface BuyNowButtonProps {
   variant?: "detail" | "card";
   disabled?: boolean;
   cartItem?: CartItemInput;
+  className?: string;
 }
 
 export function BuyNowButton({
@@ -18,6 +19,7 @@ export function BuyNowButton({
   variant = "detail",
   disabled = false,
   cartItem,
+  className = "",
 }: BuyNowButtonProps) {
   const router = useRouter();
   const { addItem, getQuantity, isHydrated } = useCart();

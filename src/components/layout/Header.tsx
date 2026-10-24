@@ -8,12 +8,13 @@ import { CartLink } from "@/components/cart/CartLink";
 import { AuthButton } from "./AuthButton";
 import { ThemeToggle } from "./ThemeToggle";
 import { CurrencySelector } from "@/components/currency/CurrencySelector";
+import { HeaderSearch } from "./HeaderSearch";
 
 export function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+
   const [activeHash, setActiveHash] = useState("");
 
   const getNavLinkClassName = (targetPath: string, targetHash = "") => {
@@ -34,36 +35,7 @@ export function Header() {
     window.dispatchEvent(new Event("techbd:open-category-sidebar"));
   };
 
-  const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
 
-    const query = searchQuery.trim();
-    const isProductsPage = pathname.startsWith("/products");
-    const targetUrl = query
-      ? `${isProductsPage ? "/products" : "/home"}?search=${encodeURIComponent(
-          query,
-        )}#${isProductsPage ? "products-by-category" : "products"}`
-      : "/products#products-by-category";
-
-    router.push(targetUrl);
-  };
-
-  const clearHeaderSearch = () => {
-    setSearchQuery("");
-
-    const url = new URL(window.location.href);
-
-    if (!url.searchParams.has("search")) {
-      return;
-    }
-
-    url.searchParams.delete("search");
-    router.push(
-      `${url.pathname}${url.search}#${
-        pathname.startsWith("/products") ? "products-by-category" : "products"
-      }`,
-    );
-  };
 
   useEffect(() => {
     let animationFrameId: number | null = null;
@@ -268,66 +240,7 @@ export function Header() {
           </div>
         </Link>
 
-        <form
-          className="modern-search-box"
-          role="search"
-          aria-label="Search products"
-          onSubmit={handleSearchSubmit}
-        >
-          <input
-            type="search"
-            className="modern-search-input"
-            placeholder="Search for genuine software licenses..."
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-          />
-
-          <svg
-            className="search-icon-inside"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-
-          {searchQuery && (
-            <button
-              type="button"
-              className="modern-search-clear-btn"
-              aria-label="Clear search filter"
-              onClick={clearHeaderSearch}
-            >
-              ×
-            </button>
-          )}
-
-          <button
-            type="submit"
-            className="modern-search-btn"
-            aria-label="Search products"
-          >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              aria-hidden="true"
-              focusable="false"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-          </button>
-        </form>
+        <HeaderSearch />
 
         <div className="header-right-group">
           <div className="header-support">

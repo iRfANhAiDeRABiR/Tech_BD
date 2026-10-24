@@ -9,6 +9,8 @@ import { toPlainText } from "@/lib/text";
 import styles from "./product.module.css";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { BuyNowButton } from "@/components/cart/BuyNowButton";
+import { WhatsAppOrderButton } from "@/components/products/WhatsAppOrderButton";
+import { ProductMobileStickyBar } from "@/components/products/ProductMobileStickyBar";
 import { ProductOptionSelector } from "@/components/products/ProductOptionSelector";
 import { PriceDisplay } from "@/components/currency/PriceDisplay";
 
@@ -227,7 +229,7 @@ export default async function ProductPage({
 
                 {productHighlights}
 
-                <div className={styles.actions}>
+                <div className={styles.actions} id="product-actions-trigger">
                   <AddToCartButton
                     productId={product.id}
                     productName={name}
@@ -238,6 +240,12 @@ export default async function ProductPage({
                     productId={product.id}
                     productName={name}
                     disabled={product.outOfStock}
+                  />
+
+                  <WhatsAppOrderButton
+                    productId={product.id}
+                    productName={name}
+                    price={product.price}
                   />
                 </div>
               </>
@@ -318,6 +326,15 @@ export default async function ProductPage({
           </section>
         )}
       </div>
+
+      <ProductMobileStickyBar
+        productId={product.id}
+        productName={name}
+        price={product.price}
+        originalPrice={originalPrice}
+        image={product.image}
+        outOfStock={product.outOfStock}
+      />
     </main>
   );
 }
