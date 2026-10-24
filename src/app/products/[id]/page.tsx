@@ -230,22 +230,25 @@ export default async function ProductPage({
                 {productHighlights}
 
                 <div className={styles.actions} id="product-actions-trigger">
-                  <AddToCartButton
-                    productId={product.id}
-                    productName={name}
-                    disabled={product.outOfStock}
-                  />
+                  <div className={styles.actionsRow}>
+                    <AddToCartButton
+                      productId={product.id}
+                      productName={name}
+                      disabled={product.outOfStock}
+                    />
 
-                  <BuyNowButton
-                    productId={product.id}
-                    productName={name}
-                    disabled={product.outOfStock}
-                  />
+                    <BuyNowButton
+                      productId={product.id}
+                      productName={name}
+                      disabled={product.outOfStock}
+                    />
+                  </div>
 
                   <WhatsAppOrderButton
                     productId={product.id}
                     productName={name}
                     price={product.price}
+                    className={styles.whatsappFullBtn}
                   />
                 </div>
               </>

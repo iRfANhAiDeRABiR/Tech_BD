@@ -130,23 +130,27 @@ export function ProductOptionSelector({
       )}
 
       <div className={styles.actions} id="product-actions-trigger">
-        <AddToCartButton
-          productId={productId}
-          productName={productName}
-          disabled={outOfStock}
-          cartItem={selectedCartItem}
-        />
-        <BuyNowButton
-          productId={productId}
-          productName={productName}
-          disabled={outOfStock}
-          cartItem={selectedCartItem}
-        />
+        <div className={styles.actionsRow}>
+          <AddToCartButton
+            productId={productId}
+            productName={productName}
+            disabled={outOfStock}
+            cartItem={selectedCartItem}
+          />
+          <BuyNowButton
+            productId={productId}
+            productName={productName}
+            disabled={outOfStock}
+            cartItem={selectedCartItem}
+          />
+        </div>
+
         <WhatsAppOrderButton
           productId={productId}
           productName={productName}
           price={currentPrice}
           selectedOptionName={selectedOption?.name}
+          className={styles.whatsappFullBtn}
         />
       </div>
     </>

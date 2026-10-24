@@ -355,15 +355,27 @@
 
 .actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
+  flex-direction: column;
+  gap: 12px;
   padding-top: 24px;
   border-top: 1px solid var(--border-color);
 }
 
-.actions > * {
-  flex: 1 1 190px;
+.actionsRow {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.actionsRow > * {
+  flex: 1 1 0;
+  min-width: 0;
   justify-content: center;
+}
+
+.whatsappFullBtn {
+  width: 100% !important;
+  justify-content: center !important;
 }
 
 .meta {
@@ -703,12 +715,11 @@
 
   .actions {
     flex-direction: column;
+    gap: 10px;
   }
 
-  .actions > * {
-    width: 100%;
-    flex: 1;
-    justify-content: center;
+  .actionsRow {
+    gap: 10px;
   }
 
   .relatedGrid {
@@ -736,5 +747,14 @@
     top: auto !important;
     min-height: unset;
     padding: 0;
+  }
+
+  .actionsRow {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .actionsRow > * {
+    width: 100%;
   }
 }
