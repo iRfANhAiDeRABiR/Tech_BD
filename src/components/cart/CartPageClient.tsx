@@ -747,7 +747,7 @@ export function CartPageClient({ products }: CartPageClientProps) {
                 className={styles.continueButton}
                 style={{ cursor: "pointer", background: "#2563eb", color: "#ffffff", border: "none" }}
               >
-                🛒 Go to Cart / কার্ট পেজে যান
+                🛒 Go to Cart
               </button>
               <button
                 type="button"
@@ -765,13 +765,13 @@ export function CartPageClient({ products }: CartPageClientProps) {
                 className={styles.continueButton}
                 style={{ cursor: "pointer", background: "none", border: "1px solid rgba(255, 255, 255, 0.15)" }}
               >
-                + Start New Order / নতুন অর্ডার
+                + Start New Order
               </button>
               <Link href="/products#products-by-category" className={styles.continueButton}>
-                ← Browse Software Catalog
+                ← Browse Catalog
               </Link>
               <Link href="/account/orders" className={styles.continueButton}>
-                View My Account Orders
+                View My Orders
               </Link>
             </div>
           </div>

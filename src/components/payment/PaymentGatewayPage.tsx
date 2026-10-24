@@ -799,7 +799,7 @@ export default function PaymentGatewayPage({
                     }}
                   >
                     <FileDown size={18} />
-                    <span>Download Official Invoice (PDF) / ইনভয়েস ডাউনলোড</span>
+                    <span>Download Official Invoice (PDF)</span>
                   </a>
                 )}
 
@@ -813,7 +813,7 @@ export default function PaymentGatewayPage({
                     className={styles.btnConfirm}
                     style={{ background: "#ef4444", color: "#ffffff", padding: "12px 18px", borderRadius: "10px" }}
                   >
-                    🔄 পুনরায় TrxID দিন (Re-enter TrxID)
+                    🔄 Re-enter TrxID / পুনরায় দিন
                   </button>
                 )}
 
@@ -821,7 +821,7 @@ export default function PaymentGatewayPage({
                   href={`/checkout?order=${encodeURIComponent(submittedOrder?.orderNumber || order.refId)}`}
                   className={styles.btnReturnHome}
                 >
-                  Return to Checkout & View Status / অর্ডারে ফিরুন
+                  Return to Checkout &amp; View Status
                 </Link>
               </div>
             </div>
