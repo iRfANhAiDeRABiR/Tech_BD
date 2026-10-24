@@ -226,41 +226,44 @@ export async function saveProductAction(formData: FormData) {
         );
       }
 
-      await prisma.$transaction(operations);
+      await prisma.$transaction(operations, { maxWait: 10000, timeout: 30000 });
     } else {
-      await prisma.$transaction(async (tx) => {
-        const conflictingProduct = await tx.product.findUnique({
-          where: { id: nextProductId },
-          select: { id: true },
-        });
-
-        if (conflictingProduct) {
-          throw new Error("Product ID is already in use.");
-        }
-
-        await tx.productOption.deleteMany({ where: { productId: existing.id } });
-        await tx.product.update({
-          where: { id: existing.id },
-          data: { id: nextProductId, ...productData },
-        });
-
-        if (data.options.length) {
-          await tx.productOption.createMany({
-            data: data.options.map((option, index) => ({
-              productId: nextProductId,
-              name: option.name,
-              type: option.type,
-              sku: option.sku || null,
-              price: option.price,
-              originalPrice: option.originalPrice ?? null,
-              description: option.description || null,
-              isDefault: option.isDefault || (!data.options.some((item) => item.isDefault) && index === 0),
-              isActive: option.isActive,
-              sortOrder: option.sortOrder,
-            })),
+      await prisma.$transaction(
+        async (tx) => {
+          const conflictingProduct = await tx.product.findUnique({
+            where: { id: nextProductId },
+            select: { id: true },
           });
-        }
-      });
+
+          if (conflictingProduct) {
+            throw new Error("Product ID is already in use.");
+          }
+
+          await tx.productOption.deleteMany({ where: { productId: existing.id } });
+          await tx.product.update({
+            where: { id: existing.id },
+            data: { id: nextProductId, ...productData },
+          });
+
+          if (data.options.length) {
+            await tx.productOption.createMany({
+              data: data.options.map((option, index) => ({
+                productId: nextProductId,
+                name: option.name,
+                type: option.type,
+                sku: option.sku || null,
+                price: option.price,
+                originalPrice: option.originalPrice ?? null,
+                description: option.description || null,
+                isDefault: option.isDefault || (!data.options.some((item) => item.isDefault) && index === 0),
+                isActive: option.isActive,
+                sortOrder: option.sortOrder,
+              })),
+            });
+          }
+        },
+        { maxWait: 10000, timeout: 30000 },
+      );
     }
   } else {
     await prisma.product.create({
@@ -482,16 +485,19 @@ export async function updatePaymentStatusAction(formData: FormData) {
   }
 
   if (paymentStatus === "REJECTED") {
-    await prisma.$transaction([
-      prisma.paymentSubmission.update({
-        where: { orderId },
-        data: { status: "REJECTED" },
-      }),
-      prisma.order.update({
-        where: { id: orderId },
-        data: { status: "CANCELLED" },
-      }),
-    ]);
+    await prisma.$transaction(
+      [
+        prisma.paymentSubmission.update({
+          where: { orderId },
+          data: { status: "REJECTED" },
+        }),
+        prisma.order.update({
+          where: { id: orderId },
+          data: { status: "CANCELLED" },
+        }),
+      ],
+      { maxWait: 10000, timeout: 30000 },
+    );
 
     await logAdminEvent({
       action: "PAYMENT_REJECTED",
@@ -510,16 +516,19 @@ export async function updatePaymentStatusAction(formData: FormData) {
       severity: "WARNING",
     });
   } else if (paymentStatus === "VERIFIED") {
-    await prisma.$transaction([
-      prisma.paymentSubmission.update({
-        where: { orderId },
-        data: { status: "VERIFIED", verifiedAt: new Date() },
-      }),
-      prisma.order.update({
-        where: { id: orderId },
-        data: { status: "COMPLETED" },
-      }),
-    ]);
+    await prisma.$transaction(
+      [
+        prisma.paymentSubmission.update({
+          where: { orderId },
+          data: { status: "VERIFIED", verifiedAt: new Date() },
+        }),
+        prisma.order.update({
+          where: { id: orderId },
+          data: { status: "COMPLETED" },
+        }),
+      ],
+      { maxWait: 10000, timeout: 30000 },
+    );
 
     await logAdminEvent({
       action: "PAYMENT_VERIFIED",
@@ -618,6 +627,7 @@ export async function saveCategoryOrderAction(formData: FormData) {
     updates.map(({ id, sortOrder }) =>
       prisma.category.update({ where: { id }, data: { sortOrder } }),
     ),
+    { maxWait: 15000, timeout: 60000 },
   );
 
   revalidateStoreCatalog();
@@ -686,52 +696,58 @@ export async function copyProductsToCategoryAction(formData: FormData) {
       takenSkus.map((item) => item.sku).filter((sku): sku is string => Boolean(sku)),
     );
 
-    await prisma.$transaction(async (tx) => {
-      for (const product of sourceProducts) {
-        const idBase = `${product.id}-c${categoryId}`;
-        const slugBase = `${product.slug}-c${categoryId}`;
-        const nextId = buildUniqueSuffix(idBase, takenValues);
-        const nextSlug = buildUniqueSuffix(slugBase, takenValues);
+    await prisma.$transaction(
+      async (tx) => {
+        for (const product of sourceProducts) {
+          const idBase = `${product.id}-c${categoryId}`;
+          const slugBase = `${product.slug}-c${categoryId}`;
+          const nextId = buildUniqueSuffix(idBase, takenValues);
+          const nextSlug = buildUniqueSuffix(slugBase, takenValues);
 
-        await tx.product.create({
-          data: {
-            id: nextId,
-            slug: nextSlug,
-            name: product.name,
-            categoryId,
-            badge: product.badge,
-            price: product.price,
-            originalPrice: product.originalPrice,
-            shortDescription: product.shortDescription,
-            descriptionHtml: product.descriptionHtml,
-            image: product.image,
-            imagePublicId: null,
-            icon: product.icon,
-            color: product.color,
-            gradient: product.gradient,
-            status: product.status,
-            isFeatured: product.isFeatured,
-            outOfStock: product.outOfStock,
-            sortOrder: product.sortOrder,
-            options: {
-              create: product.options.map((option) => ({
-                name: option.name,
-                type: option.type,
-                sku: option.sku
-                  ? buildUniqueSuffix(`${option.sku}-c${categoryId}`, takenSkuValues)
-                  : null,
-                price: option.price,
-                originalPrice: option.originalPrice,
-                description: option.description,
-                isDefault: option.isDefault,
-                isActive: option.isActive,
-                sortOrder: option.sortOrder,
-              })),
+          await tx.product.create({
+            data: {
+              id: nextId,
+              slug: nextSlug,
+              name: product.name,
+              categoryId,
+              badge: product.badge,
+              price: product.price,
+              originalPrice: product.originalPrice,
+              shortDescription: product.shortDescription,
+              descriptionHtml: product.descriptionHtml,
+              image: product.image,
+              imagePublicId: null,
+              icon: product.icon,
+              color: product.color,
+              gradient: product.gradient,
+              status: product.status,
+              isFeatured: product.isFeatured,
+              outOfStock: product.outOfStock,
+              sortOrder: product.sortOrder,
+              options: {
+                create: product.options.map((option) => ({
+                  name: option.name,
+                  type: option.type,
+                  sku: option.sku
+                    ? buildUniqueSuffix(`${option.sku}-c${categoryId}`, takenSkuValues)
+                    : null,
+                  price: option.price,
+                  originalPrice: option.originalPrice,
+                  description: option.description,
+                  isDefault: option.isDefault,
+                  isActive: option.isActive,
+                  sortOrder: option.sortOrder,
+                })),
+              },
             },
-          },
-        });
-      }
-    });
+          });
+        }
+      },
+      {
+        maxWait: 20000,
+        timeout: 120000,
+      },
+    );
   }
 
   revalidateStoreCatalog();
@@ -764,6 +780,7 @@ export async function saveCategoryProductOrderAction(formData: FormData) {
     updates.map(({ id, sortOrder }) =>
       prisma.product.updateMany({ where: { id, categoryId }, data: { sortOrder } }),
     ),
+    { maxWait: 15000, timeout: 60000 },
   );
 
   revalidateStoreCatalog();
