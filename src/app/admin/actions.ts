@@ -369,6 +369,38 @@ export async function toggleProductStockAction(formData: FormData) {
   revalidateStoreCatalog(id);
 }
 
+export async function updateProductImageAction(formData: FormData) {
+  const session = await requireAdmin();
+  const id = parseOptionalProductId(formData.get("productId"));
+  const imageUrl = String(formData.get("imageUrl") ?? "").trim();
+  if (!id) throw new Error("Invalid product.");
+  if (!imageUrl) throw new Error("Invalid image URL.");
+
+  const product = await prisma.product.findUnique({
+    where: { id },
+    select: { name: true, image: true },
+  });
+  if (!product) throw new Error("Product not found.");
+
+  await prisma.product.update({
+    where: { id },
+    data: { image: imageUrl },
+  });
+
+  await logAdminEvent({
+    action: "PRODUCT_IMAGE_UPDATED",
+    category: "CATALOG",
+    entityType: "Product",
+    entityId: id,
+    entityName: product.name,
+    details: { previousImage: product.image, newImage: imageUrl },
+    adminEmail: session?.user?.email || "Admin",
+    severity: "INFO",
+  });
+
+  revalidateStoreCatalog(id);
+}
+
 export async function toggleProductStatusAction(formData: FormData) {
   const session = await requireAdmin();
   const id = parseOptionalProductId(formData.get("productId"));

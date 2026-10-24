@@ -19,8 +19,16 @@ import {
   ArrowUpDown,
   Tag,
   Loader2,
+  Check,
+  Image as ImageIcon,
 } from "lucide-react";
-import { deleteProductAction, toggleProductStockAction, toggleProductStatusAction } from "@/app/admin/actions";
+import {
+  deleteProductAction,
+  toggleProductStockAction,
+  toggleProductStatusAction,
+  updateProductImageAction,
+} from "@/app/admin/actions";
+import { AVAILABLE_IMG_CONTENT } from "@/lib/available-images";
 import { useAdminLanguage } from "@/context/AdminLanguageContext";
 import styles from "./AdminProductsManager.module.css";
 
@@ -78,9 +86,35 @@ export function AdminProductsManager({
   // Delete confirmation modal state
   const [productToDelete, setProductToDelete] = useState<AdminProductItem | null>(null);
 
+  // Quick Image Change modal state
+  const [productForImageChange, setProductForImageChange] = useState<AdminProductItem | null>(null);
+  const [newImageSelected, setNewImageSelected] = useState<string>("");
+  const [imageModalSearch, setImageModalSearch] = useState<string>("");
+
   // Optimistic toggling transitions
   const [isPending, startTransition] = useTransition();
   const [optimisticProducts, setOptimisticProducts] = useState(initialProducts);
+
+  const handleUpdateProductImage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!productForImageChange || !newImageSelected) return;
+
+    const productId = productForImageChange.id;
+    const targetImage = newImageSelected;
+
+    setProductForImageChange(null);
+
+    startTransition(async () => {
+      setOptimisticProducts((prev) =>
+        prev.map((p) => (p.id === productId ? { ...p, image: targetImage } : p))
+      );
+
+      const fd = new FormData();
+      fd.append("productId", productId);
+      fd.append("imageUrl", targetImage);
+      await updateProductImageAction(fd);
+    });
+  };
 
   // Stats computation
   const stats = useMemo(() => {
@@ -501,19 +535,29 @@ export function AdminProductsManager({
                       {/* Product Name + Image */}
                       <td className={styles.productCell}>
                         <div className={styles.productMetaCell}>
-                          {product.image ? (
-                            <Image
-                              src={product.image}
-                              alt={product.name}
-                              width={44}
-                              height={44}
-                              className={styles.productThumb}
-                            />
-                          ) : (
-                            <div className={styles.productThumbFallback}>
-                              <Package size={20} />
-                            </div>
-                          )}
+                          <div
+                            onClick={() => {
+                              setProductForImageChange(product);
+                              setNewImageSelected(product.image || AVAILABLE_IMG_CONTENT[0]);
+                              setImageModalSearch("");
+                            }}
+                            style={{ cursor: "pointer" }}
+                            title={lang === "bn" ? "ছবি পরিবর্তন করুন" : "Click to change image"}
+                          >
+                            {product.image ? (
+                              <Image
+                                src={product.image}
+                                alt={product.name}
+                                width={44}
+                                height={44}
+                                className={styles.productThumb}
+                              />
+                            ) : (
+                              <div className={styles.productThumbFallback}>
+                                <Package size={20} />
+                              </div>
+                            )}
+                          </div>
 
                           <div className={styles.productNameCol}>
                             <Link
@@ -643,6 +687,19 @@ export function AdminProductsManager({
                             <span>{lang === "bn" ? "এডিট" : "Edit"}</span>
                           </Link>
 
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setProductForImageChange(product);
+                              setNewImageSelected(product.image || AVAILABLE_IMG_CONTENT[0]);
+                              setImageModalSearch("");
+                            }}
+                            className={styles.btnActionPreview}
+                            title={lang === "bn" ? "ছবি পরিবর্তন করুন" : "Change Product Image"}
+                          >
+                            <ImageIcon size={13} />
+                          </button>
+
                           <Link
                             href={`/products/${product.slug || product.id}`}
                             target="_blank"
@@ -689,22 +746,32 @@ export function AdminProductsManager({
             return (
               <div key={product.id} className={styles.productCard}>
                 <div className={styles.cardTopRow}>
-                  {product.image ? (
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      width={60}
-                      height={60}
-                      className={styles.cardThumb}
-                    />
-                  ) : (
-                    <div
-                      className={styles.productThumbFallback}
-                      style={{ width: 60, height: 60 }}
-                    >
-                      <Package size={24} />
-                    </div>
-                  )}
+                  <div
+                    onClick={() => {
+                      setProductForImageChange(product);
+                      setNewImageSelected(product.image || AVAILABLE_IMG_CONTENT[0]);
+                      setImageModalSearch("");
+                    }}
+                    style={{ cursor: "pointer" }}
+                    title={lang === "bn" ? "ছবি পরিবর্তন করুন" : "Click to change image"}
+                  >
+                    {product.image ? (
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        width={60}
+                        height={60}
+                        className={styles.cardThumb}
+                      />
+                    ) : (
+                      <div
+                        className={styles.productThumbFallback}
+                        style={{ width: 60, height: 60 }}
+                      >
+                        <Package size={24} />
+                      </div>
+                    )}
+                  </div>
 
                   <div className={styles.cardMeta}>
                     <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
@@ -778,6 +845,19 @@ export function AdminProductsManager({
                       <Edit2 size={12} />
                       <span>{lang === "bn" ? "এডিট" : "Edit"}</span>
                     </Link>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProductForImageChange(product);
+                        setNewImageSelected(product.image || AVAILABLE_IMG_CONTENT[0]);
+                        setImageModalSearch("");
+                      }}
+                      className={styles.btnActionPreview}
+                      title={lang === "bn" ? "ছবি পরিবর্তন করুন" : "Change Product Image"}
+                    >
+                      <ImageIcon size={13} />
+                    </button>
 
                     <Link
                       href={`/products/${product.slug || product.id}`}
@@ -863,6 +943,229 @@ export function AdminProductsManager({
                 {lang === "bn" ? "প্রোডাক্ট মুছুন" : "Delete Product"}
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Image Change Modal */}
+      {productForImageChange && (
+        <div
+          className={styles.modalBackdrop}
+          onClick={() => setProductForImageChange(null)}
+        >
+          <div
+            style={{
+              background: "#111420",
+              border: "1px solid rgba(255, 255, 255, 0.12)",
+              borderRadius: 18,
+              maxWidth: 680,
+              width: "100%",
+              maxHeight: "85vh",
+              display: "flex",
+              flexDirection: "column",
+              boxShadow: "0 24px 50px rgba(0, 0, 0, 0.7)",
+              overflow: "hidden",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                padding: "16px 20px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <ImageIcon size={18} color="#c084fc" />
+                <span style={{ fontSize: 15, fontWeight: 800, color: "#ffffff" }}>
+                  Change Image: {productForImageChange.name}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setProductForImageChange(null)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "#94a3b8",
+                  cursor: "pointer",
+                  padding: 4,
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ padding: "12px 20px", borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
+              <div style={{ position: "relative" }}>
+                <Search
+                  size={15}
+                  style={{
+                    position: "absolute",
+                    left: 12,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    color: "#64748b",
+                  }}
+                />
+                <input
+                  type="text"
+                  placeholder="Filter images by name (e.g. office, windows, adobe)..."
+                  value={imageModalSearch}
+                  onChange={(e) => setImageModalSearch(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "9px 12px 9px 36px",
+                    background: "rgba(255, 255, 255, 0.05)",
+                    border: "1px solid rgba(255, 255, 255, 0.12)",
+                    borderRadius: 9,
+                    color: "#ffffff",
+                    fontSize: 13,
+                    outline: "none",
+                  }}
+                />
+              </div>
+            </div>
+
+            <div
+              style={{
+                padding: 18,
+                overflowY: "auto",
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))",
+                gap: 12,
+                flex: 1,
+              }}
+            >
+              {AVAILABLE_IMG_CONTENT.filter((p) => {
+                if (!imageModalSearch.trim()) return true;
+                return p.toLowerCase().includes(imageModalSearch.toLowerCase().trim());
+              }).map((path) => {
+                const isSelected = newImageSelected === path;
+                const fileName = path.replace("/img_content/", "");
+
+                return (
+                  <div
+                    key={path}
+                    onClick={() => setNewImageSelected(path)}
+                    style={{
+                      border: isSelected
+                        ? "2px solid #10b981"
+                        : "1px solid rgba(255, 255, 255, 0.08)",
+                      borderRadius: 10,
+                      background: isSelected
+                        ? "rgba(16, 185, 129, 0.1)"
+                        : "rgba(255, 255, 255, 0.02)",
+                      padding: 8,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: 6,
+                      cursor: "pointer",
+                      transition: "all 0.15s ease",
+                      position: "relative",
+                    }}
+                    title={fileName}
+                  >
+                    {isSelected && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: 4,
+                          right: 4,
+                          background: "#10b981",
+                          color: "#ffffff",
+                          borderRadius: "50%",
+                          width: 18,
+                          height: 18,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Check size={12} />
+                      </div>
+                    )}
+                    <img
+                      src={path}
+                      alt={fileName}
+                      style={{
+                        width: 70,
+                        height: 70,
+                        objectFit: "contain",
+                        borderRadius: 6,
+                        background: "#0b0d14",
+                      }}
+                      loading="lazy"
+                    />
+                    <span
+                      style={{
+                        fontSize: 10,
+                        color: isSelected ? "#34d399" : "#cbd5e1",
+                        textAlign: "center",
+                        width: "100%",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        fontWeight: isSelected ? 700 : 500,
+                      }}
+                    >
+                      {fileName}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div
+              style={{
+                padding: "14px 20px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+                background: "rgba(255, 255, 255, 0.02)",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 10, overflow: "hidden" }}>
+                <img
+                  src={newImageSelected}
+                  alt="Selected"
+                  style={{ width: 34, height: 34, objectFit: "contain", borderRadius: 6, background: "#0b0d14" }}
+                />
+                <span style={{ fontSize: 11, color: "#94a3b8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  Selected: <strong style={{ color: "#ffffff" }}>{newImageSelected}</strong>
+                </span>
+              </div>
+
+              <div style={{ display: "flex", gap: 10 }}>
+                <button
+                  type="button"
+                  onClick={() => setProductForImageChange(null)}
+                  className={styles.btnModalCancel}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleUpdateProductImage}
+                  style={{
+                    background: "#10b981",
+                    color: "#ffffff",
+                    border: "none",
+                    padding: "8px 18px",
+                    borderRadius: 8,
+                    fontSize: 13,
+                    fontWeight: 700,
+                    cursor: "pointer",
+                  }}
+                >
+                  Save Image
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

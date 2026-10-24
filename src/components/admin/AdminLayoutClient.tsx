@@ -21,6 +21,7 @@ import {
   Activity,
   TicketPercent,
   LifeBuoy,
+  Image as ImageIcon,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { AdminLanguageDropdown } from "@/components/admin/AdminLanguageDropdown";
@@ -55,6 +56,9 @@ function getBreadcrumb(
   }
   if (pathname.startsWith("/admin/products")) {
     return { title: t.bc_products_catalog, subtitle: t.nav_products };
+  }
+  if (pathname.startsWith("/admin/images")) {
+    return { title: "Media & Image Library", subtitle: "Catalog Assets" };
   }
   if (pathname.startsWith("/admin/categories")) {
     return { title: t.bc_categories, subtitle: t.nav_group_management };
@@ -109,6 +113,12 @@ export function AdminLayoutClient({
         label: t.nav_products,
         href: "/admin/products",
         icon: Package,
+        exact: false,
+      },
+      {
+        label: "Image Library",
+        href: "/admin/images",
+        icon: ImageIcon,
         exact: false,
       },
       {

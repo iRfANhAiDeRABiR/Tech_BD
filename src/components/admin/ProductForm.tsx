@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import Image from "next/image";
-import { Loader2, Plus, Trash2 } from "lucide-react";
+import { Loader2, Plus, Trash2, Image as ImageIcon, Search, X, Check } from "lucide-react";
 import type { ProductOption } from "@/types/product";
 import { saveProductAction } from "@/app/admin/actions";
 import { AVAILABLE_IMG_CONTENT } from "@/lib/available-images";
@@ -76,6 +76,13 @@ export function ProductForm({
 }) {
   const [options, setOptions] = useState<EditableOption[]>(product.options ?? []);
   const [imageUrl, setImageUrl] = useState<string>(product.image ?? "");
+  const [isImagePickerOpen, setIsImagePickerOpen] = useState(false);
+  const [imageSearchQuery, setImageSearchQuery] = useState("");
+
+  const filteredPickerImages = AVAILABLE_IMG_CONTENT.filter((path) => {
+    if (!imageSearchQuery.trim()) return true;
+    return path.toLowerCase().includes(imageSearchQuery.toLowerCase().trim());
+  });
   const update = (
     index: number,
     key: keyof EditableOption,
@@ -217,9 +224,26 @@ export function ProductForm({
         <div className={styles.field}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <label>Or image URL</label>
-            <span style={{ fontSize: "11px", color: "#10b981", fontWeight: 600 }}>
-              {AVAILABLE_IMG_CONTENT.length} images available in /img_content
-            </span>
+            <button
+              type="button"
+              onClick={() => setIsImagePickerOpen(true)}
+              style={{
+                background: "rgba(139, 92, 246, 0.15)",
+                border: "1px solid rgba(139, 92, 246, 0.35)",
+                color: "#c084fc",
+                padding: "3px 9px",
+                borderRadius: "6px",
+                fontSize: "11px",
+                fontWeight: 700,
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "5px",
+              }}
+            >
+              <ImageIcon size={12} />
+              <span>Browse Library ({AVAILABLE_IMG_CONTENT.length})</span>
+            </button>
           </div>
           <input
             name="imageUrl"
@@ -461,6 +485,217 @@ export function ProductForm({
       <div className={styles.actions}>
         <SubmitButton />
       </div>
+
+      {isImagePickerOpen && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0, 0, 0, 0.8)",
+            backdropFilter: "blur(6px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 20,
+            zIndex: 1000,
+          }}
+          onClick={() => setIsImagePickerOpen(false)}
+        >
+          <div
+            style={{
+              background: "#111420",
+              border: "1px solid rgba(255, 255, 255, 0.12)",
+              borderRadius: 18,
+              maxWidth: 720,
+              width: "100%",
+              maxHeight: "85vh",
+              display: "flex",
+              flexDirection: "column",
+              boxShadow: "0 24px 50px rgba(0, 0, 0, 0.7)",
+              overflow: "hidden",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div
+              style={{
+                padding: "16px 20px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <ImageIcon size={18} color="#c084fc" />
+                <span style={{ fontSize: 15, fontWeight: 800, color: "#ffffff" }}>
+                  Select Image from Library ({AVAILABLE_IMG_CONTENT.length})
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsImagePickerOpen(false)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "#94a3b8",
+                  cursor: "pointer",
+                  padding: 4,
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Modal Search */}
+            <div style={{ padding: "12px 20px", borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
+              <div style={{ position: "relative" }}>
+                <Search
+                  size={15}
+                  style={{
+                    position: "absolute",
+                    left: 12,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    color: "#64748b",
+                  }}
+                />
+                <input
+                  type="text"
+                  placeholder="Filter images by name (e.g. office, windows, adobe)..."
+                  value={imageSearchQuery}
+                  onChange={(e) => setImageSearchQuery(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "9px 12px 9px 36px",
+                    background: "rgba(255, 255, 255, 0.05)",
+                    border: "1px solid rgba(255, 255, 255, 0.12)",
+                    borderRadius: 9,
+                    color: "#ffffff",
+                    fontSize: 13,
+                    outline: "none",
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Modal Grid */}
+            <div
+              style={{
+                padding: 20,
+                overflowY: "auto",
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))",
+                gap: 12,
+                flex: 1,
+              }}
+            >
+              {filteredPickerImages.map((path) => {
+                const isSelected = imageUrl === path;
+                const fileName = path.replace("/img_content/", "");
+
+                return (
+                  <div
+                    key={path}
+                    onClick={() => {
+                      setImageUrl(path);
+                      setIsImagePickerOpen(false);
+                    }}
+                    style={{
+                      border: isSelected
+                        ? "2px solid #10b981"
+                        : "1px solid rgba(255, 255, 255, 0.08)",
+                      borderRadius: 10,
+                      background: isSelected
+                        ? "rgba(16, 185, 129, 0.1)"
+                        : "rgba(255, 255, 255, 0.02)",
+                      padding: 8,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: 6,
+                      cursor: "pointer",
+                      transition: "all 0.15s ease",
+                      position: "relative",
+                    }}
+                    title={fileName}
+                  >
+                    {isSelected && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: 4,
+                          right: 4,
+                          background: "#10b981",
+                          color: "#ffffff",
+                          borderRadius: "50%",
+                          width: 18,
+                          height: 18,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Check size={12} />
+                      </div>
+                    )}
+                    <img
+                      src={path}
+                      alt={fileName}
+                      style={{
+                        width: 70,
+                        height: 70,
+                        objectFit: "contain",
+                        borderRadius: 6,
+                        background: "#0b0d14",
+                      }}
+                      loading="lazy"
+                    />
+                    <span
+                      style={{
+                        fontSize: 10,
+                        color: isSelected ? "#34d399" : "#cbd5e1",
+                        textAlign: "center",
+                        width: "100%",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        fontWeight: isSelected ? 700 : 500,
+                      }}
+                    >
+                      {fileName}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Modal Footer */}
+            <div
+              style={{
+                padding: "12px 20px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+                background: "rgba(255, 255, 255, 0.02)",
+              }}
+            >
+              <span style={{ fontSize: 12, color: "#94a3b8" }}>
+                Showing {filteredPickerImages.length} images
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsImagePickerOpen(false)}
+                className={styles.buttonSecondary}
+                style={{ padding: "6px 14px", fontSize: 12 }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </form>
   );
 }
