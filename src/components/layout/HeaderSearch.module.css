@@ -3,15 +3,16 @@
   flex: 1;
   max-width: 640px;
   margin: 0 28px;
+  z-index: 100;
 }
 
 .dropdown {
   position: absolute;
-  top: calc(100% + 10px);
+  top: calc(100% + 8px);
   left: 0;
   right: 0;
-  z-index: 1200;
-  background: rgba(15, 23, 42, 0.96);
+  z-index: 2000;
+  background: rgba(15, 23, 42, 0.98);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg, 18px);
   box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08);
@@ -22,8 +23,9 @@
 }
 
 :global([data-theme="light"]) .dropdown {
-  background: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.08);
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.08) !important;
 }
 
 @keyframes dropdownSlideIn {
@@ -50,6 +52,11 @@
   color: var(--text-muted);
 }
 
+:global([data-theme="light"]) .dropdownHeader {
+  color: #64748b;
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
 .resultsList {
   list-style: none;
   margin: 0;
@@ -74,6 +81,10 @@
   background: rgba(108, 99, 255, 0.12);
 }
 
+:global([data-theme="light"]) .resultItem {
+  color: #1e293b;
+}
+
 :global([data-theme="light"]) .resultItem:hover,
 :global([data-theme="light"]) .resultItemActive {
   background: rgba(108, 99, 255, 0.08);
@@ -92,6 +103,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .thumbImg {
@@ -115,12 +127,20 @@
   margin-bottom: 3px;
 }
 
+:global([data-theme="light"]) .itemTitle {
+  color: #0f172a;
+}
+
 .itemMeta {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 0.75rem;
   color: var(--text-muted);
+}
+
+:global([data-theme="light"]) .itemMeta {
+  color: #64748b;
 }
 
 .categoryTag {
@@ -139,6 +159,11 @@
   color: var(--accent-primary);
 }
 
+:global([data-theme="light"]) .itemBadge {
+  background: rgba(108, 99, 255, 0.12);
+  color: #4f46e5;
+}
+
 .itemPrice {
   text-align: right;
   min-width: fit-content;
@@ -150,11 +175,19 @@
   color: var(--accent-primary);
 }
 
+:global([data-theme="light"]) .currentPrice {
+  color: #4f46e5;
+}
+
 .originalPrice {
   display: block;
   font-size: 0.75rem;
   color: var(--text-muted);
   text-decoration: line-through;
+}
+
+:global([data-theme="light"]) .originalPrice {
+  color: #94a3b8;
 }
 
 .dropdownFooter {
@@ -169,7 +202,9 @@
 }
 
 :global([data-theme="light"]) .dropdownFooter {
-  background: rgba(0, 0, 0, 0.02);
+  background: #f8fafc;
+  border-top-color: rgba(0, 0, 0, 0.08);
+  color: #64748b;
 }
 
 .viewAllLink {
@@ -190,6 +225,30 @@
   text-align: center;
   color: var(--text-muted);
   font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+:global([data-theme="light"]) .emptyState {
+  color: #64748b;
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(108, 99, 255, 0.25);
+  border-top-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media screen and (max-width: 900px) {
@@ -210,4 +269,3 @@
     top: calc(100% + 6px);
   }
 }
-

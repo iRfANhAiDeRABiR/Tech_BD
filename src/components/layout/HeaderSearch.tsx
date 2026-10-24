@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { useState, useEffect, useRef, type FormEvent, type KeyboardEvent } from "react";
+import { useState, useEffect, useRef, useCallback, type FormEvent, type KeyboardEvent } from "react";
 import { useCurrency } from "@/context/CurrencyContext";
 import styles from "./HeaderSearch.module.css";
 
@@ -57,6 +57,32 @@ export function HeaderSearch() {
     };
   }, []);
 
+  const performFetch = useCallback(async (query: string) => {
+    const trimmed = query.trim();
+    if (!trimmed) {
+      setResults([]);
+      setIsLoading(false);
+      setIsOpen(false);
+      setSelectedIndex(-1);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const res = await fetch(`/api/products/search?q=${encodeURIComponent(trimmed)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setResults(data.results || []);
+        setIsOpen(true);
+        setSelectedIndex(-1);
+      }
+    } catch (err) {
+      console.error("Search fetch error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   // Fetch search results when user types (debounced 160ms)
   useEffect(() => {
     const query = searchQuery.trim();
@@ -72,21 +98,8 @@ export function HeaderSearch() {
       clearTimeout(debounceTimerRef.current);
     }
 
-    debounceTimerRef.current = setTimeout(async () => {
-      setIsLoading(true);
-      try {
-        const res = await fetch(`/api/products/search?q=${encodeURIComponent(query)}`);
-        if (res.ok) {
-          const data = await res.json();
-          setResults(data.results || []);
-          setIsOpen(true);
-          setSelectedIndex(-1);
-        }
-      } catch (err) {
-        console.error("Search fetch error:", err);
-      } finally {
-        setIsLoading(false);
-      }
+    debounceTimerRef.current = setTimeout(() => {
+      performFetch(query);
     }, 160);
 
     return () => {
@@ -94,7 +107,7 @@ export function HeaderSearch() {
         clearTimeout(debounceTimerRef.current);
       }
     };
-  }, [searchQuery]);
+  }, [searchQuery, performFetch]);
 
   const handleSearchSubmit = (event?: FormEvent) => {
     if (event) event.preventDefault();
@@ -162,6 +175,15 @@ export function HeaderSearch() {
     router.push(`/products/${productId}`);
   };
 
+  const handleInputActivate = () => {
+    if (searchQuery.trim().length > 0) {
+      setIsOpen(true);
+      if (results.length === 0 && !isLoading) {
+        performFetch(searchQuery);
+      }
+    }
+  };
+
   return (
     <div className={styles.searchWrapper} ref={wrapperRef}>
       <form
@@ -177,12 +199,14 @@ export function HeaderSearch() {
           className="modern-search-input"
           placeholder="Search for genuine software licenses..."
           value={searchQuery}
-          onChange={(event) => setSearchQuery(event.target.value)}
-          onFocus={() => {
-            if (searchQuery.trim().length > 0 && results.length > 0) {
+          onChange={(event) => {
+            setSearchQuery(event.target.value);
+            if (event.target.value.trim().length > 0) {
               setIsOpen(true);
             }
           }}
+          onFocus={handleInputActivate}
+          onClick={handleInputActivate}
           onKeyDown={handleKeyDown}
           autoComplete="off"
           aria-autocomplete="list"
@@ -258,9 +282,14 @@ export function HeaderSearch() {
         </button>
       </form>
 
-      {isOpen && (
+      {isOpen && searchQuery.trim().length > 0 && (
         <div className={styles.dropdown}>
-          {results.length > 0 ? (
+          {isLoading && results.length === 0 ? (
+            <div className={styles.emptyState}>
+              <span className={styles.spinner} />
+              <span>Searching licenses...</span>
+            </div>
+          ) : results.length > 0 ? (
             <>
               <div className={styles.dropdownHeader}>
                 <span>Suggested Products</span>
@@ -338,4 +367,3 @@ export function HeaderSearch() {
     </div>
   );
 }
-

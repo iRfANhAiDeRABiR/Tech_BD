@@ -2838,7 +2838,9 @@ input, textarea, select {
     padding: 0 clamp(44px, 4.5vw, 80px);
     background: var(--bg-primary);
     border-bottom: 1px solid var(--border-color);
-    overflow: hidden;
+    position: relative;
+    z-index: 100;
+    overflow: visible !important;
 }
 
 .header-logo {
