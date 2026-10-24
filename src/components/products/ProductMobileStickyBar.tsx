@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { useCurrency } from "@/context/CurrencyContext";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { BuyNowButton } from "@/components/cart/BuyNowButton";
-import { WhatsAppOrderButton } from "@/components/products/WhatsAppOrderButton";
 import styles from "./ProductMobileStickyBar.module.css";
 
 interface ProductMobileStickyBarProps {
@@ -32,7 +31,6 @@ export function ProductMobileStickyBar({
     const triggerEl = document.getElementById("product-actions-trigger");
 
     if (!triggerEl) {
-      // Fallback: show on scroll past 450px
       const handleScroll = () => {
         setIsVisible(window.scrollY > 450);
       };
@@ -43,7 +41,6 @@ export function ProductMobileStickyBar({
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
-        // Visible when main actions are scrolled above the viewport
         setIsVisible(!entry.isIntersecting && entry.boundingClientRect.top < 0);
       },
       {
@@ -102,14 +99,6 @@ export function ProductMobileStickyBar({
       </div>
 
       <div className={styles.actions}>
-        <WhatsAppOrderButton
-          productId={productId}
-          productName={productName}
-          price={price}
-          variant="iconOnly"
-          className={styles.btnWa}
-        />
-
         <AddToCartButton
           productId={productId}
           productName={productName}
@@ -129,4 +118,3 @@ export function ProductMobileStickyBar({
     </aside>
   );
 }
-

@@ -653,10 +653,12 @@
 @media (max-width: 1000px) {
   .detail {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 32px;
   }
 
   .imageColumn {
+    position: relative !important;
+    top: auto !important;
     max-width: 520px;
     margin: 0 auto;
     min-height: unset;
@@ -688,6 +690,8 @@
   }
 
   .imageColumn {
+    position: relative !important;
+    top: auto !important;
     max-width: 100%;
     min-height: unset;
     padding: 0;
@@ -728,6 +732,8 @@
   }
 
   .imageColumn {
+    position: relative !important;
+    top: auto !important;
     min-height: unset;
     padding: 0;
   }
