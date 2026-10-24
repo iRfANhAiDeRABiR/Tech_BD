@@ -322,28 +322,6 @@ export function SupportTicketsBox({
     }
   };
 
-  // Handle closing or reopening ticket
-  const handleToggleStatus = async (ticket: SupportTicket) => {
-    const nextStatus = ticket.status === "Closed" ? "In Progress" : "Closed";
-    const updated = updateTicketStatus(ticket.id, nextStatus);
-    if (updated) {
-      setActiveTicket(updated);
-      setTickets(getStoredTickets());
-    }
-
-    // Sync to server
-    fetch("/api/support/tickets", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ticketId: ticket.id,
-        status: nextStatus,
-      }),
-    }).catch(() => {});
-
-    notify.info(`Ticket #${ticket.ticketCode} marked as ${nextStatus}`);
-  };
-
   return (
     <div className={styles.wrapper}>
       {/* ── 1. Top Header Card ── */}
@@ -586,8 +564,8 @@ export function SupportTicketsBox({
             <div className={styles.stepText}>
               <h4 className={styles.stepHeading}>Track to resolution</h4>
               <p className={styles.stepDesc}>
-                Follow your ticket from open to resolved. Reopen within 7 days if
-                something&apos;s still off.
+                Follow your ticket from open to resolved. Support team will verify
+                and close the ticket once your issue is completely solved.
               </p>
             </div>
           </div>
@@ -897,56 +875,63 @@ export function SupportTicketsBox({
                 ))}
               </div>
 
-              {/* Reply Form */}
-              <form onSubmit={handleSendReply} className={styles.replyBox}>
-                <div style={{ display: "flex", gap: "8px" }}>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Reply to this ticket..."
-                    className={styles.formInput}
-                    value={replyText}
-                    onChange={(e) => setReplyText(e.target.value)}
-                  />
-                  <button
-                    type="submit"
-                    disabled={isSendingReply}
-                    className={styles.submitBtn}
-                    style={{ flexShrink: 0 }}
-                  >
-                    <Send size={14} />
-                    <span>Send</span>
-                  </button>
-                </div>
-
+              {/* Reply Form or Closed Notice */}
+              {activeTicket.status === "Closed" ? (
                 <div
                   style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginTop: "4px",
+                    background: "rgba(148, 163, 184, 0.08)",
+                    border: "1px dashed var(--account-border, #cbd5e1)",
+                    borderRadius: "10px",
+                    padding: "14px 18px",
+                    textAlign: "center",
+                    fontSize: "12.5px",
+                    color: "var(--account-muted, #64748b)",
+                    marginTop: "12px",
                   }}
                 >
-                  <button
-                    type="button"
-                    onClick={() => handleToggleStatus(activeTicket)}
-                    className={styles.cancelBtn}
-                    style={{ fontSize: "11.5px", padding: "4px 10px" }}
-                  >
-                    {activeTicket.status === "Closed"
-                      ? "🔄 Reopen Ticket"
-                      : "✅ Mark as Closed"}
-                  </button>
-                  <span
+                  🔒 This ticket has been marked as <strong>Closed</strong> by the support team. If you require further assistance, please open a new ticket.
+                </div>
+              ) : (
+                <form onSubmit={handleSendReply} className={styles.replyBox}>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Reply to this ticket..."
+                      className={styles.formInput}
+                      value={replyText}
+                      onChange={(e) => setReplyText(e.target.value)}
+                    />
+                    <button
+                      type="submit"
+                      disabled={isSendingReply}
+                      className={styles.submitBtn}
+                      style={{ flexShrink: 0 }}
+                    >
+                      <Send size={14} />
+                      <span>Send</span>
+                    </button>
+                  </div>
+
+                  <div
                     style={{
-                      fontSize: "11px",
-                      color: "var(--account-muted, #94a3b8)",
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      alignItems: "center",
+                      marginTop: "4px",
                     }}
                   >
-                    We reply in-thread in ~15 mins
-                  </span>
-                </div>
-              </form>
+                    <span
+                      style={{
+                        fontSize: "11px",
+                        color: "var(--account-muted, #94a3b8)",
+                      }}
+                    >
+                      Support team replies in-thread in ~15 mins
+                    </span>
+                  </div>
+                </form>
+              )}
             </div>
           </div>
         </div>

@@ -570,6 +570,54 @@ export function AdminTicketsManager({ initialTickets }: AdminTicketsManagerProps
                     <option value="Urgent">Urgent</option>
                   </select>
                 </div>
+
+                <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "8px" }}>
+                  {activeTicket.status === "Closed" ? (
+                    <button
+                      type="button"
+                      disabled={isUpdatingStatus}
+                      onClick={() => handleUpdateStatusAndPriority("Open")}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        padding: "6px 14px",
+                        borderRadius: "8px",
+                        background: "#0284c7",
+                        color: "#ffffff",
+                        fontSize: "12px",
+                        fontWeight: 650,
+                        border: "none",
+                        cursor: "pointer",
+                      }}
+                      title="Reopen this ticket"
+                    >
+                      <span>🔄 Reopen Ticket</span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={isUpdatingStatus}
+                      onClick={() => handleUpdateStatusAndPriority("Closed")}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        padding: "6px 14px",
+                        borderRadius: "8px",
+                        background: "#475569",
+                        color: "#ffffff",
+                        fontSize: "12px",
+                        fontWeight: 650,
+                        border: "none",
+                        cursor: "pointer",
+                      }}
+                      title="Mark ticket as closed"
+                    >
+                      <span>🔒 Mark as Closed</span>
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Conversation Messages Thread */}
