@@ -833,6 +833,39 @@ export async function deleteCategoryAction(formData: FormData) {
   redirect("/admin/categories?deleted=1");
 }
 
+export async function toggleCategoryStatusAction(formData: FormData) {
+  const session = await requireAdmin();
+  const id = Number(formData.get("categoryId"));
+  if (!Number.isInteger(id) || id <= 0) throw new Error("Invalid category.");
+
+  const category = await prisma.category.findUnique({
+    where: { id },
+    select: { name: true, isActive: true },
+  });
+  if (!category) return;
+
+  const nextActive = !category.isActive;
+
+  await prisma.category.update({
+    where: { id },
+    data: { isActive: nextActive },
+  });
+
+  await logAdminEvent({
+    action: nextActive ? "CATEGORY_ACTIVATED" : "CATEGORY_DEACTIVATED",
+    category: "CATEGORIES",
+    entityType: "Category",
+    entityId: String(id),
+    entityName: category.name,
+    details: { previousActive: category.isActive, nextActive },
+    adminEmail: session?.user?.email || "Admin",
+    severity: "INFO",
+  });
+
+  revalidateStoreCatalog();
+  invalidateCategoryOptionsCache();
+}
+
 export async function saveSoftwareDownloadAction(formData: FormData) {
   const session = await requireAdmin();
 
