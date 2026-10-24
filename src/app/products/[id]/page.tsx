@@ -256,12 +256,11 @@ export default async function ProductPage({
               </ProductOptionSelector>
             )}
 
-            <p className={styles.status}>
-              <span aria-hidden="true">●</span>{" "}
-              {product.outOfStock
-                ? "Currently out of stock"
-                : "Available for digital delivery"}
-            </p>
+            {product.outOfStock && (
+              <p className={styles.status}>
+                <span aria-hidden="true">●</span> Currently out of stock
+              </p>
+            )}
 
             <dl className={styles.meta}>
               <div>
