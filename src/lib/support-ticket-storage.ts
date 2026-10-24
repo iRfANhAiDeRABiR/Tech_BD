@@ -64,61 +64,23 @@ export function formatRelativeTime(dateString: string): string {
 }
 
 /**
- * Default sample ticket for first-time visitors matching the requested screenshot style
- */
-const INITIAL_SAMPLE_TICKETS: SupportTicket[] = [
-  {
-    id: "tkt-59c66c",
-    ticketCode: "59C66C",
-    subject: "Priority student not showing still have 108 complete",
-    category: "Bug",
-    priority: "Normal",
-    status: "Closed",
-    customerName: "Irfan Haider",
-    customerEmail: "support@techsolutionsbd.com",
-    deviceInfo: "Google Chrome on Windows (1920x1080, en-US)",
-    createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), // ~4 hours ago
-    updatedAt: new Date(Date.now() - 3.5 * 60 * 60 * 1000).toISOString(),
-    messages: [
-      {
-        id: "msg-1",
-        sender: "customer",
-        senderName: "Irfan Haider",
-        message:
-          "Priority student list is not displaying properly. There are still 108 complete records in the counter but the grid shows empty.",
-        createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: "msg-2",
-        sender: "support",
-        senderName: "Tech Solutions BD Support",
-        message:
-          "Hello Irfan! We identified a pagination cache sync delay in the filter index. We have patched the sync worker and flushed the records cache. The 108 records are now displaying properly. Thank you for reporting this!",
-        createdAt: new Date(Date.now() - 3.5 * 60 * 60 * 1000).toISOString(),
-      },
-    ],
-  },
-];
-
-/**
- * Get all support tickets from local storage
+ * Get all support tickets for this customer from local storage
+ * Defaults to clean empty array (no third-party sample data).
  */
 export function getStoredTickets(): SupportTicket[] {
-  if (typeof window === "undefined") return INITIAL_SAMPLE_TICKETS;
+  if (typeof window === "undefined") return [];
 
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_SAMPLE_TICKETS));
-      return INITIAL_SAMPLE_TICKETS;
-    }
+    if (!raw) return [];
     const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed) && parsed.length > 0) {
-      return parsed;
+    if (Array.isArray(parsed)) {
+      // Filter out any legacy sample tickets from another platform
+      return parsed.filter((t) => t.id !== "tkt-59c66c" && t.ticketCode !== "59C66C");
     }
-    return INITIAL_SAMPLE_TICKETS;
+    return [];
   } catch {
-    return INITIAL_SAMPLE_TICKETS;
+    return [];
   }
 }
 
@@ -163,6 +125,7 @@ export function createStoredTicket(input: CreateTicketInput): SupportTicket {
     status: "Open",
     orderNumber: input.orderNumber?.trim() || undefined,
     customerName: input.customerName.trim(),
+    customerPhone: input.customerPhone.trim(),
     customerEmail: input.customerEmail.trim(),
     deviceInfo: input.deviceInfo || getClientDiagnosticDetails(),
     createdAt: now,
@@ -239,4 +202,3 @@ export function updateTicketStatus(
   saveStoredTickets(existing);
   return existing[index];
 }
-

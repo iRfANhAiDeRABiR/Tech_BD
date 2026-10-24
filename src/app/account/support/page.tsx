@@ -13,15 +13,17 @@ export default async function AccountSupportPage() {
   } = await supabase.auth.getUser();
 
   let customerName = "User";
+  let customerPhone = "";
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("full_name, username")
+      .select("full_name, username, phone_e164, whatsapp_e164")
       .eq("id", user.id)
       .single();
 
     customerName =
       profile?.full_name || profile?.username || user.email?.split("@")[0] || "User";
+    customerPhone = profile?.phone_e164 || profile?.whatsapp_e164 || "";
   }
 
   return (
@@ -29,6 +31,7 @@ export default async function AccountSupportPage() {
       <SupportTicketsBox
         initialUserEmail={user?.email || ""}
         initialUserName={customerName}
+        initialUserPhone={customerPhone}
       />
     </div>
   );

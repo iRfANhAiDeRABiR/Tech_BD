@@ -235,6 +235,7 @@ export interface TelegramTicketNotificationPayload {
   subject: string;
   description: string;
   userName?: string;
+  userPhone?: string;
   userEmail?: string;
   orderNumber?: string;
   deviceInfo?: string;
@@ -255,15 +256,54 @@ export async function sendTelegramTicketNotification(
     `📂 <b>Category:</b> ${escapeTelegramHtml(payload.category)}`,
     `⚡ <b>Priority:</b> ${escapeTelegramHtml(payload.priority)}`,
     payload.orderNumber ? `📦 <b>Order ID:</b> #${escapeTelegramHtml(payload.orderNumber)}` : "",
-    payload.userName || payload.userEmail
-      ? `👤 <b>Customer:</b> ${escapeTelegramHtml(payload.userName || "")} (${escapeTelegramHtml(payload.userEmail || "Guest")})`
-      : "",
+    `👤 <b>Customer:</b> ${escapeTelegramHtml(payload.userName || "Guest")}`,
+    payload.userPhone ? `📞 <b>Phone:</b> ${escapeTelegramHtml(payload.userPhone)}` : "",
+    payload.userEmail ? `📧 <b>Email:</b> ${escapeTelegramHtml(payload.userEmail)}` : "",
     `📝 <b>Subject:</b> ${escapeTelegramHtml(payload.subject)}`,
     "",
     `💬 <b>Description:</b>`,
     escapeTelegramHtml(payload.description),
     "",
     payload.deviceInfo ? `🌐 <b>Diagnostic context:</b> <code>${escapeTelegramHtml(payload.deviceInfo)}</code>` : "",
+  ].filter(Boolean);
+
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: lines.join("\n"),
+        parse_mode: "HTML",
+      }),
+    });
+    const data = await res.json();
+    return { success: data.ok };
+  } catch (err: any) {
+    return { success: false, error: err?.message };
+  }
+}
+
+export async function sendTelegramTicketReplyNotification(payload: {
+  ticketCode: string;
+  senderName: string;
+  replyMessage: string;
+  subject?: string;
+}): Promise<{ success: boolean; error?: string }> {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
+
+  if (!token || !chatId) {
+    return { success: false, error: "Telegram credentials not configured" };
+  }
+
+  const lines = [
+    `💬 <b>NEW CUSTOMER REPLY on Ticket #${escapeTelegramHtml(payload.ticketCode)}</b>`,
+    `👤 <b>From:</b> ${escapeTelegramHtml(payload.senderName)}`,
+    payload.subject ? `📝 <b>Subject:</b> ${escapeTelegramHtml(payload.subject)}` : "",
+    "",
+    `💬 <b>Customer Reply:</b>`,
+    escapeTelegramHtml(payload.replyMessage),
   ].filter(Boolean);
 
   try {

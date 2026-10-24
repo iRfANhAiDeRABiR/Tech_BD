@@ -27,6 +27,7 @@ export interface SupportTicket {
   status: TicketStatus;
   orderNumber?: string;
   customerName: string;
+  customerPhone: string;
   customerEmail: string;
   deviceInfo?: string;
   createdAt: string; // ISO string
@@ -40,8 +41,8 @@ export interface CreateTicketInput {
   priority: TicketPriority;
   orderNumber?: string;
   customerName: string;
+  customerPhone: string;
   customerEmail: string;
   description: string;
   deviceInfo?: string;
 }
-

@@ -14,10 +14,11 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
-  HelpCircle,
   PhoneCall,
   Info,
+  UserCheck,
 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 import { notify } from "@/lib/toast";
 import {
   SupportTicket,
@@ -37,6 +38,7 @@ import styles from "./SupportTicketsBox.module.css";
 interface SupportTicketsBoxProps {
   initialUserEmail?: string;
   initialUserName?: string;
+  initialUserPhone?: string;
   embedded?: boolean;
 }
 
@@ -54,11 +56,18 @@ const PRIORITIES: TicketPriority[] = ["Low", "Normal", "High", "Urgent"];
 export function SupportTicketsBox({
   initialUserEmail = "",
   initialUserName = "",
+  initialUserPhone = "",
   embedded = false,
 }: SupportTicketsBoxProps) {
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [filter, setFilter] = useState<"All" | "Active" | "Closed">("All");
+
+  // User auth state
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [customerName, setCustomerName] = useState(initialUserName);
+  const [customerPhone, setCustomerPhone] = useState(initialUserPhone);
+  const [customerEmail, setCustomerEmail] = useState(initialUserEmail);
 
   // Open modal states
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -66,23 +75,70 @@ export function SupportTicketsBox({
 
   // Form states
   const [subject, setSubject] = useState("");
-  const [category, setCategory] = useState<TicketCategory>("Bug");
+  const [category, setCategory] = useState<TicketCategory>("License Key Activation");
   const [priority, setPriority] = useState<TicketPriority>("Normal");
   const [orderNumber, setOrderNumber] = useState("");
   const [description, setDescription] = useState("");
-  const [customerName, setCustomerName] = useState(initialUserName);
-  const [customerEmail, setCustomerEmail] = useState(initialUserEmail);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Thread reply states
   const [replyText, setReplyText] = useState("");
   const [isSendingReply, setIsSendingReply] = useState(false);
 
-  // Load tickets on client mount
+  // Check auth session and fetch tickets
   useEffect(() => {
-    const loaded = getStoredTickets();
-    setTickets(loaded);
+    // 1. Load locally stored tickets (starts at 0, no dummy data)
+    const local = getStoredTickets();
+    setTickets(local);
     setIsLoaded(true);
+
+    // 2. Check if logged in via Supabase
+    const supabase = createClient();
+    supabase.auth.getUser().then(async (res: any) => {
+      const user = res?.data?.user;
+      if (user) {
+        setIsLoggedIn(true);
+        const email = user.email || "";
+        setCustomerEmail((prev) => prev || email);
+
+        // Fetch profile details
+        try {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("full_name, username, phone_e164, whatsapp_e164")
+            .eq("id", user.id)
+            .single();
+
+          if (profile) {
+            const name = profile.full_name || profile.username || email.split("@")[0] || "Customer";
+            const phone = profile.phone_e164 || profile.whatsapp_e164 || "";
+            setCustomerName((prev) => prev || name);
+            setCustomerPhone((prev) => prev || phone);
+          }
+        } catch {
+          // ignore
+        }
+
+        // Sync tickets from server for this user
+        if (email) {
+          fetch(`/api/support/tickets?email=${encodeURIComponent(email)}`)
+            .then((res) => res.json())
+            .then((data) => {
+              if (data?.tickets && Array.isArray(data.tickets)) {
+                // Merge server tickets with local
+                const map = new Map<string, SupportTicket>();
+                local.forEach((t) => map.set(t.id, t));
+                data.tickets.forEach((t: SupportTicket) => map.set(t.id, t));
+                const merged = Array.from(map.values()).sort(
+                  (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+                );
+                setTickets(merged);
+              }
+            })
+            .catch(() => {});
+        }
+      }
+    });
   }, []);
 
   // Compute live stats
@@ -104,31 +160,49 @@ export function SupportTicketsBox({
   // Handle creating a new ticket
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!subject.trim() || !description.trim()) {
       notify.error("Please fill in subject and description");
       return;
+    }
+
+    // If guest, validate name, phone, email
+    if (!isLoggedIn) {
+      if (!customerName.trim()) {
+        notify.error("Please enter your name");
+        return;
+      }
+      if (!customerPhone.trim()) {
+        notify.error("Please enter your phone number (for WhatsApp/bKash updates)");
+        return;
+      }
+      if (!customerEmail.trim()) {
+        notify.error("Please enter your email address");
+        return;
+      }
     }
 
     setIsSubmitting(true);
     const diagInfo = getClientDiagnosticDetails();
 
     try {
+      // 1. Create locally for instant UI update
       const newTicket = createStoredTicket({
         subject: subject.trim(),
         category,
         priority,
         orderNumber: orderNumber.trim() || undefined,
         customerName: customerName.trim() || "Customer",
+        customerPhone: customerPhone.trim(),
         customerEmail: customerEmail.trim() || "guest@techsolutionsbd.com",
         description: description.trim(),
         deviceInfo: diagInfo,
       });
 
-      // Update state
       setTickets(getStoredTickets());
 
-      // Attempt to push to server API (which pings Telegram)
-      fetch("/api/support/tickets", {
+      // 2. Post to server store (persists to Database and fires real-time Telegram alert)
+      const res = await fetch("/api/support/tickets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -137,15 +211,20 @@ export function SupportTicketsBox({
           priority: newTicket.priority,
           subject: newTicket.subject,
           description: description.trim(),
-          customerName: customerName.trim() || "Customer",
-          customerEmail: customerEmail.trim() || "guest@techsolutionsbd.com",
+          customerName: newTicket.customerName,
+          customerPhone: newTicket.customerPhone,
+          customerEmail: newTicket.customerEmail,
           orderNumber: orderNumber.trim() || undefined,
           deviceInfo: diagInfo,
         }),
-      }).catch(() => {});
+      });
 
-      notify.success(`Ticket #${newTicket.ticketCode} Created!`, {
-        description: "Our support engineering team will reply in-thread shortly.",
+      if (!res.ok) {
+        console.warn("Server ticket sync warning");
+      }
+
+      notify.success(`Ticket #${newTicket.ticketCode} Opened!`, {
+        description: "Our support engineering team will answer in-thread shortly.",
       });
 
       // Reset form
@@ -155,22 +234,25 @@ export function SupportTicketsBox({
       setIsCreateOpen(false);
       setActiveTicket(newTicket);
     } catch {
-      notify.error("Failed to create ticket. Please try again.");
+      notify.error("Failed to open ticket. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   // Handle in-thread reply
-  const handleSendReply = (e: React.FormEvent) => {
+  const handleSendReply = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeTicket || !replyText.trim()) return;
 
     setIsSendingReply(true);
+    const text = replyText.trim();
+
     try {
+      // 1. Update locally
       const updated = addMessageToTicket(
         activeTicket.id,
-        replyText.trim(),
+        text,
         "customer",
         customerName.trim() || "Customer"
       );
@@ -179,8 +261,23 @@ export function SupportTicketsBox({
         setActiveTicket(updated);
         setTickets(getStoredTickets());
         setReplyText("");
-        notify.success("Reply added to thread");
       }
+
+      // 2. Post to server API (notifies admin on Telegram)
+      await fetch("/api/support/tickets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "reply",
+          ticketId: activeTicket.id,
+          message: text,
+          sender: "customer",
+          senderName: customerName.trim() || "Customer",
+          subject: activeTicket.subject,
+        }),
+      });
+
+      notify.success("Reply added to thread");
     } catch {
       notify.error("Failed to send reply");
     } finally {
@@ -189,19 +286,30 @@ export function SupportTicketsBox({
   };
 
   // Handle closing or reopening ticket
-  const handleToggleStatus = (ticket: SupportTicket) => {
+  const handleToggleStatus = async (ticket: SupportTicket) => {
     const nextStatus = ticket.status === "Closed" ? "In Progress" : "Closed";
     const updated = updateTicketStatus(ticket.id, nextStatus);
     if (updated) {
       setActiveTicket(updated);
       setTickets(getStoredTickets());
-      notify.info(`Ticket #${ticket.ticketCode} marked as ${nextStatus}`);
     }
+
+    // Sync to server
+    fetch("/api/support/tickets", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ticketId: ticket.id,
+        status: nextStatus,
+      }),
+    }).catch(() => {});
+
+    notify.info(`Ticket #${ticket.ticketCode} marked as ${nextStatus}`);
   };
 
   return (
     <div className={styles.wrapper}>
-      {/* ── 1. Top Header Card (Matching User Screenshot) ── */}
+      {/* ── 1. Top Header Card ── */}
       <div className={styles.topCard}>
         <div className={styles.topCardMain}>
           <div className={styles.headerLeft}>
@@ -235,7 +343,7 @@ export function SupportTicketsBox({
               <MessageSquare size={17} color="#94a3b8" />
             </div>
             <div>
-              <div className={styles.statNum}>{isLoaded ? totalCount : 1}</div>
+              <div className={styles.statNum}>{isLoaded ? totalCount : 0}</div>
               <div className={styles.statLabel}>Total</div>
             </div>
           </div>
@@ -255,7 +363,7 @@ export function SupportTicketsBox({
               <ShieldCheck size={18} color="#10b981" />
             </div>
             <div>
-              <div className={styles.statNum}>{isLoaded ? resolvedCount : 1}</div>
+              <div className={styles.statNum}>{isLoaded ? resolvedCount : 0}</div>
               <div className={styles.statLabel}>Resolved</div>
             </div>
           </div>
@@ -478,6 +586,75 @@ export function SupportTicketsBox({
 
             <form onSubmit={handleCreateSubmit}>
               <div className={styles.modalBody}>
+                {/* Logged in indicator */}
+                {isLoggedIn ? (
+                  <div
+                    style={{
+                      background: "rgba(16, 185, 129, 0.08)",
+                      border: "1px solid rgba(16, 185, 129, 0.25)",
+                      borderRadius: "10px",
+                      padding: "10px 14px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      fontSize: "12.5px",
+                      color: "#059669",
+                    }}
+                  >
+                    <UserCheck size={18} />
+                    <span>
+                      Submitting as <strong>{customerName || "Verified User"}</strong> ({customerEmail})
+                    </span>
+                  </div>
+                ) : (
+                  /* Guest user input fields: Name, Phone, Email */
+                  <>
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.formLabel}>
+                          Your Name <span style={{ color: "#ef4444" }}>*</span>
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. Irfan Haider"
+                          className={styles.formInput}
+                          value={customerName}
+                          onChange={(e) => setCustomerName(e.target.value)}
+                        />
+                      </div>
+
+                      <div className={styles.formGroup}>
+                        <label className={styles.formLabel}>
+                          Phone / WhatsApp <span style={{ color: "#ef4444" }}>*</span>
+                        </label>
+                        <input
+                          type="tel"
+                          required
+                          placeholder="e.g. 017XXXXXXXX"
+                          className={styles.formInput}
+                          value={customerPhone}
+                          onChange={(e) => setCustomerPhone(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>
+                        Email Address <span style={{ color: "#ef4444" }}>*</span>
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        placeholder="e.g. name@example.com"
+                        className={styles.formInput}
+                        value={customerEmail}
+                        onChange={(e) => setCustomerEmail(e.target.value)}
+                      />
+                    </div>
+                  </>
+                )}
+
                 <div className={styles.formRow}>
                   <div className={styles.formGroup}>
                     <label className={styles.formLabel}>Category</label>
@@ -519,7 +696,7 @@ export function SupportTicketsBox({
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Windows 11 activation key error or issue"
+                    placeholder="e.g. Windows 11 activation key error or query"
                     className={styles.formInput}
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
@@ -579,7 +756,7 @@ export function SupportTicketsBox({
                   {isSubmitting ? (
                     <>
                       <Loader2 size={15} className="animate-spin" />
-                      <span>Creating...</span>
+                      <span>Opening...</span>
                     </>
                   ) : (
                     <>
@@ -640,6 +817,7 @@ export function SupportTicketsBox({
                 <div
                   style={{
                     display: "flex",
+                    flexWrap: "wrap",
                     gap: "8px",
                     marginTop: "6px",
                     fontSize: "12px",
@@ -649,6 +827,12 @@ export function SupportTicketsBox({
                   <span>Category: {activeTicket.category}</span>
                   <span>•</span>
                   <span>Priority: {activeTicket.priority}</span>
+                  {activeTicket.customerPhone && (
+                    <>
+                      <span>•</span>
+                      <span>Phone: {activeTicket.customerPhone}</span>
+                    </>
+                  )}
                   {activeTicket.orderNumber && (
                     <>
                       <span>•</span>
@@ -670,7 +854,7 @@ export function SupportTicketsBox({
                     }`}
                   >
                     <div className={styles.msgSender}>{msg.senderName}</div>
-                    <div>{msg.message}</div>
+                    <div style={{ whiteSpace: "pre-wrap" }}>{msg.message}</div>
                     <div className={styles.msgTime}>
                       {formatRelativeTime(msg.createdAt)}
                     </div>
@@ -735,4 +919,3 @@ export function SupportTicketsBox({
     </div>
   );
 }
-
