@@ -23,14 +23,6 @@ const defaultCategories: StoreCategory[] = [
     image: "/img_content/office24proplus.png",
     accent: "#D83B01",
   },
-  {
-    slug: "365",
-    name: "Office 365",
-    description: "Office 365",
-    count: 0,
-    image: "/img_content/O365log.png",
-    accent: "#7B5EA7",
-  },
 ];
 
 interface CategorySidebarProps {

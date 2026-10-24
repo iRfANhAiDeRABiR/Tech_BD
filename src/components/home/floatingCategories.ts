@@ -18,7 +18,7 @@ const floatingCategoryConfig: FloatingCategoryConfig[] = [
   {
     name: "Microsoft Office",
     image: "/img_content/office24proplus.png",
-    matches: ["office", "microsoft office"],
+    matches: ["office", "microsoft office", "365", "office 365", "microsoft 365"],
   },
   {
     name: "Cloud Storage",
@@ -42,11 +42,6 @@ const floatingCategoryConfig: FloatingCategoryConfig[] = [
       "adobe",
       "adobe creative cloud",
     ],
-  },
-  {
-    name: "Productivity",
-    image: "/img_content/O365log.png",
-    matches: ["productivity", "365", "microsoft 365", "office 365"],
   },
 ];
 

@@ -394,7 +394,7 @@ export const products: Product[] = [
     {
         "id": "1774510199259",
         "name": "Microsoft Office 365 <br> Account And Password(Changable)",
-        "category": "365",
+        "category": "office",
         "badge": "hot",
         "price": 400,
         "originalPrice": 7500,
@@ -408,7 +408,7 @@ export const products: Product[] = [
     {
         "id": "1774510988677",
         "name": "Microsoft Office 365 Personal <br> With Own Mail ",
-        "category": "365",
+        "category": "office",
         "badge": "new",
         "price": 1750,
         "originalPrice": 12500,
@@ -481,7 +481,7 @@ export const categorySummaries: StoreCategory[] = [
   {
     slug: "office",
     name: "Microsoft Office",
-    description: "Office Home and Professional",
+    description: "Office Home, Professional & 365",
     count: products.filter((product) => product.category === "office").length,
     image: "/img_content/office24proplus.png",
     accent: "#D83B01",
@@ -493,14 +493,6 @@ export const categorySummaries: StoreCategory[] = [
     count: products.filter((product) => product.category === "windows").length,
     image: "/img_content/win11pro.png",
     accent: "#0078D4",
-  },
-  {
-    slug: "365",
-    name: "Microsoft 365",
-    description: "Subscription-based Office plans",
-    count: products.filter((product) => product.category === "365").length,
-    image: "/img_content/O365log.png",
-    accent: "#7B5EA7",
   },
   {
     slug: "adobe",
