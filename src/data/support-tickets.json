@@ -1,0 +1,33 @@
+[
+  {
+    "id": "tkt-6zwxn9",
+    "ticketCode": "6ZWXN9",
+    "subject": "test",
+    "category": "License Key Activation",
+    "priority": "Normal",
+    "status": "Resolved",
+    "customerName": "IRFAN HAIDER ABIR",
+    "customerPhone": "01518902822",
+    "customerEmail": "irfanhaiderabir90@gmail.com",
+    "orderNumber": "dfsfsfdf",
+    "deviceInfo": "Google Chrome on Windows (1707x1067, en-US)",
+    "createdAt": "2026-10-24T11:56:11.910Z",
+    "updatedAt": "2026-10-24T11:56:43.923Z",
+    "messages": [
+      {
+        "id": "msg-1792842971910",
+        "sender": "customer",
+        "senderName": "IRFAN HAIDER ABIR",
+        "message": "dfdffsfdf",
+        "createdAt": "2026-10-24T11:56:11.910Z"
+      },
+      {
+        "id": "msg-1792843003923",
+        "sender": "support",
+        "senderName": "Tech Solutions BD Support",
+        "message": "done",
+        "createdAt": "2026-10-24T11:56:43.923Z"
+      }
+    ]
+  }
+]

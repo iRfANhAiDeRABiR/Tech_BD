@@ -17,6 +17,8 @@ import {
   PhoneCall,
   Info,
   UserCheck,
+  Lock,
+  LogIn,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { notify } from "@/lib/toast";
@@ -64,7 +66,7 @@ export function SupportTicketsBox({
   const [filter, setFilter] = useState<"All" | "Active" | "Closed">("All");
 
   // User auth state
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(Boolean(initialUserEmail));
   const [customerName, setCustomerName] = useState(initialUserName);
   const [customerPhone, setCustomerPhone] = useState(initialUserPhone);
   const [customerEmail, setCustomerEmail] = useState(initialUserEmail);
@@ -85,9 +87,48 @@ export function SupportTicketsBox({
   const [replyText, setReplyText] = useState("");
   const [isSendingReply, setIsSendingReply] = useState(false);
 
+  // Open login/signup modal
+  const handleOpenAuth = () => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("techbd:open-auth-modal", { detail: { mode: "login" } })
+      );
+    }
+  };
+
+  // Open ticket click handler (requires auth)
+  const handleOpenTicketClick = () => {
+    if (!isLoggedIn) {
+      notify.info("Please sign in or create an account to open support tickets.");
+      handleOpenAuth();
+      return;
+    }
+    setIsCreateOpen(true);
+  };
+
+  // Fetch tickets for a specific email
+  const syncServerTickets = (email: string) => {
+    if (!email) return;
+    fetch(`/api/support/tickets?email=${encodeURIComponent(email)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.tickets && Array.isArray(data.tickets)) {
+          const local = getStoredTickets();
+          const map = new Map<string, SupportTicket>();
+          local.forEach((t) => map.set(t.id, t));
+          data.tickets.forEach((t: SupportTicket) => map.set(t.id, t));
+          const merged = Array.from(map.values()).sort(
+            (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          );
+          setTickets(merged);
+        }
+      })
+      .catch(() => {});
+  };
+
   // Check auth session and fetch tickets
   useEffect(() => {
-    // 1. Load locally stored tickets (starts at 0, no dummy data)
+    // 1. Load locally stored tickets
     const local = getStoredTickets();
     setTickets(local);
     setIsLoaded(true);
@@ -119,27 +160,38 @@ export function SupportTicketsBox({
           // ignore
         }
 
-        // Sync tickets from server for this user
-        if (email) {
-          fetch(`/api/support/tickets?email=${encodeURIComponent(email)}`)
-            .then((res) => res.json())
-            .then((data) => {
-              if (data?.tickets && Array.isArray(data.tickets)) {
-                // Merge server tickets with local
-                const map = new Map<string, SupportTicket>();
-                local.forEach((t) => map.set(t.id, t));
-                data.tickets.forEach((t: SupportTicket) => map.set(t.id, t));
-                const merged = Array.from(map.values()).sort(
-                  (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-                );
-                setTickets(merged);
-              }
-            })
-            .catch(() => {});
-        }
+        syncServerTickets(email);
       }
     });
-  }, []);
+
+    // 3. Listen to auth state changes (if user logs in while on this page)
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (_event: any, session: any) => {
+        if (session?.user) {
+          setIsLoggedIn(true);
+          const email = session.user.email || "";
+          setCustomerEmail(email);
+          syncServerTickets(email);
+        } else {
+          setIsLoggedIn(false);
+        }
+      }
+    );
+
+    // 4. Check query param ?create=true
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("create") === "true") {
+        if (initialUserEmail) {
+          setIsCreateOpen(true);
+        }
+      }
+    }
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+  }, [initialUserEmail]);
 
   // Compute live stats
   const totalCount = tickets.length;
@@ -161,25 +213,14 @@ export function SupportTicketsBox({
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!subject.trim() || !description.trim()) {
-      notify.error("Please fill in subject and description");
+    if (!isLoggedIn) {
+      handleOpenAuth();
       return;
     }
 
-    // If guest, validate name, phone, email
-    if (!isLoggedIn) {
-      if (!customerName.trim()) {
-        notify.error("Please enter your name");
-        return;
-      }
-      if (!customerPhone.trim()) {
-        notify.error("Please enter your phone number (for WhatsApp/bKash updates)");
-        return;
-      }
-      if (!customerEmail.trim()) {
-        notify.error("Please enter your email address");
-        return;
-      }
+    if (!subject.trim() || !description.trim()) {
+      notify.error("Please fill in subject and description");
+      return;
     }
 
     setIsSubmitting(true);
@@ -202,7 +243,7 @@ export function SupportTicketsBox({
       setTickets(getStoredTickets());
 
       // 2. Post to server store (persists to Database and fires real-time Telegram alert)
-      const res = await fetch("/api/support/tickets", {
+      await fetch("/api/support/tickets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -218,10 +259,6 @@ export function SupportTicketsBox({
           deviceInfo: diagInfo,
         }),
       });
-
-      if (!res.ok) {
-        console.warn("Server ticket sync warning");
-      }
 
       notify.success(`Ticket #${newTicket.ticketCode} Opened!`, {
         description: "Our support engineering team will answer in-thread shortly.",
@@ -328,11 +365,20 @@ export function SupportTicketsBox({
           <button
             type="button"
             className={styles.openTicketBtn}
-            onClick={() => setIsCreateOpen(true)}
-            title="Open a new support ticket"
+            onClick={handleOpenTicketClick}
+            title={isLoggedIn ? "Open a new support ticket" : "Sign in to open a support ticket"}
           >
-            <Plus size={16} strokeWidth={2.5} />
-            <span>Open ticket</span>
+            {isLoggedIn ? (
+              <>
+                <Plus size={16} strokeWidth={2.5} />
+                <span>Open ticket</span>
+              </>
+            ) : (
+              <>
+                <Lock size={15} />
+                <span>Sign in to Open Ticket</span>
+              </>
+            )}
           </button>
         </div>
 
@@ -374,28 +420,48 @@ export function SupportTicketsBox({
       <div className={styles.ticketsSection}>
         <div className={styles.ticketsHeader}>
           <h2 className={styles.sectionHeading}>Your tickets</h2>
-          <div className={styles.filterTabs}>
-            {(["All", "Active", "Closed"] as const).map((tab) => (
-              <button
-                key={tab}
-                type="button"
-                onClick={() => setFilter(tab)}
-                className={`${styles.filterTab} ${
-                  filter === tab ? styles.filterTabActive : ""
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
+          {isLoggedIn && (
+            <div className={styles.filterTabs}>
+              {(["All", "Active", "Closed"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setFilter(tab)}
+                  className={`${styles.filterTab} ${
+                    filter === tab ? styles.filterTabActive : ""
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className={styles.ticketList}>
-          {filteredTickets.length === 0 ? (
+          {!isLoggedIn ? (
+            /* Auth Gate Card when customer is not signed in */
+            <div className={styles.authGateCard}>
+              <div className={styles.authGateIcon}>
+                <Lock size={24} />
+              </div>
+              <h3 className={styles.authGateTitle}>Sign In to Access Your Support History</h3>
+              <p className={styles.authGateDesc}>
+                To open new support tickets, communicate with our engineering team in-thread, and track resolution history, please sign in or register with your account.
+              </p>
+              <button
+                type="button"
+                className={styles.authGateBtn}
+                onClick={handleOpenAuth}
+              >
+                <LogIn size={16} />
+                <span>Sign In / Sign Up to Continue</span>
+              </button>
+            </div>
+          ) : filteredTickets.length === 0 ? (
             <div className={styles.emptyState}>
               <p className={styles.emptyStateText}>
-                No {filter !== "All" ? filter.toLowerCase() : ""} support tickets
-                found.
+                No {filter !== "All" ? filter.toLowerCase() : ""} support tickets found.
               </p>
               <button
                 type="button"
@@ -586,73 +652,40 @@ export function SupportTicketsBox({
 
             <form onSubmit={handleCreateSubmit}>
               <div className={styles.modalBody}>
-                {/* Logged in indicator */}
-                {isLoggedIn ? (
-                  <div
-                    style={{
-                      background: "rgba(16, 185, 129, 0.08)",
-                      border: "1px solid rgba(16, 185, 129, 0.25)",
-                      borderRadius: "10px",
-                      padding: "10px 14px",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "10px",
-                      fontSize: "12.5px",
-                      color: "#059669",
-                    }}
-                  >
-                    <UserCheck size={18} />
-                    <span>
-                      Submitting as <strong>{customerName || "Verified User"}</strong> ({customerEmail})
-                    </span>
+                {/* Verified user badge */}
+                <div
+                  style={{
+                    background: "rgba(16, 185, 129, 0.08)",
+                    border: "1px solid rgba(16, 185, 129, 0.25)",
+                    borderRadius: "10px",
+                    padding: "10px 14px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    fontSize: "12.5px",
+                    color: "#059669",
+                  }}
+                >
+                  <UserCheck size={18} />
+                  <span>
+                    Submitting as <strong>{customerName || "Verified User"}</strong> ({customerEmail}{customerPhone ? `, ${customerPhone}` : ""})
+                  </span>
+                </div>
+
+                {/* Optional phone update if not in profile */}
+                {!customerPhone && (
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>
+                      Phone / WhatsApp Number (Optional)
+                    </label>
+                    <input
+                      type="tel"
+                      placeholder="e.g. 017XXXXXXXX"
+                      className={styles.formInput}
+                      value={customerPhone}
+                      onChange={(e) => setCustomerPhone(e.target.value)}
+                    />
                   </div>
-                ) : (
-                  /* Guest user input fields: Name, Phone, Email */
-                  <>
-                    <div className={styles.formRow}>
-                      <div className={styles.formGroup}>
-                        <label className={styles.formLabel}>
-                          Your Name <span style={{ color: "#ef4444" }}>*</span>
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="e.g. Irfan Haider"
-                          className={styles.formInput}
-                          value={customerName}
-                          onChange={(e) => setCustomerName(e.target.value)}
-                        />
-                      </div>
-
-                      <div className={styles.formGroup}>
-                        <label className={styles.formLabel}>
-                          Phone / WhatsApp <span style={{ color: "#ef4444" }}>*</span>
-                        </label>
-                        <input
-                          type="tel"
-                          required
-                          placeholder="e.g. 017XXXXXXXX"
-                          className={styles.formInput}
-                          value={customerPhone}
-                          onChange={(e) => setCustomerPhone(e.target.value)}
-                        />
-                      </div>
-                    </div>
-
-                    <div className={styles.formGroup}>
-                      <label className={styles.formLabel}>
-                        Email Address <span style={{ color: "#ef4444" }}>*</span>
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        placeholder="e.g. name@example.com"
-                        className={styles.formInput}
-                        value={customerEmail}
-                        onChange={(e) => setCustomerEmail(e.target.value)}
-                      />
-                    </div>
-                  </>
                 )}
 
                 <div className={styles.formRow}>
@@ -853,7 +886,9 @@ export function SupportTicketsBox({
                         : styles.supportMsg
                     }`}
                   >
-                    <div className={styles.msgSender}>{msg.senderName}</div>
+                    <div className={styles.msgSender}>
+                      {msg.sender === "support" ? "🛡️ Support Team" : `👤 ${msg.senderName}`}
+                    </div>
                     <div style={{ whiteSpace: "pre-wrap" }}>{msg.message}</div>
                     <div className={styles.msgTime}>
                       {formatRelativeTime(msg.createdAt)}

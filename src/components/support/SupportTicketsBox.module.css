@@ -900,6 +900,86 @@
   border-color: #2d2a4a;
 }
 
+/* ── Auth Gate Card ──────────────────────────────────────── */
+.authGateCard {
+  background: var(--account-panel-bg, #ffffff);
+  border: 1px dashed var(--account-border, #cbd5e1);
+  border-radius: 16px;
+  padding: 36px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+:global([data-theme="dark"]) .authGateCard {
+  background: var(--account-panel-bg, #16132e);
+  border-color: var(--account-border, #2d2a4a);
+}
+
+.authGateIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(234, 88, 12, 0.1);
+  color: #ea580c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:global([data-theme="dark"]) .authGateIcon {
+  background: rgba(234, 88, 12, 0.18);
+  color: #fb923c;
+}
+
+.authGateTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--account-title, #0f172a);
+}
+
+:global([data-theme="dark"]) .authGateTitle {
+  color: #f1f5f9;
+}
+
+.authGateDesc {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--account-muted, #64748b);
+  max-width: 480px;
+  line-height: 1.5;
+}
+
+:global([data-theme="dark"]) .authGateDesc {
+  color: #94a3b8;
+}
+
+.authGateBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ea580c;
+  color: #ffffff;
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 650;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3);
+  transition: all 0.2s ease;
+  margin-top: 6px;
+}
+
+.authGateBtn:hover {
+  background: #c2410c;
+  transform: translateY(-1px);
+}
+
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 768px) {
   .topCardMain {
