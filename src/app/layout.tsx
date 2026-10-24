@@ -110,6 +110,26 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        {/* Suppress unhandled non-Error rejections (e.g. browser extension rejections, HMR WebSocket reconnect events) from triggering false-positive Next.js dev overlays */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){
+              if(typeof window!=="undefined"){
+                window.addEventListener("unhandledrejection",function(event){
+                  var r=event&&event.reason;
+                  var isDomEvent=(typeof Event!=="undefined"&&r instanceof Event)||
+                    (r&&typeof r==="object"&&("type"in r||"isTrusted"in r)&&!("stack"in r));
+                  if(isDomEvent){
+                    event.preventDefault();
+                    if(typeof event.stopImmediatePropagation==="function"){
+                      event.stopImmediatePropagation();
+                    }
+                  }
+                },{capture:true});
+              }
+            })();`,
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
