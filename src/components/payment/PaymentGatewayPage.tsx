@@ -10,6 +10,7 @@ import {
   AlertTriangle,
   ShieldCheck,
   PhoneCall,
+  FileDown,
 } from "lucide-react";
 import { BkashLogo, NagadLogo, RocketLogo } from "@/components/common/PaymentLogos";
 import styles from "./PaymentGatewayPage.module.css";
@@ -776,6 +777,32 @@ export default function PaymentGatewayPage({
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "14px" }}>
+                {verificationStatus === "CONFIRMED" && (
+                  <a
+                    href={`/api/orders/${encodeURIComponent(submittedOrder?.orderNumber || order.refId)}/invoice`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.btnConfirm}
+                    style={{
+                      background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
+                      color: "#38bdf8",
+                      padding: "13px 20px",
+                      borderRadius: "10px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "8px",
+                      textDecoration: "none",
+                      fontWeight: 650,
+                      border: "1px solid rgba(56, 189, 248, 0.3)",
+                      boxShadow: "0 4px 14px rgba(15, 23, 42, 0.25)",
+                    }}
+                  >
+                    <FileDown size={18} />
+                    <span>Download Official Invoice (PDF) / ইনভয়েস ডাউনলোড</span>
+                  </a>
+                )}
+
                 {verificationStatus === "INVALID" && (
                   <button
                     type="button"

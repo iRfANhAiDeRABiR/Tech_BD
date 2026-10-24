@@ -13,6 +13,7 @@ import {
   Check,
   KeyRound,
   FileText,
+  FileDown,
   CreditCard,
   User,
 } from "lucide-react";
@@ -154,6 +155,7 @@ export default function OrdersListClient({ orders }: OrdersListClientProps) {
         const isExpanded = expandedIds.has(order.id);
         const statusBadge = getStatusBadge(order.status);
         const isCompleted = order.status?.toLowerCase() === "completed" || order.status?.toLowerCase() === "delivered";
+        const isConfirmed = isCompleted || order.status?.toLowerCase() === "paid" || order.payment?.status?.toLowerCase() === "verified";
         const isPending = order.status?.toLowerCase() === "payment_submitted" || order.status?.toLowerCase().includes("pending");
         const isFailed = order.status?.toLowerCase() === "cancelled" || order.status?.toLowerCase() === "rejected";
 
@@ -388,6 +390,18 @@ export default function OrdersListClient({ orders }: OrdersListClientProps) {
 
                 {/* 4. Action Buttons */}
                 <div className={styles.actionFooter}>
+                  {isConfirmed && (
+                    <a
+                      href={`/api/orders/${order.id}/invoice`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.actionBtnInvoice}
+                      title="Download official PDF invoice with full details"
+                    >
+                      <FileDown size={14} />
+                      <span>Download Invoice (PDF)</span>
+                    </a>
+                  )}
                   {isCompleted && (
                     <Link href="/account/licenses" className={styles.actionBtnPrimary}>
                       <KeyRound size={14} />

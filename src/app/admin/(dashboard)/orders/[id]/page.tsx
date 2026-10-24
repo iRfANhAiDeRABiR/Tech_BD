@@ -77,7 +77,16 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Adm
         <h1>{order.orderNumber}</h1>
         <p className={styles.muted}>Full website order details received from Supabase database.</p>
       </div>
-      <div className={styles.actions} style={{ margin: 0 }}>
+      <div className={styles.actions} style={{ margin: 0, display: "flex", gap: "10px", alignItems: "center" }}>
+        <a
+          className={styles.button}
+          href={`/api/orders/${order.id}/invoice`}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Download official PDF invoice"
+        >
+          Download Invoice (PDF)
+        </a>
         <Link className={styles.buttonSecondary} href="/admin/orders">Back to orders</Link>
       </div>
     </div>

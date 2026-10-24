@@ -14,6 +14,7 @@ import {
   Trash2,
   AlertCircle,
   Headphones,
+  FileDown,
 } from "lucide-react";
 import type { ProductSummary } from "@/types/product";
 import { toPlainText } from "@/lib/text";
@@ -707,6 +708,29 @@ export function CartPageClient({ products }: CartPageClientProps) {
 
             {/* Bottom Actions */}
             <div className={styles.confirmationActions}>
+              {isConfirmed && (
+                <a
+                  href={`/api/orders/${encodeURIComponent(submittedOrder.orderNumber)}/invoice`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.continueButton}
+                  style={{
+                    background: "#0f172a",
+                    color: "#38bdf8",
+                    borderColor: "rgba(56, 189, 248, 0.4)",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                    fontWeight: 700,
+                    textDecoration: "none",
+                  }}
+                  title="Download official PDF tax invoice with full details"
+                >
+                  <FileDown size={16} />
+                  <span>Download Invoice (PDF)</span>
+                </a>
+              )}
               <button
                 type="button"
                 onClick={() => {
