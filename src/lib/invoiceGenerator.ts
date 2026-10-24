@@ -453,9 +453,9 @@ export async function generateInvoicePdf(order: InvoiceOrderData): Promise<Uint8
   });
 
   // Totals Box on Right
-  const totBoxW = 220;
+  const totBoxW = 215;
   const totBoxX = pageWidth - 40 - totBoxW;
-  let curTotY = summaryY - 5;
+  let curTotY = summaryY - 8;
 
   // Subtotal
   page.drawText("Subtotal:", { x: totBoxX, y: curTotY, size: 8.5, font: fontRegular, color: mutedText });
@@ -463,7 +463,7 @@ export async function generateInvoicePdf(order: InvoiceOrderData): Promise<Uint8
   const subW = fontRegular.widthOfTextAtSize(subStr, 8.5);
   page.drawText(subStr, { x: pageWidth - 40 - subW, y: curTotY, size: 8.5, font: fontRegular, color: darkNavy });
 
-  curTotY -= 16;
+  curTotY -= 18;
   
   // Discount (if coupon applied)
   if (order.discount > 0) {
@@ -472,30 +472,49 @@ export async function generateInvoicePdf(order: InvoiceOrderData): Promise<Uint8
     const discStr = `- ${formatBdt(order.discount)}`;
     const discW = fontRegular.widthOfTextAtSize(discStr, 8.5);
     page.drawText(discStr, { x: pageWidth - 40 - discW, y: curTotY, size: 8.5, font: fontRegular, color: emerald });
-    curTotY -= 16;
+    curTotY -= 18;
   }
 
-  // Grand Total Banner Box
-  curTotY -= 4;
+  // Clear vertical buffer gap between subtotal/discount and the Total Paid box
+  curTotY -= 8;
+
+  // Grand Total Banner Box (Height: 28pt)
+  const boxHeight = 28;
+  const boxBottom = curTotY - boxHeight;
+
   page.drawRectangle({
     x: totBoxX - 8,
-    y: curTotY - 6,
+    y: boxBottom,
     width: totBoxW + 8,
-    height: 26,
+    height: boxHeight,
     color: rgb(241 / 255, 245 / 255, 249 / 255),
     borderColor: borderGrey,
     borderWidth: 1,
   });
 
-  page.drawText("TOTAL PAID:", { x: totBoxX, y: curTotY + 4, size: 9.5, font: fontBold, color: darkNavy });
+  page.drawText("TOTAL PAID:", {
+    x: totBoxX,
+    y: boxBottom + 9.5,
+    size: 9.5,
+    font: fontBold,
+    color: darkNavy,
+  });
+
   const grandStr = formatBdt(order.total);
   const grandW = fontBold.widthOfTextAtSize(grandStr, 11);
-  page.drawText(grandStr, { x: pageWidth - 40 - grandW, y: curTotY + 3, size: 11, font: fontBold, color: brandIndigo });
+  page.drawText(grandStr, {
+    x: pageWidth - 40 - grandW,
+    y: boxBottom + 9,
+    size: 11,
+    font: fontBold,
+    color: brandIndigo,
+  });
 
-  curTotY -= 20;
+  // Balance Due note cleanly separated underneath the box
+  const balanceY = boxBottom - 16;
   page.drawText("Balance Due: BDT 0.00 (PAID IN FULL)", {
     x: totBoxX,
-    y: curTotY,
+    y: balanceY,
     size: 7.5,
     font: fontBold,
     color: emerald,
