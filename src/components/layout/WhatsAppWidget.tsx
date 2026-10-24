@@ -83,7 +83,7 @@ export function WhatsAppWidget() {
             <div className={styles.headerLeft}>
               <div className={styles.avatarWrap}>
                 <Image
-                  src="/logo-icon.png"
+                  src="/img_content/tsb.png"
                   alt="Tech Solutions BD"
                   width={36}
                   height={36}
