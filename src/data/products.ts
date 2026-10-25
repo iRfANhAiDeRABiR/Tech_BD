@@ -788,10 +788,148 @@ export const products: Product[] = [
                 "description": "1 PC Lifetime activation linked permanently to your Microsoft account. Reusable & transferable to new PC via setup.office.com."
             }
         ]
-    }
+    },
+    {
+        "id": "mcafee-total-protection-1-year",
+        "slug": "mcafee-total-protection-1-year",
+        "name": "McAfee Total Protection (1 Year)",
+        "category": "Anti-Virus",
+        "badge": "Hot",
+        "price": 1249,
+        "originalPrice": 3499,
+        "desc": "🛡️ McAfee Total Protection provides award-winning antivirus, scam protection, Secure VPN, identity monitoring, and password manager for PC, Mac, and Mobile.<br>⚡ Instant digital delivery with official activation support.",
+        "longDesc": "<h1>McAfee Total Protection (1 Year) Genuine License Key Price in BD</h1>\n\n<h3>📦 Product Overview</h3>\n<p>McAfee Total Protection is antivirus and online security software for device protection, scam protection, Secure VPN, identity monitoring, web protection, and password management. Tech Solutions BD থেকে সাশ্রয়ী মূল্যে গ্রহণ করুন ১০০% অফিসিয়াল ও ভেরিফাইড McAfee Total Protection লাইসেন্স কি।</p>\n<p>McAfee Total Protection provides comprehensive defense against evolving cyber threats, malware, and identity theft across your computers and mobile devices.</p>\n\n<hr>\n\n<h3>✅ McAfee Total Protection Key Features</h3>\n<ul>\n  <li><strong>Award-Winning Antivirus:</strong> Comprehensive protection against viruses, malware, ransomware, and evolving online threats.</li>\n  <li><strong>Scam Protection:</strong> Advanced AI detection to identify fake messages, suspicious links, and deepfake scams.</li>\n  <li><strong>Secure VPN:</strong> Encrypted VPN protection for personal data and online privacy, especially on public Wi-Fi networks.</li>\n  <li><strong>Web Protection:</strong> Real-time browser warnings for risky websites, dangerous links, and phishing downloads.</li>\n  <li><strong>Identity Monitoring:</strong> Proactive dark web monitoring and alerts for compromised personal and financial credentials.</li>\n  <li><strong>Password Manager:</strong> Multi-platform password vault for auto-filling and storing complex credentials securely.</li>\n  <li><strong>Personal Data Cleanup:</strong> Tools that help reduce exposure of your sensitive private records across data brokers.</li>\n  <li><strong>Multi-Device Compatibility:</strong> Protect laptops, desktops, tablets, and smartphones (Windows, macOS, Android, iOS).</li>\n</ul>\n\n<h3>🛡️ Protection Against Everyday Online Threats</h3>\n<p>McAfee Total Protection helps secure daily online activity with antivirus, malware protection, and scam detection tools. It is built for users who want reliable protection while browsing, shopping, banking, downloading files, or opening messages. The software works quietly in the background to help identify suspicious activity and reduce the risk of cyber attacks.</p>\n\n<h3>🔒 Safer Browsing and Private Connections</h3>\n<p>With Secure VPN and web protection, McAfee Total Protection helps keep online sessions private and secure. The VPN encrypts internet traffic to safeguard financial details and credentials from eavesdroppers on public networks, while smart web protection prevents access to fraudulent websites before they can cause harm.</p>\n\n<h3>🔍 Identity and Personal Data Monitoring</h3>\n<p>McAfee Total Protection includes identity monitoring features that can alert users when sensitive personal information is detected in risky places. Depending on the selected plan, users may also get personal data cleanup or online account cleanup tools that help reduce exposure of private information across the web.</p>\n\n<h3>💻 Simple Security for Multiple Devices</h3>\n<p>McAfee Total Protection is designed for common devices used at home and on the go, including laptops, desktops, tablets, and smartphones. This makes it a practical choice for users who want one security solution to help protect different parts of their digital life.</p>\n\n<h3>👥 Who Will Like McAfee Total Protection</h3>\n<ul>\n  <li>Users who want antivirus, privacy, and identity protection in one unified package.</li>\n  <li>People who frequently shop, bank, browse, or manage personal accounts online.</li>\n  <li>Remote workers, freelancers, and travelers who often connect to public Wi-Fi.</li>\n  <li>Families and households that need trusted protection across multiple computers and phones.</li>\n  <li>Users concerned about phishing scams, malicious attachments, and identity fraud.</li>\n</ul>\n\n<div style=\"background: rgba(239, 68, 68, 0.08); border-left: 4px solid #ef4444; padding: 14px 18px; margin: 20px 0; border-radius: 6px;\">\n  <h4 style=\"margin-top: 0; color: #dc2626;\">🔑 Official Activation Instructions</h4>\n  <ol style=\"margin-bottom: 0; padding-left: 20px;\">\n    <li>Visit the official McAfee activation portal: <a href=\"https://mcafee.com/activate\" target=\"_blank\" rel=\"noopener noreferrer\">https://mcafee.com/activate</a>.</li>\n    <li>Enter your 25-digit genuine activation product key.</li>\n    <li>Log in to your existing McAfee account or create a new free account.</li>\n    <li>Download the McAfee software on your PC, Mac, Android, or iOS device and activate seamlessly.</li>\n  </ol>\n</div>",
+        "image": "/img_content/McAfee Antivirus Protection Banner.png",
+        "icon": "🛡️",
+        "color": "#ef4444",
+        "gradient": "linear-gradient(135deg, #ef4444, #dc2626)",
+        "options": [
+                {
+                        "id": "opt-mcafee-1yr-sub",
+                        "name": "1 Year License (1 Device / Multi-Platform)",
+                        "type": "SUBSCRIPTION",
+                        "price": 1249,
+                        "originalPrice": 3499,
+                        "description": "Official 1 Year License Key for 1 Device (PC, Mac, Android, iOS) with Secure VPN & Identity Protection"
+                }
+        ]
+},
+    {
+        "id": "avast-premium-security-1-device-1-year",
+        "slug": "avast-premium-security-1-device-1-year",
+        "name": "Avast Premium Security (1 Device, 1 Year)",
+        "category": "Anti-Virus",
+        "badge": "Popular",
+        "price": 949,
+        "originalPrice": 2499,
+        "desc": "🛡️ Avast Premium Security provides complete defense against ransomware, fake websites, hackers, and modern malware for PC.<br>⚡ Instant digital delivery with 24/7 activation assistance.",
+        "longDesc": "<h1>Avast Premium Security (1 Device, 1 Year) Price in BD</h1>\n\n<h3>📦 Product Overview</h3>\n<p>Avast Premium Security is a complete security suite that helps keep you safe from today’s most dangerous online threats. It protects your PC, Mac, Android, and iOS devices against ransomware, fake websites, and other types of malware, so you can browse, shop, and bank online with confidence. Tech Solutions BD দিচ্ছে সাশ্রয়ী মূল্যে ১০০% অফিসিয়াল জেনুইন লাইসেন্স কি।</p>\n\n<hr>\n\n<h3>✅ Key Features</h3>\n<ul>\n  <li><strong>Cross-Platform Security:</strong> Tailored protection for PC, Mac, Android, and iPhone/iPad.</li>\n  <li><strong>Safe Shopping and Banking:</strong> Detects and blocks spoofed and fake websites, redirecting you to verified authentic pages.</li>\n  <li><strong>Ransomware Protection:</strong> Stops ransomware before it can encrypt your documents, photos, and personal files.</li>\n  <li><strong>Advanced Malware Defense:</strong> Real-time heuristic scanning against viruses, spyware, trojans, and zero-day threats.</li>\n  <li><strong>Network and DNS Protection:</strong> Shields your connection from compromised routers and malicious DNS redirection attacks.</li>\n  <li><strong>Quiet Background Security:</strong> Seamless background protection without lagging games or slowing down daily work.</li>\n</ul>\n\n<h3>🎯 Security Tailored to Each Device</h3>\n<p>Avast Premium Security comes with custom features for every platform, so each device gets protection where it matters most:</p>\n<ul>\n  <li><strong>PC and Mac:</strong> Advanced antivirus, intelligent firewall, ransomware shield, and spoofed site prevention.</li>\n  <li><strong>Android:</strong> Malware defense, app lock, anti-theft tracking, and malicious link blocking.</li>\n  <li><strong>iPhone/iPad:</strong> Network security monitoring, Wi-Fi vulnerability checks, and malicious website defense.</li>\n</ul>\n\n<h3>💳 Safe Shopping and Banking Online</h3>\n<p>One of the biggest risks online is landing on a fake (spoofed) website that looks identical to your bank or favorite store. These counterfeit sites are engineered to harvest your passwords and payment cards. Avast Premium Security scans URLs in real-time, blocking fraudulent redirects and shielding your financial transactions.</p>\n\n<h3>🛑 Protection Against Ransomware and Digital Extortion</h3>\n<p>Ransomware locks your personal documents and demands payment for access. Avast Premium Security shields your sensitive folders, preventing unauthorized applications from modifying, encrypting, or corrupting your data.</p>\n\n<div style=\"background: rgba(234, 88, 12, 0.08); border-left: 4px solid #ea580c; padding: 14px 18px; margin: 20px 0; border-radius: 6px;\">\n  <h4 style=\"margin-top: 0; color: #c2410c;\">🔑 Activation Instructions & Multi-Platform Compatibility</h4>\n  <p>The license key provided is compatible with Windows. For Mac, iOS, and Android you may need to use the Activation code instead in your Avast account at <a href=\"https://id.avast.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://id.avast.com</a>, which is generated once the license key is activated in Windows.</p>\n  <p style=\"margin-bottom: 0;\"><em>Note: If you do not have a Windows computer, please contact Tech Solutions BD support via WhatsApp or Live Chat, and our team will gladly register this license key for you and deliver your direct Activation Code.</em></p>\n</div>",
+        "image": "/img_content/Avast Antivirus Tech Solutions Banner.png",
+        "icon": "🛡️",
+        "color": "#ea580c",
+        "gradient": "linear-gradient(135deg, #ea580c, #c2410c)",
+        "options": [
+                {
+                        "id": "opt-avast-prem-1dev-1yr",
+                        "name": "1 Device - 1 Year (PC/Windows)",
+                        "type": "SUBSCRIPTION",
+                        "price": 949,
+                        "originalPrice": 2499,
+                        "description": "1 Device 1 Year Genuine Avast Premium Security License Key for Windows PC"
+                }
+        ]
+},
+    {
+        "id": "avast-ultimate-bundle-1-device-1-year",
+        "slug": "avast-ultimate-bundle-1-device-1-year",
+        "name": "Avast Ultimate Bundle (1 Device, 1 Year Key GLOBAL)",
+        "category": "Anti-Virus",
+        "badge": "Best Value",
+        "price": 1249,
+        "originalPrice": 3999,
+        "desc": "🛡️ Avast Ultimate Bundle combines Premium Security, SecureLine VPN, AntiTrack, and Cleanup Premium in one 4-in-1 suite for Windows, Mac, and Mobile.<br>⚡ Instant digital delivery with global activation.",
+        "longDesc": "<h1>Avast Ultimate Bundle (1 Device, 1 Year Key GLOBAL) Price in BD</h1>\n\n<h3>📦 Product Overview</h3>\n<p>Avast Ultimate is an all-in-one security, privacy, and performance suite combining antivirus protection, an encrypted VPN, anti-tracking tools, and device cleanup for Windows, macOS, Android, and iOS devices. Tech Solutions BD দিচ্ছে প্রিমিয়াম বান্ডেলের ১০০% আসল গ্লোবাল লাইসেন্স।</p>\n\n<hr>\n\n<h3>🌟 4-in-1 Premium Suite Included</h3>\n<ol>\n  <li><strong>Avast Premium Security:</strong> Complete real-time protection against viruses, ransomware, spyware, scams, and zero-day threats.</li>\n  <li><strong>Avast SecureLine VPN:</strong> Bank-grade encryption for online privacy and unrestricted, anonymous browsing on any Wi-Fi network.</li>\n  <li><strong>Avast AntiTrack:</strong> Disguises your digital fingerprint and prevents advertisers and trackers from following your online activities.</li>\n  <li><strong>Avast Cleanup Premium:</strong> Removes gigabytes of junk files, optimizes storage, and speeds up sluggish PC/Mac performance.</li>\n</ol>\n\n<h3>✅ Avast Ultimate Key Features</h3>\n<ul>\n  <li>Avast Premium Security for defense against malware, malicious websites, and phishing attempts.</li>\n  <li>AI-powered threat detection for identifying suspicious messages and scam offers.</li>\n  <li>Avast SecureLine VPN with unlimited bandwidth and high-speed global server locations.</li>\n  <li>Avast AntiTrack for blocking invasive trackers and profiling attempts.</li>\n  <li>Avast Cleanup Premium for automated cache cleanup, bloatware removal, and registry tuning.</li>\n  <li>Performance optimization tools that prioritize active work, gaming, and creative software.</li>\n  <li>Comprehensive security when shopping, banking, or telecommuting on public Wi-Fi.</li>\n  <li>Global Key compatibility with Windows, macOS, Android, and iOS.</li>\n</ul>\n\n<h3>👥 Who Will Like Avast Ultimate</h3>\n<ul>\n  <li>Users wanting all-in-one antivirus, VPN, tracking defense, and PC cleanup in a single subscription.</li>\n  <li>Professionals who frequently handle sensitive client files, financial transactions, or remote access.</li>\n  <li>Travelers and digital nomads requiring strong VPN encryption on airport and hotel networks.</li>\n  <li>Gamers and content creators looking to maximize disk space and eliminate background stutter.</li>\n</ul>\n\n<div style=\"background: rgba(234, 88, 12, 0.08); border-left: 4px solid #ea580c; padding: 14px 18px; margin: 20px 0; border-radius: 6px;\">\n  <h4 style=\"margin-top: 0; color: #c2410c;\">🔑 PC Activation & Account Registration</h4>\n  <p>The license key provided is compatible with Windows. To activate your Avast account for Mac, iOS, or Android devices, you can generate your direct Activation Code within your Avast portal at <a href=\"https://id.avast.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://id.avast.com</a> once activated on Windows.</p>\n  <p style=\"margin-bottom: 0;\"><em>Support: Contact Tech Solutions BD 24/7 if you need activation help on non-Windows devices!</em></p>\n</div>",
+        "image": "/img_content/Avast Antivirus Tech Solutions Banner.png",
+        "icon": "🛡️",
+        "color": "#ea580c",
+        "gradient": "linear-gradient(135deg, #f97316, #ea580c)",
+        "options": [
+                {
+                        "id": "opt-avast-ult-1dev-1yr",
+                        "name": "1 Device - 1 Year Key (GLOBAL)",
+                        "type": "SUBSCRIPTION",
+                        "price": 1249,
+                        "originalPrice": 3999,
+                        "description": "Avast Ultimate All-in-One Global Suite: Premium Security + SecureLine VPN + AntiTrack + Cleanup Premium"
+                }
+        ]
+},
+    {
+        "id": "avg-internet-security-1-pc-1-year",
+        "slug": "avg-internet-security-1-pc-1-year",
+        "name": "AVG Internet Security (1 PC, 1 Year)",
+        "category": "Anti-Virus",
+        "badge": "Special Offer",
+        "price": 699,
+        "originalPrice": 1999,
+        "desc": "🛡️ AVG Internet Security delivers advanced real-time virus protection, ransomware shield, enhanced firewall, webcam protection, and safe banking.<br>⚡ Instant delivery with step-by-step AVG MyAccount redemption instructions.",
+        "longDesc": "<h1>AVG Internet Security (1 PC, 1 Year) License Key Price in BD</h1>\n\n<h3>📦 Product Overview</h3>\n<p>AVG Internet Security is advanced antivirus and online security software for PC, Mac, Android, and iOS, helping protect against viruses, malware, scam websites, hackers, unsafe emails, and identity-related threats. Tech Solutions BD-তে পাচ্ছেন মাত্র ৬৯৯ টাকায় ১ বছরের অফিসিয়াল লাইসেন্স।</p>\n\n<hr>\n\n<h3>✅ AVG Internet Security Key Features</h3>\n<ul>\n  <li><strong>Real-Time Malware Defense:</strong> Blocks viruses, spyware, ransomware, trojans, and rootkits before they execute.</li>\n  <li><strong>Email & Web Shield:</strong> Scans web links, downloads, and attachments for hidden malware and phishing scripts.</li>\n  <li><strong>Enhanced Firewall:</strong> Stops hackers from infiltrating your local network and stealing confidential files.</li>\n  <li><strong>Fake Website & Scam Protection:</strong> Automatically prevents DNS hijacking and redirects to counterfeit banking websites.</li>\n  <li><strong>Webcam Protection:</strong> Blocks untrusted third-party apps from turning on your camera or eavesdropping.</li>\n  <li><strong>Password Protection:</strong> Secures passwords saved inside Chrome, Edge, and Firefox against credential stealers.</li>\n  <li><strong>Data Shredder:</strong> Permanently deletes sensitive financial records so they cannot be recovered by forensic tools.</li>\n  <li><strong>Multi-Platform Support:</strong> Official compatibility across Windows, macOS, Android, and iOS.</li>\n</ul>\n\n<h3>🛡️ Advanced Protection Against Online Threats</h3>\n<p>AVG Internet Security is designed for everyday internet users who demand uncompromised privacy. Its cloud-based threat detection analyzes emerging virus definitions in real time, stopping zero-day threats before they reach your hard drive.</p>\n\n<h3>👥 Who Will Like AVG Internet Security</h3>\n<ul>\n  <li>Home and office users wanting stronger, verified defense than basic built-in antivirus.</li>\n  <li>Online shoppers and banking customers needing real-time phishing and transaction protection.</li>\n  <li>Students and remote workers who frequently connect to unsecured university or coffee shop Wi-Fi.</li>\n  <li>Anyone wanting lightweight, set-and-forget security that runs quietly without hogging RAM.</li>\n</ul>\n\n<div style=\"background: rgba(16, 185, 129, 0.08); border-left: 4px solid #10b981; padding: 14px 18px; margin: 20px 0; border-radius: 6px;\">\n  <h4 style=\"margin-top: 0; color: #047857;\">🔑 How to Redeem & Activate Your AVG Code</h4>\n  <p>In order to redeem your code and activate your AVG MyAccount, please follow these official steps:</p>\n  <ol style=\"padding-left: 20px;\">\n    <li>Visit the official AVG redemption page: <a href=\"https://www.avg.com/code\" target=\"_blank\" rel=\"noopener noreferrer\">https://www.avg.com/code</a>.</li>\n    <li>Enter your unique activation code received from Tech Solutions BD.</li>\n    <li>Either create a new AVG account (or press <strong>\"Login here\"</strong> if you are an existing customer).</li>\n    <li>Press <strong>Register & Activate</strong> (or <strong>Login & Activate</strong>).</li>\n    <li>Review the displayed license info and follow the AVG download instructions to install.</li>\n  </ol>\n  <p style=\"margin-bottom: 0; color: #b91c1c;\"><strong>⚠️ IMPORTANT WARNING:</strong> You must activate this product via the AVG redemption page above (<a href=\"https://www.avg.com/code\" target=\"_blank\" rel=\"noopener noreferrer\">avg.com/code</a>). Inserting a raw license key directly inside the pre-installed AVG interface will NOT WORK. Register with your account first, then install from your AVG MyAccount portal.</p>\n</div>",
+        "image": "/img_content/avg.png",
+        "icon": "🛡️",
+        "color": "#10b981",
+        "gradient": "linear-gradient(135deg, #10b981, #059669)",
+        "options": [
+                {
+                        "id": "opt-avg-is-1pc-1yr",
+                        "name": "1 PC - 1 Year License",
+                        "type": "SUBSCRIPTION",
+                        "price": 699,
+                        "originalPrice": 1999,
+                        "description": "Official 1 PC 1 Year AVG Internet Security Genuine License Key"
+                }
+        ]
+},
+    {
+        "id": "bitdefender-total-security-5-devices-1-year",
+        "slug": "bitdefender-total-security-5-devices-1-year",
+        "name": "Bitdefender Total Security (5 Devices, 1 Year Key GLOBAL)",
+        "category": "Anti-Virus",
+        "badge": "Hot",
+        "price": 3849,
+        "originalPrice": 8999,
+        "desc": "🛡️ Bitdefender Total Security provides comprehensive multi-platform cybersecurity for 5 devices (PC, Mac, Android, iOS) with VPN, Anti-Theft, and system optimization.<br>⚡ Instant delivery with Bitdefender Central redemption.",
+        "longDesc": "<h1>Bitdefender Total Security (5 Devices, 1 Year Key GLOBAL) Price in BD</h1>\n\n<h3>📦 Product Overview</h3>\n<p>Bitdefender Total Security is multi-platform cybersecurity software for Windows, macOS, Android, and iOS, offering malware, ransomware, privacy, VPN, and device optimization tools. Tech Solutions BD-তে সাশ্রয়ী মূল্যে গ্রহণ করুন ৫টি ডিভাইসের জন্য ১ বছরের ১০০% জেনুইন গ্লোবাল লাইসেন্স কি।</p>\n\n<hr>\n\n<h3>✅ Bitdefender Total Security Key Features</h3>\n<ul>\n  <li><strong>Real-Time Threat Defense:</strong> World-renowned protection against viruses, malware, ransomware, spyware, rootkits, and zero-day exploits.</li>\n  <li><strong>Multi-Platform Security:</strong> Protect up to 5 devices across Windows, macOS, Android, and iOS under a single subscription.</li>\n  <li><strong>Multi-Layer Ransomware Protection:</strong> Safeguards sensitive personal files, documents, and family photos from unauthorized encryption.</li>\n  <li><strong>Privacy Suite:</strong> Includes Anti-Tracker, Webcam Protection, Microphone Monitor, and advanced bidirectional firewall.</li>\n  <li><strong>Bitdefender VPN Included:</strong> Encrypts internet traffic and protects your online privacy on public and unsecured networks.</li>\n  <li><strong>Device Optimization:</strong> Cleans up cached system files, fixes registry clutter, and boosts boot times with OneClick Optimizer.</li>\n  <li><strong>Anti-Theft Tools & Wi-Fi Advisor:</strong> Remotely locate, lock, or wipe lost devices and assess security on wireless networks.</li>\n  <li><strong>Parental Controls:</strong> Manage screen time, filter age-inappropriate content, and keep children safe online.</li>\n</ul>\n\n<h3>🛡️ Complete Protection for Everyday Digital Life</h3>\n<p>Bitdefender Total Security helps protect users from common and advanced cyberthreats while they browse, shop, work, bank, stream, or download files. Its real-time security technologies are designed to detect and block malware, phishing attempts, ransomware attacks, suspicious links, and other digital risks before they can harm the device or personal data.</p>\n\n<h3>💻 Security Across Multiple Devices and Platforms</h3>\n<p>This software is a strong choice for users who need one security suite for different devices. Bitdefender Total Security supports major operating systems, including Windows, macOS, Android, and iOS, making it suitable for protecting laptops, desktops, smartphones, and tablets under one cybersecurity solution.</p>\n\n<h3>🔒 Privacy Tools for Safer Browsing and Online Banking</h3>\n<p>Bitdefender Total Security includes privacy-focused features that help protect sensitive information online. Tools such as VPN traffic, anti-tracker, webcam protection, microphone monitor, privacy firewall, and safe online banking support give users more control over their digital privacy when using public Wi-Fi, shopping online, or accessing financial accounts.</p>\n\n<h3>👥 Who Will Like Bitdefender Total Security</h3>\n<ul>\n  <li>Users who want all-in-one antivirus, privacy, and performance tools.</li>\n  <li>Families or individuals protecting multiple devices (up to 5 PCs, Macs, or smartphones) across different platforms.</li>\n  <li>People who frequently shop, bank, or transact online.</li>\n  <li>Remote workers who want webcam, microphone, and privacy protection.</li>\n  <li>Gamers and everyday users who want industry-leading protection with zero system slowdown.</li>\n</ul>\n\n<div style=\"background: rgba(220, 38, 38, 0.08); border-left: 4px solid #dc2626; padding: 14px 18px; margin: 20px 0; border-radius: 6px;\">\n  <h4 style=\"margin-top: 0; color: #991b1b;\">🔑 Bitdefender Central Activation Instructions</h4>\n  <ol style=\"padding-left: 20px; margin-bottom: 0;\">\n    <li>Go to the official Bitdefender Central website: <a href=\"https://central.bitdefender.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://central.bitdefender.com</a>.</li>\n    <li>Register a new account or log in to your existing account.</li>\n    <li>Click on the <strong>'My Subscriptions'</strong> tab on the left-side menu.</li>\n    <li>Click the <strong>'Activation Code'</strong> button in the top right corner and enter your unique code.</li>\n    <li>Your 1-Year subscription for 5 devices will activate immediately, and you can download the application onto your devices from the dashboard.</li>\n  </ol>\n</div>",
+        "image": "/img_content/Bitdefender Antivirus Tech Advertisement.png",
+        "icon": "🛡️",
+        "color": "#dc2626",
+        "gradient": "linear-gradient(135deg, #dc2626, #991b1b)",
+        "options": [
+                {
+                        "id": "opt-bitdefender-5dev-1yr",
+                        "name": "5 Devices - 1 Year (GLOBAL)",
+                        "type": "SUBSCRIPTION",
+                        "price": 3849,
+                        "originalPrice": 8999,
+                        "description": "Official Bitdefender Total Security Global Key for 5 Devices (PC, Mac, Android, iOS) - 1 Year"
+                }
+        ]
+}
 ];
 
 export const categorySummaries: StoreCategory[] = [
+  {
+    slug: "Anti-Virus",
+    name: "Anti-Virus",
+    description: "McAfee, Avast, AVG, and Bitdefender security suites",
+    count: products.filter(
+      (product) =>
+        product.category === "Anti-Virus" ||
+        product.category === "anti-virus" ||
+        product.category === "Antivirus"
+    ).length,
+    image: "/img_content/anti1.png",
+    accent: "#38bdf8",
+  },
   {
     slug: "microsoft-visio",
     name: "Microsoft Visio",
