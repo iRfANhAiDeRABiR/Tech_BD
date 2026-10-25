@@ -474,10 +474,150 @@ export const products: Product[] = [
         "icon": "📦",
         "color": "#6C63FF",
         "gradient": "linear-gradient(135deg, #6C63FF, #00D4AA)"
+    },
+    {
+        "id": "6",
+        "slug": "project-professional-2024",
+        "name": "Project Professional 2024",
+        "category": "microsoft-project",
+        "badge": "Latest",
+        "price": 1249,
+        "originalPrice": 14999,
+        "desc": "✨ 100% Original Microsoft Project 2024 Professional License Key for 1 PC.<br>🔑 Available in Retail Key (1 PC Lifetime) and Bind Key (Microsoft Account Linked / Transferable).<br>⚡ Instant digital delivery to dashboard & email with lifetime activation and dedicated support.",
+        "longDesc": "<h1>Microsoft Project 2024 Professional Genuine License Key Price in BD</h1>\n\n<h3>📦 পণ্য পরিচিতি (Product Overview)</h3>\n<p>Microsoft Project 2024 Professional হলো একটি শক্তিশালী প্রজেক্ট ম্যানেজমেন্ট সফটওয়্যার যা আপনাকে জটিল প্রজেক্টগুলি কার্যকরভাবে পরিকল্পনা, ট্র্যাক এবং সফলভাবে পরিচালনা করতে সাহায্য করে। এটি উন্নত শিডিউলিং টুলস, রিসোর্স ম্যানেজমেন্ট, বাজেট ট্র্যাকিং এবং টিম কোলাবোরেশন নিশ্চিত করে। Tech Solutions BD থেকে আপনি পাচ্ছেন ১০০% জেনুইন লাইসেন্স কি দ্রুত ডিজিটাল ডেলিভারি সহ।</p>\n\n<h3>✨ Available License Options</h3>\n<ul>\n  <li>\n    <strong>🔑 Retail Key:</strong>\n    <ul>\n      <li>Lifetime validation on 1 PC</li>\n      <li>Online / phone activation</li>\n      <li>One-time activation (not linked with Microsoft account)</li>\n      <li>Lifetime validity remains as long as it is not uninstalled</li>\n    </ul>\n  </li>\n  <li>\n    <strong>🔐 Bind Key:</strong>\n    <ul>\n      <li>Lifetime validation (Reusable / transferable)</li>\n      <li>Online activation linked directly with your Microsoft account</li>\n      <li>Redeem here: <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://setup.office.com</a></li>\n      <li>Automatically activates when you log in with the same Microsoft account during installation or after reinstalling/changing PC</li>\n    </ul>\n  </li>\n</ul>\n\n<h3>✅ মূল বৈশিষ্ট্য (Key Features)</h3>\n<ul>\n  <li><strong>Advanced Project Scheduling:</strong> Gantt charts, network diagrams, timelines, and automated milestone tracking.</li>\n  <li><strong>Resource Management:</strong> Allocate, monitor, and balance human and equipment resources efficiently.</li>\n  <li><strong>Budget & Cost Control:</strong> Track financial budgets, variance analysis, and generate expense reports.</li>\n  <li><strong>Built-in Customizable Reports:</strong> Visual insights and data analytics to keep stakeholders informed.</li>\n  <li><strong>Seamless Microsoft Office Integration:</strong> Share project data effortlessly with Excel, PowerPoint, and Teams.</li>\n  <li><strong>Task Dependencies:</strong> Understand relationships between complex tasks to avoid bottlenecks.</li>\n</ul>\n\n<h3>💡 কেন কিনবেন? (Benefits)</h3>\n<ul>\n  <li>আপনার প্রজেক্টগুলো সময়মতো এবং বাজেট অনুযায়ী সফলভাবে সম্পন্ন করুন।</li>\n  <li>রিসোর্সগুলো দক্ষতার সাথে ব্যবহার করে কাজের অপচয় ও খরচ কমান।</li>\n  <li>টিম কোলাবোরেশন এবং কমিউনিকেশন আরও গতিশীল করুন।</li>\n  <li>সঠিক ডেটা ও রিপোর্ট বিশ্লেষণ করে আত্মবিশ্বাসের সাথে ব্যবসায়িক সিদ্ধান্ত নিন।</li>\n  <li>সহজ ও ইউজার-ফ্রেন্ডলি ইন্টারফেস যা দ্রুত আয়ত্ত করা যায়।</li>\n</ul>\n\n<h3>📋 Delivery & Support Information</h3>\n<ul>\n  <li>You will receive 1x Project 2024 Professional license key that can activate 1 PC.</li>\n  <li>Activation is valid for a lifetime (Bind key links to your Microsoft account via setup.office.com).</li>\n  <li>This key can be used only on PC / Windows (Not for Mac OS).</li>\n  <li>Friendly and professional 24/7 customer support via WhatsApp and helpline.</li>\n  <li>Experience fast and convenient product delivery through our web store dashboard.</li>\n  <li>Guaranteed 100% Authentic Licenses sourced from authorized Microsoft partners.</li>\n  <li>Ensure you're purchasing the right version/edition/PC count for your needs. We do not accept returns or exchanges for incorrect orders after delivery. If you have any questions, please don't hesitate to contact us.</li>\n</ul>\n\n<h3>💰 Pricing & Plans</h3>\n<ul>\n  <li><strong>Retail Key (1 PC Lifetime):</strong> ৳1,249</li>\n  <li><strong>Bind Key (Account Linked / Transferable):</strong> ৳4,999</li>\n</ul>\n\n<h3>🏪 কেন আমাদের বেছে নেবেন? (Why Choose Us?)</h3>\n<ul>\n  <li><strong>Trusted Platform:</strong> Tech Solutions BD বাংলাদেশের একটি বিশ্বস্ত ডিজিটাল প্ল্যাটফর্ম।</li>\n  <li><strong>Best Price Guarantee:</strong> আমরা নিশ্চিত করি বাজারের সেরা এবং সাশ্রয়ী মূল্য।</li>\n  <li><strong>Fast Delivery:</strong> অর্ডারের পর তাৎক্ষণিক বা দ্রুত ডেলিভারি আপনার ড্যাশবোর্ড ও ইমেইলে।</li>\n  <li><strong>Dedicated Support:</strong> সার্বক্ষণিক টেকনিক্যাল সাপোর্ট ও লাইসেন্স অ্যাক্টিভেশন সহায়তা।</li>\n</ul>\n\n<h3>⚠️ Important Notes</h3>\n<ul>\n  <li>❌ Sold Products Are Not Returnable.</li>\n  <li>🛒 The product will be delivered instantly or within 1 hours (Rare cases: up to 24 hours).</li>\n  <li>❌ Any of our products are requested to be activated within two days maximum. Otherwise the warranty will be void.</li>\n</ul>",
+        "image": "/img_content/project24.png",
+        "icon": "📊",
+        "color": "#047857",
+        "gradient": "linear-gradient(135deg, #10b981 0%, #047857 100%)",
+        "options": [
+            {
+                "id": "opt-proj-2024-retail",
+                "name": "Retail Key (1 PC Lifetime)",
+                "type": "RETAIL_KEY",
+                "price": 1249,
+                "originalPrice": 3499,
+                "description": "One-time online activation for 1 PC. Lifetime validity as long as Windows/Office is not reinstalled."
+            },
+            {
+                "id": "opt-proj-2024-bind",
+                "name": "Bind Key (Account Linked - Transferable)",
+                "type": "BIND_KEY",
+                "price": 4999,
+                "originalPrice": 12999,
+                "description": "Redeem at setup.office.com and link permanently to your Microsoft account. Reusable & transferable to new PC."
+            }
+        ]
+    },
+    {
+        "id": "microsoft-project-2021-professional-price-in-bd",
+        "slug": "project-professional-2021",
+        "name": "Project Professional 2021",
+        "category": "microsoft-project",
+        "badge": "Popular",
+        "price": 849,
+        "originalPrice": 12999,
+        "desc": "✨ 100% Original Microsoft Project 2021 Professional License Key for 1 PC.<br>🔑 Available in Retail Key (1 PC Lifetime) and Bind Key (Microsoft Account Linked / Transferable).<br>⚡ Instant digital delivery to dashboard & email with lifetime activation and dedicated support.",
+        "longDesc": "<h1>Microsoft Project 2021 Professional Genuine License Key Price in BD</h1>\n\n<h3>📦 পণ্য পরিচিতি (Product Overview)</h3>\n<p>Microsoft Project 2021 Professional হলো একটি শক্তিশালী প্রজেক্ট ম্যানেজমেন্ট সফটওয়্যার যা আপনাকে জটিল প্রজেক্টগুলি কার্যকরভাবে পরিকল্পনা, ট্র্যাক এবং সফলভাবে পরিচালনা করতে সাহায্য করে। এটি উন্নত শিডিউলিং টুলস, রিসোর্স ম্যানেজমেন্ট, বাজেট ট্র্যাকিং এবং টিম কোলাবোরেশন নিশ্চিত করে। Tech Solutions BD থেকে আপনি পাচ্ছেন ১০০% জেনুইন লাইসেন্স কি দ্রুত ডিজিটাল ডেলিভারি সহ।</p>\n\n<h3>✨ Available License Options</h3>\n<ul>\n  <li>\n    <strong>🔑 Retail Key:</strong>\n    <ul>\n      <li>Lifetime validation on 1 PC</li>\n      <li>Online / phone activation</li>\n      <li>One-time activation (not linked with Microsoft account)</li>\n      <li>Lifetime validity remains as long as it is not uninstalled</li>\n    </ul>\n  </li>\n  <li>\n    <strong>🔐 Bind Key:</strong>\n    <ul>\n      <li>Lifetime validation (Reusable / transferable)</li>\n      <li>Online activation linked directly with your Microsoft account</li>\n      <li>Redeem here: <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://setup.office.com</a></li>\n      <li>Automatically activates when you log in with the same Microsoft account during installation or after reinstalling/changing PC</li>\n    </ul>\n  </li>\n</ul>\n\n<h3>✅ মূল বৈশিষ্ট্য (Key Features)</h3>\n<ul>\n  <li><strong>Advanced Project Scheduling:</strong> Gantt charts, network diagrams, timelines, and automated milestone tracking.</li>\n  <li><strong>Resource Management:</strong> Allocate, monitor, and balance human and equipment resources efficiently.</li>\n  <li><strong>Budget & Cost Control:</strong> Track financial budgets, variance analysis, and generate expense reports.</li>\n  <li><strong>Built-in Customizable Reports:</strong> Visual insights and data analytics to keep stakeholders informed.</li>\n  <li><strong>Seamless Microsoft Office Integration:</strong> Share project data effortlessly with Excel, PowerPoint, and Teams.</li>\n  <li><strong>Task Dependencies:</strong> Understand relationships between complex tasks to avoid bottlenecks.</li>\n</ul>\n\n<h3>💡 কেন কিনবেন? (Benefits)</h3>\n<ul>\n  <li>আপনার প্রজেক্টগুলো সময়মতো এবং বাজেট অনুযায়ী সফলভাবে সম্পন্ন করুন।</li>\n  <li>রিসোর্সগুলো দক্ষতার সাথে ব্যবহার করে কাজের অপচয় ও খরচ কমান।</li>\n  <li>টিম কোলাবোরেশন এবং কমিউনিকেশন আরও গতিশীল করুন।</li>\n  <li>সঠিক ডেটা ও রিপোর্ট বিশ্লেষণ করে আত্মবিশ্বাসের সাথে ব্যবসায়িক সিদ্ধান্ত নিন।</li>\n  <li>সহজ ও ইউজার-ফ্রেন্ডলি ইন্টারফেস যা দ্রুত আয়ত্ত করা যায়।</li>\n</ul>\n\n<h3>📋 Delivery & Support Information</h3>\n<ul>\n  <li>You will receive 1x Project 2021 Professional license key that can activate 1 PC.</li>\n  <li>Activation is valid for a lifetime (Bind key links to your Microsoft account via setup.office.com).</li>\n  <li>This key can be used only on PC / Windows (Not for Mac OS).</li>\n  <li>Friendly and professional 24/7 customer support via WhatsApp and helpline.</li>\n  <li>Experience fast and convenient product delivery through our web store dashboard.</li>\n  <li>Guaranteed 100% Authentic Licenses sourced from authorized Microsoft partners.</li>\n  <li>Ensure you're purchasing the right version/edition/PC count for your needs. We do not accept returns or exchanges for incorrect orders after delivery. If you have any questions, please don't hesitate to contact us.</li>\n</ul>\n\n<h3>💰 Pricing & Plans</h3>\n<ul>\n  <li><strong>Retail Key (1 PC Lifetime):</strong> ৳849</li>\n  <li><strong>Bind Key (Account Linked / Transferable):</strong> ৳3,999</li>\n</ul>\n\n<h3>🏪 কেন আমাদের বেছে নেবেন? (Why Choose Us?)</h3>\n<ul>\n  <li><strong>Trusted Platform:</strong> Tech Solutions BD বাংলাদেশের একটি বিশ্বস্ত ডিজিটাল প্ল্যাটফর্ম।</li>\n  <li><strong>Best Price Guarantee:</strong> আমরা নিশ্চিত করি বাজারের সেরা এবং সাশ্রয়ী মূল্য।</li>\n  <li><strong>Fast Delivery:</strong> অর্ডারের পর তাৎক্ষণিক বা দ্রুত ডেলিভারি আপনার ড্যাশবোর্ড ও ইমেইলে।</li>\n  <li><strong>Dedicated Support:</strong> সার্বক্ষণিক টেকনিক্যাল সাপোর্ট ও লাইসেন্স অ্যাক্টিভেশন সহায়তা।</li>\n</ul>\n\n<h3>⚠️ Important Notes</h3>\n<ul>\n  <li>❌ Sold Products Are Not Returnable.</li>\n  <li>🛒 The product will be delivered instantly or within 1 hours (Rare cases: up to 24 hours).</li>\n  <li>❌ Any of our products are requested to be activated within two days maximum. Otherwise the warranty will be void.</li>\n</ul>",
+        "image": "/img_content/project21.png",
+        "icon": "📊",
+        "color": "#047857",
+        "gradient": "linear-gradient(135deg, #10b981 0%, #047857 100%)",
+        "options": [
+            {
+                "id": "opt-proj-2021-retail",
+                "name": "Retail Key (1 PC Lifetime)",
+                "type": "RETAIL_KEY",
+                "price": 849,
+                "originalPrice": 2499,
+                "description": "One-time online activation for 1 PC. Lifetime validity as long as Windows/Office is not reinstalled."
+            },
+            {
+                "id": "opt-proj-2021-bind",
+                "name": "Bind Key (Account Linked - Transferable)",
+                "type": "BIND_KEY",
+                "price": 3999,
+                "originalPrice": 9999,
+                "description": "Redeem at setup.office.com and link permanently to your Microsoft account. Reusable & transferable to new PC."
+            }
+        ]
+    },
+    {
+        "id": "project-professional-2019",
+        "slug": "project-professional-2019",
+        "name": "Project Professional 2019",
+        "category": "microsoft-project",
+        "badge": "",
+        "price": 749,
+        "originalPrice": 9999,
+        "desc": "✨ 100% Original Microsoft Project 2019 Professional License Key for 1 PC.<br>🔑 Available in Retail Key (1 PC Lifetime) and Bind Key (Microsoft Account Linked / Transferable).<br>⚡ Instant digital delivery to dashboard & email with lifetime activation and dedicated support.",
+        "longDesc": "<h1>Microsoft Project 2019 Professional Genuine License Key Price in BD</h1>\n\n<h3>📦 পণ্য পরিচিতি (Product Overview)</h3>\n<p>Microsoft Project 2019 Professional হলো একটি শক্তিশালী প্রজেক্ট ম্যানেজমেন্ট সফটওয়্যার যা আপনাকে জটিল প্রজেক্টগুলি কার্যকরভাবে পরিকল্পনা, ট্র্যাক এবং সফলভাবে পরিচালনা করতে সাহায্য করে। এটি উন্নত শিডিউলিং টুলস, রিসোর্স ম্যানেজমেন্ট, বাজেট ট্র্যাকিং এবং টিম কোলাবোরেশন নিশ্চিত করে। Tech Solutions BD থেকে আপনি পাচ্ছেন ১০০% জেনুইন লাইসেন্স কি দ্রুত ডিজিটাল ডেলিভারি সহ।</p>\n\n<h3>✨ Available License Options</h3>\n<ul>\n  <li>\n    <strong>🔑 Retail Key:</strong>\n    <ul>\n      <li>Lifetime validation on 1 PC</li>\n      <li>Online / phone activation</li>\n      <li>One-time activation (not linked with Microsoft account)</li>\n      <li>Lifetime validity remains as long as it is not uninstalled</li>\n    </ul>\n  </li>\n  <li>\n    <strong>🔐 Bind Key:</strong>\n    <ul>\n      <li>Lifetime validation (Reusable / transferable)</li>\n      <li>Online activation linked directly with your Microsoft account</li>\n      <li>Redeem here: <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://setup.office.com</a></li>\n      <li>Automatically activates when you log in with the same Microsoft account during installation or after reinstalling/changing PC</li>\n    </ul>\n  </li>\n</ul>\n\n<h3>✅ মূল বৈশিষ্ট্য (Key Features)</h3>\n<ul>\n  <li><strong>Advanced Project Scheduling:</strong> Gantt charts, network diagrams, timelines, and automated milestone tracking.</li>\n  <li><strong>Resource Management:</strong> Allocate, monitor, and balance human and equipment resources efficiently.</li>\n  <li><strong>Budget & Cost Control:</strong> Track financial budgets, variance analysis, and generate expense reports.</li>\n  <li><strong>Built-in Customizable Reports:</strong> Visual insights and data analytics to keep stakeholders informed.</li>\n  <li><strong>Seamless Microsoft Office Integration:</strong> Share project data effortlessly with Excel, PowerPoint, and Teams.</li>\n  <li><strong>Task Dependencies:</strong> Understand relationships between complex tasks to avoid bottlenecks.</li>\n</ul>\n\n<h3>💡 কেন কিনবেন? (Benefits)</h3>\n<ul>\n  <li>আপনার প্রজেক্টগুলো সময়মতো এবং বাজেট অনুযায়ী সফলভাবে সম্পন্ন করুন।</li>\n  <li>রিসোর্সগুলো দক্ষতার সাথে ব্যবহার করে কাজের অপচয় ও খরচ কমান।</li>\n  <li>টিম কোলাবোরেশন এবং কমিউনিকেশন আরও গতিশীল করুন।</li>\n  <li>সঠিক ডেটা ও রিপোর্ট বিশ্লেষণ করে আত্মবিশ্বাসের সাথে ব্যবসায়িক সিদ্ধান্ত নিন।</li>\n  <li>সহজ ও ইউজার-ফ্রেন্ডলি ইন্টারফেস যা দ্রুত আয়ত্ত করা যায়।</li>\n</ul>\n\n<h3>📋 Delivery & Support Information</h3>\n<ul>\n  <li>You will receive 1x Project 2019 Professional license key that can activate 1 PC.</li>\n  <li>Activation is valid for a lifetime (Bind key links to your Microsoft account via setup.office.com).</li>\n  <li>This key can be used only on PC / Windows (Not for Mac OS).</li>\n  <li>Friendly and professional 24/7 customer support via WhatsApp and helpline.</li>\n  <li>Experience fast and convenient product delivery through our web store dashboard.</li>\n  <li>Guaranteed 100% Authentic Licenses sourced from authorized Microsoft partners.</li>\n  <li>Ensure you're purchasing the right version/edition/PC count for your needs. We do not accept returns or exchanges for incorrect orders after delivery. If you have any questions, please don't hesitate to contact us.</li>\n</ul>\n\n<h3>💰 Pricing & Plans</h3>\n<ul>\n  <li><strong>Retail Key (1 PC Lifetime):</strong> ৳749</li>\n  <li><strong>Bind Key (Account Linked / Transferable):</strong> ৳3,299</li>\n</ul>\n\n<h3>🏪 কেন আমাদের বেছে নেবেন? (Why Choose Us?)</h3>\n<ul>\n  <li><strong>Trusted Platform:</strong> Tech Solutions BD বাংলাদেশের একটি বিশ্বস্ত ডিজিটাল প্ল্যাটফর্ম।</li>\n  <li><strong>Best Price Guarantee:</strong> আমরা নিশ্চিত করি বাজারের সেরা এবং সাশ্রয়ী মূল্য।</li>\n  <li><strong>Fast Delivery:</strong> অর্ডারের পর তাৎক্ষণিক বা দ্রুত ডেলিভারি আপনার ড্যাশবোর্ড ও ইমেইলে।</li>\n  <li><strong>Dedicated Support:</strong> সার্বক্ষণিক টেকনিক্যাল সাপোর্ট ও লাইসেন্স অ্যাক্টিভেশন সহায়তা।</li>\n</ul>\n\n<h3>⚠️ Important Notes</h3>\n<ul>\n  <li>❌ Sold Products Are Not Returnable.</li>\n  <li>🛒 The product will be delivered instantly or within 1 hours (Rare cases: up to 24 hours).</li>\n  <li>❌ Any of our products are requested to be activated within two days maximum. Otherwise the warranty will be void.</li>\n</ul>",
+        "image": "/img_content/project19.png",
+        "icon": "📊",
+        "color": "#047857",
+        "gradient": "linear-gradient(135deg, #10b981 0%, #047857 100%)",
+        "options": [
+            {
+                "id": "opt-proj-2019-retail",
+                "name": "Retail Key (1 PC Lifetime)",
+                "type": "RETAIL_KEY",
+                "price": 749,
+                "originalPrice": 1999,
+                "description": "One-time online activation for 1 PC. Lifetime validity as long as Windows/Office is not reinstalled."
+            },
+            {
+                "id": "opt-proj-2019-bind",
+                "name": "Bind Key (Account Linked - Transferable)",
+                "type": "BIND_KEY",
+                "price": 3299,
+                "originalPrice": 7999,
+                "description": "Redeem at setup.office.com and link permanently to your Microsoft account. Reusable & transferable to new PC."
+            }
+        ]
+    },
+    {
+        "id": "project-professional-2016",
+        "slug": "project-professional-2016",
+        "name": "Project Professional 2016",
+        "category": "microsoft-project",
+        "badge": "",
+        "price": 649,
+        "originalPrice": 7999,
+        "desc": "✨ 100% Original Microsoft Project 2016 Professional License Key for 1 PC.<br>🔑 Available in Retail Key (1 PC Lifetime) and Bind Key (Microsoft Account Linked / Transferable).<br>⚡ Instant digital delivery to dashboard & email with lifetime activation and dedicated support.",
+        "longDesc": "<h1>Microsoft Project 2016 Professional Genuine License Key Price in BD</h1>\n\n<h3>📦 পণ্য পরিচিতি (Product Overview)</h3>\n<p>Microsoft Project 2016 Professional হলো একটি শক্তিশালী প্রজেক্ট ম্যানেজমেন্ট সফটওয়্যার যা আপনাকে জটিল প্রজেক্টগুলি কার্যকরভাবে পরিকল্পনা, ট্র্যাক এবং সফলভাবে পরিচালনা করতে সাহায্য করে। এটি উন্নত শিডিউলিং টুলস, রিসোর্স ম্যানেজমেন্ট, বাজেট ট্র্যাকিং এবং টিম কোলাবোরেশন নিশ্চিত করে। Tech Solutions BD থেকে আপনি পাচ্ছেন ১০০% জেনুইন লাইসেন্স কি দ্রুত ডিজিটাল ডেলিভারি সহ।</p>\n\n<h3>✨ Available License Options</h3>\n<ul>\n  <li>\n    <strong>🔑 Retail Key:</strong>\n    <ul>\n      <li>Lifetime validation on 1 PC</li>\n      <li>Online / phone activation</li>\n      <li>One-time activation (not linked with Microsoft account)</li>\n      <li>Lifetime validity remains as long as it is not uninstalled</li>\n    </ul>\n  </li>\n  <li>\n    <strong>🔐 Bind Key:</strong>\n    <ul>\n      <li>Lifetime validation (Reusable / transferable)</li>\n      <li>Online activation linked directly with your Microsoft account</li>\n      <li>Redeem here: <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://setup.office.com</a></li>\n      <li>Automatically activates when you log in with the same Microsoft account during installation or after reinstalling/changing PC</li>\n    </ul>\n  </li>\n</ul>\n\n<h3>✅ মূল বৈশিষ্ট্য (Key Features)</h3>\n<ul>\n  <li><strong>Advanced Project Scheduling:</strong> Gantt charts, network diagrams, timelines, and automated milestone tracking.</li>\n  <li><strong>Resource Management:</strong> Allocate, monitor, and balance human and equipment resources efficiently.</li>\n  <li><strong>Budget & Cost Control:</strong> Track financial budgets, variance analysis, and generate expense reports.</li>\n  <li><strong>Built-in Customizable Reports:</strong> Visual insights and data analytics to keep stakeholders informed.</li>\n  <li><strong>Seamless Microsoft Office Integration:</strong> Share project data effortlessly with Excel, PowerPoint, and Teams.</li>\n  <li><strong>Task Dependencies:</strong> Understand relationships between complex tasks to avoid bottlenecks.</li>\n</ul>\n\n<h3>💡 কেন কিনবেন? (Benefits)</h3>\n<ul>\n  <li>আপনার প্রজেক্টগুলো সময়মতো এবং বাজেট অনুযায়ী সফলভাবে সম্পন্ন করুন।</li>\n  <li>রিসোর্সগুলো দক্ষতার সাথে ব্যবহার করে কাজের অপচয় ও খরচ কমান।</li>\n  <li>টিম কোলাবোরেশন এবং কমিউনিকেশন আরও গতিশীল করুন।</li>\n  <li>সঠিক ডেটা ও রিপোর্ট বিশ্লেষণ করে আত্মবিশ্বাসের সাথে ব্যবসায়িক সিদ্ধান্ত নিন।</li>\n  <li>সহজ ও ইউজার-ফ্রেন্ডলি ইন্টারফেস যা দ্রুত আয়ত্ত করা যায়।</li>\n</ul>\n\n<h3>📋 Delivery & Support Information</h3>\n<ul>\n  <li>You will receive 1x Project 2016 Professional license key that can activate 1 PC.</li>\n  <li>Activation is valid for a lifetime (Bind key links to your Microsoft account via setup.office.com).</li>\n  <li>This key can be used only on PC / Windows (Not for Mac OS).</li>\n  <li>Friendly and professional 24/7 customer support via WhatsApp and helpline.</li>\n  <li>Experience fast and convenient product delivery through our web store dashboard.</li>\n  <li>Guaranteed 100% Authentic Licenses sourced from authorized Microsoft partners.</li>\n  <li>Ensure you're purchasing the right version/edition/PC count for your needs. We do not accept returns or exchanges for incorrect orders after delivery. If you have any questions, please don't hesitate to contact us.</li>\n</ul>\n\n<h3>💰 Pricing & Plans</h3>\n<ul>\n  <li><strong>Retail Key (1 PC Lifetime):</strong> ৳649</li>\n  <li><strong>Bind Key (Account Linked / Transferable):</strong> ৳2,999</li>\n</ul>\n\n<h3>🏪 কেন আমাদের বেছে নেবেন? (Why Choose Us?)</h3>\n<ul>\n  <li><strong>Trusted Platform:</strong> Tech Solutions BD বাংলাদেশের একটি বিশ্বস্ত ডিজিটাল প্ল্যাটফর্ম।</li>\n  <li><strong>Best Price Guarantee:</strong> আমরা নিশ্চিত করি বাজারের সেরা এবং সাশ্রয়ী মূল্য।</li>\n  <li><strong>Fast Delivery:</strong> অর্ডারের পর তাৎক্ষণিক বা দ্রুত ডেলিভারি আপনার ড্যাশবোর্ড ও ইমেইলে।</li>\n  <li><strong>Dedicated Support:</strong> সার্বক্ষণিক টেকনিক্যাল সাপোর্ট ও লাইসেন্স অ্যাক্টিভেশন সহায়তা।</li>\n</ul>\n\n<h3>⚠️ Important Notes</h3>\n<ul>\n  <li>❌ Sold Products Are Not Returnable.</li>\n  <li>🛒 The product will be delivered instantly or within 1 hours (Rare cases: up to 24 hours).</li>\n  <li>❌ Any of our products are requested to be activated within two days maximum. Otherwise the warranty will be void.</li>\n</ul>",
+        "image": "/img_content/project.png",
+        "icon": "📊",
+        "color": "#047857",
+        "gradient": "linear-gradient(135deg, #10b981 0%, #047857 100%)",
+        "options": [
+            {
+                "id": "opt-proj-2016-retail",
+                "name": "Retail Key (1 PC Lifetime)",
+                "type": "RETAIL_KEY",
+                "price": 649,
+                "originalPrice": 1699,
+                "description": "One-time online activation for 1 PC. Lifetime validity as long as Windows/Office is not reinstalled."
+            },
+            {
+                "id": "opt-proj-2016-bind",
+                "name": "Bind Key (Account Linked - Transferable)",
+                "type": "BIND_KEY",
+                "price": 2999,
+                "originalPrice": 6999,
+                "description": "Redeem at setup.office.com and link permanently to your Microsoft account. Reusable & transferable to new PC."
+            }
+        ]
     }
 ];
 
 export const categorySummaries: StoreCategory[] = [
+  {
+    slug: "microsoft-project",
+    name: "Microsoft Project",
+    description: "Project Professional 2024, 2021, 2019, 2016",
+    count: products.filter((product) => product.category === "microsoft-project").length,
+    image: "/img_content/project24.png",
+    accent: "#047857",
+  },
   {
     slug: "office",
     name: "Microsoft Office",
