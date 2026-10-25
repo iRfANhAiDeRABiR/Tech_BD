@@ -528,7 +528,7 @@ type CachedCatalog = {
   timestamp: number;
 };
 
-const DB_CATALOG_TIMEOUT_MS = 10000;
+const DB_CATALOG_TIMEOUT_MS = 25000;
 const CATALOG_CACHE_TTL_MS = 10 * 60 * 1000;
 
 const globalForCatalog = globalThis as unknown as {
@@ -594,175 +594,184 @@ async function loadDatabaseCatalog(): Promise<StoreCatalog | null> {
     return null;
   }
 
-  try {
-    const fetchPromise = (async () => {
-      const { default: prisma } = await import("../lib/prisma");
-      return await prisma.$queryRaw<
-        {
-          id: string;
-          slug: string;
-          name: string;
-          description: string | null;
-          image: string | null;
-          accent: string | null;
-          sortOrder: number;
-          products: {
+  const MAX_RETRIES = 3;
+  let lastError: unknown = null;
+
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const fetchPromise = (async () => {
+        const { default: prisma } = await import("../lib/prisma");
+        return await prisma.$queryRaw<
+          {
             id: string;
             slug: string;
             name: string;
-            badge: string | null;
-            price: number;
-            originalPrice: number | null;
-            shortDescription: string;
-            descriptionHtml: string;
-            image: string;
-            icon: string | null;
-            color: string | null;
-            gradient: string | null;
-            outOfStock: boolean;
+            description: string | null;
+            image: string | null;
+            accent: string | null;
             sortOrder: number;
-            options: {
+            products: {
               id: string;
+              slug: string;
               name: string;
-              type: string;
+              badge: string | null;
               price: number;
               originalPrice: number | null;
-              description: string | null;
+              shortDescription: string;
+              descriptionHtml: string;
+              image: string;
+              icon: string | null;
+              color: string | null;
+              gradient: string | null;
+              outOfStock: boolean;
               sortOrder: number;
+              options: {
+                id: string;
+                name: string;
+                type: string;
+                price: number;
+                originalPrice: number | null;
+                description: string | null;
+                sortOrder: number;
+              }[];
             }[];
-          }[];
-        }[]
-      >`
-        SELECT
-          c.id, c.slug, c.name, c.description, c.image, c.accent, c."sortOrder",
-          COALESCE(
-            json_agg(
-              json_build_object(
-                'id', p.id,
-                'slug', p.slug,
-                'name', p.name,
-                'badge', p.badge,
-                'price', p.price,
-                'originalPrice', p."originalPrice",
-                'shortDescription', p."shortDescription",
-                'descriptionHtml', p."descriptionHtml",
-                'image', p.image,
-                'icon', p.icon,
-                'color', p.color,
-                'gradient', p.gradient,
-                'outOfStock', p."outOfStock",
-                'sortOrder', p."sortOrder",
-                'options', (
-                  SELECT COALESCE(
-                    json_agg(
-                      json_build_object(
-                        'id', o.id,
-                        'name', o.name,
-                        'type', o.type,
-                        'price', o.price,
-                        'originalPrice', o."originalPrice",
-                        'description', o.description,
-                        'sortOrder', o."sortOrder"
-                      ) ORDER BY o."sortOrder" ASC
-                    ), '[]'::json
+          }[]
+        >`
+          SELECT
+            c.id, c.slug, c.name, c.description, c.image, c.accent, c."sortOrder",
+            COALESCE(
+              json_agg(
+                json_build_object(
+                  'id', p.id,
+                  'slug', p.slug,
+                  'name', p.name,
+                  'badge', p.badge,
+                  'price', p.price,
+                  'originalPrice', p."originalPrice",
+                  'shortDescription', p."shortDescription",
+                  'descriptionHtml', p."descriptionHtml",
+                  'image', p.image,
+                  'icon', p.icon,
+                  'color', p.color,
+                  'gradient', p.gradient,
+                  'outOfStock', p."outOfStock",
+                  'sortOrder', p."sortOrder",
+                  'options', (
+                    SELECT COALESCE(
+                      json_agg(
+                        json_build_object(
+                          'id', o.id,
+                          'name', o.name,
+                          'type', o.type,
+                          'price', o.price,
+                          'originalPrice', o."originalPrice",
+                          'description', o.description,
+                          'sortOrder', o."sortOrder"
+                        ) ORDER BY o."sortOrder" ASC
+                      ), '[]'::json
+                    )
+                    FROM "ProductOption" o
+                    WHERE o."productId" = p.id AND o."isActive" = true
                   )
-                  FROM "ProductOption" o
-                  WHERE o."productId" = p.id AND o."isActive" = true
-                )
-              ) ORDER BY p."sortOrder" ASC, p."createdAt" DESC
-            ) FILTER (WHERE p.id IS NOT NULL),
-            '[]'::json
-          ) AS products
-        FROM "Category" c
-        LEFT JOIN "Product" p ON p."categoryId" = c.id AND p.status = 'ACTIVE'
-        WHERE c."isActive" = true
-        GROUP BY c.id
-        ORDER BY c."sortOrder" ASC, c."createdAt" ASC, c.name ASC
-      `;
-    })();
+                ) ORDER BY p."sortOrder" ASC, p."createdAt" DESC
+              ) FILTER (WHERE p.id IS NOT NULL),
+              '[]'::json
+            ) AS products
+          FROM "Category" c
+          LEFT JOIN "Product" p ON p."categoryId" = c.id AND p.status = 'ACTIVE'
+          WHERE c."isActive" = true
+          GROUP BY c.id
+          ORDER BY c."sortOrder" ASC, c."createdAt" ASC, c.name ASC
+        `;
+      })();
 
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      const timer = setTimeout(() => {
-        reject(
-          new Error(
-            `Catalog query exceeded ${DB_CATALOG_TIMEOUT_MS}ms timeout`,
-          ),
-        );
-      }, DB_CATALOG_TIMEOUT_MS);
-      if (typeof timer.unref === "function") {
-        timer.unref();
-      }
-    });
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        const timer = setTimeout(() => {
+          reject(
+            new Error(
+              `Catalog query exceeded ${DB_CATALOG_TIMEOUT_MS}ms timeout`,
+            ),
+          );
+        }, DB_CATALOG_TIMEOUT_MS);
+        if (typeof timer.unref === "function") {
+          timer.unref();
+        }
+      });
 
-    const databaseCategories = await Promise.race([
-      fetchPromise,
-      timeoutPromise,
-    ]);
+      const databaseCategories = await Promise.race([
+        fetchPromise,
+        timeoutPromise,
+      ]);
 
-    const databaseProducts = databaseCategories.flatMap((category) =>
-      category.products.map((product) => ({
-        id: product.id,
-        slug: product.slug,
-        name: product.name,
-        category: category.slug,
-        badge: product.badge ?? "",
-        price: product.price,
-        originalPrice: product.originalPrice,
-        desc: product.shortDescription,
-        longDesc: product.descriptionHtml,
-        image: product.image,
-        icon: product.icon ?? "💻",
-        color: product.color ?? "#38bdf8",
-        gradient:
-          product.gradient ?? "linear-gradient(135deg, #38bdf8, #6366f1)",
-        outOfStock: product.outOfStock,
-        options: product.options.map((option) => ({
-          id: option.id,
-          name: option.name,
-          type: (option.type as ProductOption["type"]) || "OTHER",
-          price: option.price,
-          originalPrice: option.originalPrice,
-          description: option.description,
+      const databaseProducts = databaseCategories.flatMap((category) =>
+        category.products.map((product) => ({
+          id: product.id,
+          slug: product.slug,
+          name: product.name,
+          category: category.slug,
+          badge: product.badge ?? "",
+          price: product.price,
+          originalPrice: product.originalPrice,
+          desc: product.shortDescription,
+          longDesc: product.descriptionHtml,
+          image: product.image,
+          icon: product.icon ?? "💻",
+          color: product.color ?? "#38bdf8",
+          gradient:
+            product.gradient ?? "linear-gradient(135deg, #38bdf8, #6366f1)",
+          outOfStock: product.outOfStock,
+          options: product.options.map((option) => ({
+            id: option.id,
+            name: option.name,
+            type: (option.type as ProductOption["type"]) || "OTHER",
+            price: option.price,
+            originalPrice: option.originalPrice,
+            description: option.description,
+          })),
         })),
-      })),
-    );
-
-    if (!databaseProducts.length) return null;
-
-    const databaseStoreCategories = databaseCategories.map((category) => ({
-      slug: category.slug,
-      name: category.name,
-      description: category.description?.trim() || `${category.name} products`,
-      count: category.products.length,
-      image: category.image,
-      accent: category.accent || "#6C63FF",
-    }));
-
-    return {
-      products: databaseProducts,
-      categories: buildCategorySummariesFromProducts(
-        databaseStoreCategories,
-        databaseProducts,
-      ),
-    };
-  } catch (error) {
-    // A local database may intentionally be offline while the storefront is
-    // being developed. Avoid emitting a server console error (which Next.js
-    // surfaces as a browser error overlay) and briefly cool down retries.
-    const retryAfter = Date.now() + 30_000;
-    setCatalogRetryAfter(retryAfter);
-    if (
-      process.env.NODE_ENV === "development" &&
-      shouldWarnAboutCatalogFallback(retryAfter)
-    ) {
-      const reason = error instanceof Error ? error.message : String(error);
-
-      console.warn(
-        `Database catalog is unavailable; using the static product catalog. Reason: ${reason}`,
       );
+
+      if (!databaseProducts.length) return null;
+
+      const databaseStoreCategories = databaseCategories.map((category) => ({
+        slug: category.slug,
+        name: category.name,
+        description: category.description?.trim() || `${category.name} products`,
+        count: category.products.length,
+        image: category.image,
+        accent: category.accent || "#6C63FF",
+      }));
+
+      return {
+        products: databaseProducts,
+        categories: buildCategorySummariesFromProducts(
+          databaseStoreCategories,
+          databaseProducts,
+        ),
+      };
+    } catch (error) {
+      lastError = error;
+      if (attempt < MAX_RETRIES) {
+        // Transient socket/DNS connection warm-up blip; back off briefly before retrying
+        await new Promise((resolve) => setTimeout(resolve, attempt * 800));
+      }
     }
-    return null;
   }
+
+  // Cool down retries after all attempts are exhausted
+  const retryAfter = Date.now() + 15_000;
+  setCatalogRetryAfter(retryAfter);
+  if (
+    process.env.NODE_ENV === "development" &&
+    shouldWarnAboutCatalogFallback(retryAfter)
+  ) {
+    const reason = lastError instanceof Error ? lastError.message : String(lastError);
+
+    console.warn(
+      `Database catalog is unavailable; using the static product catalog. Reason: ${reason}`,
+    );
+  }
+  return null;
 }
 
 export function invalidateStoreCatalogCache() {
@@ -820,9 +829,9 @@ export async function getStoreProducts(): Promise<Product[]> {
   return (await getStoreCatalog()).products;
 }
 
-// Background pre-warm on module load to ensure 0ms latency for users
+// Background pre-warm on module load to ensure 0ms latency for users once the runtime settles
 if (typeof window === "undefined" && process.env.DATABASE_URL) {
   setTimeout(() => {
     getStoreCatalog().catch(() => {});
-  }, 100);
+  }, 1500);
 }

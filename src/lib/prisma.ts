@@ -20,10 +20,11 @@ function createPrismaClient(): PrismaClient {
     globalForPrisma.pool ??
     new Pool({
       connectionString,
-      connectionTimeoutMillis: 10000,
+      connectionTimeoutMillis: 20000, // 20s allowance for international cold TLS handshake
       idleTimeoutMillis: 300000, // 5 minutes to keep pool warm across requests
       max: 10,
       keepAlive: true,
+      keepAliveInitialDelayMillis: 10000,
     });
 
   pool.on("error", (err) => {
@@ -33,11 +34,6 @@ function createPrismaClient(): PrismaClient {
 
   if (process.env.NODE_ENV !== "production") {
     globalForPrisma.pool = pool;
-  }
-
-  // Pre-warm a single database connection asynchronously on boot to eliminate 1st-query latency
-  if (typeof window === "undefined") {
-    pool.query("SELECT 1").catch(() => {});
   }
 
   const adapter = new PrismaPg(pool);
