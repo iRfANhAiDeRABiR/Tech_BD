@@ -8,7 +8,7 @@ interface StoreCatalog {
 export const products: Product[] = [
 
     {
-        "id": "1",
+        "id": "windows-11-pro",
         "name": "Windows 11 Pro",
         "category": "windows",
         "badge": "hot",
@@ -127,7 +127,7 @@ export const products: Product[] = [
         "gradient": "linear-gradient(135deg, #0078D4, #00BCF2)"
     },
     {
-        "id": "2",
+        "id": "windows-11-home",
         "name": "Windows 11 Home",
         "category": "windows",
         "badge": "hot",
@@ -141,7 +141,7 @@ export const products: Product[] = [
         "gradient": "linear-gradient(135deg, #0052a3, #0078D4)"
     },
     {
-        "id": "3",
+        "id": "windows-10-pro",
         "name": "Windows 10 Pro",
         "category": "windows",
         "badge": "sale",
@@ -252,7 +252,7 @@ export const products: Product[] = [
         "gradient": "linear-gradient(135deg, #004080, #0078D4)"
     },
     {
-        "id": "4",
+        "id": "microsoft-office-pro-plus-ltsc-2024-non-sync",
         "name": "Microsoft Office Pro Plus LTSC 2024 Non Sync",
         "category": "office",
         "badge": "new",
@@ -266,7 +266,7 @@ export const products: Product[] = [
         "gradient": "linear-gradient(135deg, #D83B01, #FF8C00)"
     },
     {
-        "id": "1774333684043",
+        "id": "windows-10-home-license-key",
         "name": "Windows 10 HOME",
         "category": "windows",
         "badge": "sale",
@@ -280,7 +280,7 @@ export const products: Product[] = [
         "gradient": "linear-gradient(135deg, #6C63FF, #00D4AA)"
     },
     {
-        "id": "1774402685893",
+        "id": "microsoft-office-2024-home-and-business-mac",
         "name": "Microsoft Office 2024 Home & Business –<br> Lifetime BIND Key - Mac OS ",
         "category": "office",
         "badge": "new",
@@ -294,7 +294,7 @@ export const products: Product[] = [
         "gradient": "linear-gradient(135deg, #6C63FF, #00D4AA)"
     },
     {
-        "id": "1774405426270",
+        "id": "microsoft-office-2021-pro-plus-non-sync",
         "name": "Microsoft Office 2021 Pro Plus Non Sync",
         "category": "office",
         "badge": "hot",
@@ -308,7 +308,7 @@ export const products: Product[] = [
         "gradient": "linear-gradient(135deg, #6C63FF, #00D4AA)"
     },
     {
-        "id": "1774419434576",
+        "id": "microsoft-office-2019-pro-plus-non-sync",
         "name": "Microsoft Office 2019 Pro Plus Non Sync",
         "category": "office",
         "badge": "sale",
@@ -322,7 +322,7 @@ export const products: Product[] = [
         "gradient": "linear-gradient(135deg, #6C63FF, #00D4AA)"
     },
     {
-        "id": "1774442079989",
+        "id": "microsoft-office-2019-home-and-business",
         "name": "Microsoft Office 2019 Home & Business –<br> Lifetime BIND Key ",
         "category": "office",
         "badge": "sale",
@@ -336,7 +336,7 @@ export const products: Product[] = [
         "gradient": "linear-gradient(135deg, #6C63FF, #00D4AA)"
     },
     {
-        "id": "1774442963518",
+        "id": "microsoft-office-2016-pro-plus-non-sync",
         "name": "Microsoft Office 2016 Pro Plus Non Sync",
         "category": "office",
         "badge": "sale",
@@ -350,7 +350,7 @@ export const products: Product[] = [
         "gradient": "linear-gradient(135deg, #6C63FF, #00D4AA)"
     },
     {
-        "id": "1774444539183",
+        "id": "microsoft-office-2021-home-and-business",
         "name": "Microsoft Office 2021 Home & Business –<br> Lifetime BIND Key ",
         "category": "office",
         "badge": "hot",
@@ -364,7 +364,7 @@ export const products: Product[] = [
         "gradient": "linear-gradient(135deg, #6C63FF, #00D4AA)"
     },
     {
-        "id": "1774445303611",
+        "id": "microsoft-office-2016-home-and-business",
         "name": "Microsoft Office 2016 Home & Business – Lifetime BIND (Email-Linked Activation)",
         "category": "office",
         "badge": "sale",
@@ -378,7 +378,7 @@ export const products: Product[] = [
         "gradient": "linear-gradient(135deg, #6C63FF, #00D4AA)"
     },
     {
-        "id": "1774508717023",
+        "id": "microsoft-office-2013-pro-plus-non-sync",
         "name": "Microsoft Office 2013 Pro Plus Non Sync",
         "category": "office",
         "badge": "",
@@ -392,7 +392,7 @@ export const products: Product[] = [
         "gradient": "linear-gradient(135deg, #6C63FF, #00D4AA)"
     },
     {
-        "id": "1774510199259",
+        "id": "microsoft-office-365-account-password",
         "name": "Microsoft Office 365 <br> Account And Password(Changable)",
         "category": "office",
         "badge": "hot",
@@ -406,7 +406,7 @@ export const products: Product[] = [
         "gradient": "linear-gradient(135deg, #6C63FF, #00D4AA)"
     },
     {
-        "id": "1774510988677",
+        "id": "microsoft-office-365-personal-own-email",
         "name": "Microsoft Office 365 Personal <br> With Own Mail ",
         "category": "office",
         "badge": "new",
@@ -420,7 +420,7 @@ export const products: Product[] = [
         "gradient": "linear-gradient(135deg, #6C63FF, #00D4AA)"
     },
     {
-        "id": "1774512428558",
+        "id": "adobe-creative-cloud-subscription",
         "name": "Adobe Creative Cloud Subscription",
         "category": "adobe",
         "badge": "",
@@ -434,7 +434,7 @@ export const products: Product[] = [
         "gradient": "linear-gradient(135deg, #6C63FF, #00D4AA)"
     },
     {
-        "id": "1774512428559",
+        "id": "adobe-creative-cloud-subscription-90-days",
         "name": "Adobe Creative Cloud Subscription - 90 Days",
         "category": "adobe",
         "badge": "",
@@ -448,7 +448,7 @@ export const products: Product[] = [
         "gradient": "linear-gradient(135deg, #6C63FF, #00D4AA)"
     },
     {
-        "id": "1774512428560",
+        "id": "adobe-creative-cloud-subscription-180-days",
         "name": "Adobe Creative Cloud Subscription - 180 Days",
         "category": "adobe",
         "badge": "hot",
@@ -462,7 +462,7 @@ export const products: Product[] = [
         "gradient": "linear-gradient(135deg, #6C63FF, #00D4AA)"
     },
     {
-        "id": "1774512428561",
+        "id": "adobe-creative-cloud-subscription-365-days",
         "name": "Adobe Creative Cloud Subscription - 365 Days",
         "category": "adobe",
         "badge": "best",
@@ -476,7 +476,7 @@ export const products: Product[] = [
         "gradient": "linear-gradient(135deg, #6C63FF, #00D4AA)"
     },
     {
-        "id": "6",
+        "id": "project-professional-2024",
         "slug": "project-professional-2024",
         "name": "Project Professional 2024",
         "category": "microsoft-project",
@@ -509,7 +509,7 @@ export const products: Product[] = [
         ]
     },
     {
-        "id": "microsoft-project-2021-professional-price-in-bd",
+        "id": "project-professional-2021",
         "slug": "project-professional-2021",
         "name": "Project Professional 2021",
         "category": "microsoft-project",
@@ -606,10 +606,150 @@ export const products: Product[] = [
                 "description": "Redeem at setup.office.com and link permanently to your Microsoft account. Reusable & transferable to new PC."
             }
         ]
+    },
+    {
+        "id": "visio-professional-2024",
+        "slug": "visio-professional-2024",
+        "name": "Visio Professional 2024",
+        "category": "microsoft-visio",
+        "badge": "Latest",
+        "price": 1249,
+        "originalPrice": 14999,
+        "desc": "✨ 100% Original Microsoft Visio 2024 Professional License Key for 1 PC.<br>🔑 Available in Retail Key (1 PC Lifetime) and Bind Key (Microsoft Account Linked / Transferable).<br>⚡ Instant digital delivery to dashboard & email with lifetime activation and dedicated support.",
+        "longDesc": "<h1>Microsoft Visio 2024 Professional Genuine License Key Price in BD</h1>\n\n<h3>📦 পণ্য পরিচিতি (Product Overview)</h3>\n<p>Microsoft Visio 2024 Professional হলো একটি শক্তিশালী ও নির্ভরযোগ্য ডায়াগ্রামিং এবং ভেক্টর গ্রাফিক্স সফটওয়্যার, যা জটিল তথ্য, প্রক্রিয়া এবং সিস্টেমকে সহজে বোধগম্য ভিজ্যুয়াল ফর্মে রূপান্তর করতে সাহায্য করে। এটি ফ্লোচার্ট, অর্গানাইজেশনাল চার্ট, নেটওয়ার্ক আর্কিটেকচার ডায়াগ্রাম, ফ্লোর প্ল্যান এবং ইঞ্জিনিয়ারিং ডিজাইন তৈরি করার জন্য বিশ্বব্যাপী সর্বাধিক ব্যবহৃত টুল। Tech Solutions BD থেকে আপনি পাচ্ছেন ১০০% জেনুইন অফিসিয়াল লাইসেন্স কি দ্রুত ডিজিটাল ডেলিভারি সহ।</p>\n\n<h3>✨ Available License Options</h3>\n<ul>\n  <li>\n    <strong>🔑 Retail Key:</strong>\n    <ul>\n      <li>Lifetime validation on 1 PC</li>\n      <li>Online / phone activation</li>\n      <li>One-time activation (not linked with Microsoft account)</li>\n      <li>Lifetime validity remains as long as it is not uninstalled</li>\n    </ul>\n  </li>\n  <li>\n    <strong>🔐 Bind Key:</strong>\n    <ul>\n      <li>Lifetime validation (Reusable / transferable)</li>\n      <li>Online activation linked directly with your Microsoft account</li>\n      <li>Redeem here: <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://setup.office.com</a></li>\n      <li>Automatically activates when you log in with the same Microsoft account during installation or after reinstalling/changing PC</li>\n    </ul>\n  </li>\n</ul>\n\n<h3>✅ মূল বৈশিষ্ট্য (Key Features)</h3>\n<ul>\n  <li><strong>পেশাদার ডায়াগ্রামিং টুলস:</strong> উন্নত ফ্লোচার্ট, নেটওয়ার্ক ডায়াগ্রাম, অর্গানোগ্রাম এবং স্পেসিফিকেশন তৈরি করুন।</li>\n  <li><strong>আধুনিক রেডিমেড টেমপ্লেট:</strong> হাজার হাজার কাস্টমাইজযোগ্য আকার, স্টেনসিল এবং আধুনিক টেমপ্লেট।</li>\n  <li><strong>রিয়েল-টাইম ডেটা লিঙ্কিং:</strong> Excel বা SQL ডেটার সাথে ডায়াগ্রাম লিঙ্ক করে স্বয়ংক্রিয়ভাবে আপডেট রাখুন।</li>\n  <li><strong>Microsoft Office ইন্টিগ্রেশন:</strong> Word, PowerPoint এবং Teams এর সাথে মসৃণ সহযোগিতা ও শেয়ারিং।</li>\n  <li><strong>সহজ কোলাবোরেশন:</strong> টিমের অন্যান্য সদস্যদের সাথে একসাথে কাজ এবং মতামত শেয়ার করুন।</li>\n  <li><strong>Windows অপ্টিমাইজেশন:</strong> Windows 10 এবং Windows 11 এর জন্য সম্পূর্ণ অপ্টিমাইজড ও মসৃণ কার্যক্ষমতা।</li>\n</ul>\n\n<h3>💡 কেন কিনবেন? (Benefits)</h3>\n<ul>\n  <li>আপনার ব্যবসায়িক প্রক্রিয়া এবং জটিল ধারণাগুলিকে সহজে উপস্থাপন করুন।</li>\n  <li>প্রজেক্ট ম্যানেজমেন্ট এবং সিস্টেম আর্কিটেকচার পরিকল্পনা আরও নিখুঁত করুন।</li>\n  <li>পেশাদার মানের ডায়াগ্রাম তৈরি করে সময় এবং উৎপাদনশীলতা বহুগুণ বৃদ্ধি করুন।</li>\n  <li>এককালীন ক্রয় – কোনো মাসিক বা বার্ষিক সাবস্ক্রিপশন ফি নেই।</li>\n</ul>\n\n<h3>📋 Delivery & Support Information</h3>\n<ul>\n  <li>You will receive 1x Visio 2024 Professional license key that can activate 1 PC.</li>\n  <li>Activation is valid for a lifetime (Bind key links to your Microsoft account via setup.office.com).</li>\n  <li>This key can be used only on PC / Windows (Not for Mac OS).</li>\n  <li>Friendly and professional 24/7 customer support via WhatsApp and helpline.</li>\n  <li>Experience fast and convenient product delivery through our web store dashboard.</li>\n  <li>Guaranteed 100% Authentic Licenses sourced from authorized Microsoft partners.</li>\n  <li>Ensure you're purchasing the right version/edition/PC count for your needs. We do not accept returns or exchanges for incorrect orders after delivery. If you have any questions, please don't hesitate to contact us.</li>\n</ul>\n\n<h3>💰 Pricing & Plans</h3>\n<ul>\n  <li><strong>Retail Key (1 PC Lifetime):</strong> ৳1,249</li>\n  <li><strong>Bind Key (Account Linked / Transferable):</strong> ৳4,999</li>\n</ul>\n\n<h3>🏪 কেন আমাদের বেছে নেবেন? (Why Choose Us?)</h3>\n<ul>\n  <li><strong>Trusted Platform:</strong> Tech Solutions BD বাংলাদেশের একটি বিশ্বস্ত ডিজিটাল প্ল্যাটফর্ম।</li>\n  <li><strong>Best Price Guarantee:</strong> আমরা নিশ্চিত করি বাজারের সেরা এবং সবচেয়ে সাশ্রয়ী মূল্য।</li>\n  <li><strong>Fast Delivery:</strong> অর্ডারের পর তাৎক্ষণিক বা দ্রুত ডেলিভারি আপনার ড্যাশবোর্ড ও ইমেইলে।</li>\n  <li><strong>Dedicated Support:</strong> সার্বক্ষণিক টেকনিক্যাল সাপোর্ট ও লাইসেন্স অ্যাক্টিভেশন সহায়তা।</li>\n</ul>\n\n<h3>⚠️ Important Notes</h3>\n<ul>\n  <li>❌ Sold Products Are Not Returnable.</li>\n  <li>🛒 The product will be delivered instantly or within 1 hours (Rare cases: up to 24 hours).</li>\n  <li>❌ Any of our products are requested to be activated within two days maximum. Otherwise the warranty will be void.</li>\n</ul>",
+        "image": "/img_content/visio24.png",
+        "icon": "📐",
+        "color": "#0078D4",
+        "gradient": "linear-gradient(135deg, #0284c7 0%, #0078D4 100%)",
+        "options": [
+            {
+                "id": "opt-visio-2024-retail",
+                "name": "Retail Key (1 PC Lifetime)",
+                "type": "RETAIL_KEY",
+                "price": 1249,
+                "originalPrice": 3499,
+                "description": "One-time online activation for 1 PC. Lifetime validity as long as Windows/Office is not reinstalled."
+            },
+            {
+                "id": "opt-visio-2024-bind",
+                "name": "Bind Key (Account Linked - Transferable)",
+                "type": "BIND_KEY",
+                "price": 4999,
+                "originalPrice": 11999,
+                "description": "Redeem at setup.office.com and link permanently to your Microsoft account. Reusable & transferable to new PC."
+            }
+        ]
+    },
+    {
+        "id": "visio-professional-2021",
+        "slug": "visio-professional-2021",
+        "name": "Visio Professional 2021",
+        "category": "microsoft-visio",
+        "badge": "Popular",
+        "price": 849,
+        "originalPrice": 12999,
+        "desc": "✨ 100% Original Microsoft Visio 2021 Professional License Key for 1 PC.<br>🔑 Available in Retail Key (1 PC Lifetime) and Bind Key (Microsoft Account Linked / Transferable).<br>⚡ Instant digital delivery to dashboard & email with lifetime activation and dedicated support.",
+        "longDesc": "<h1>Microsoft Visio 2021 Professional Genuine License Key Price in BD</h1>\n\n<h3>📦 পণ্য পরিচিতি (Product Overview)</h3>\n<p>Microsoft Visio 2021 Professional হলো একটি শক্তিশালী ও নির্ভরযোগ্য ডায়াগ্রামিং এবং ভেক্টর গ্রাফিক্স সফটওয়্যার, যা জটিল তথ্য, প্রক্রিয়া এবং সিস্টেমকে সহজে বোধগম্য ভিজ্যুয়াল ফর্মে রূপান্তর করতে সাহায্য করে। এটি ফ্লোচার্ট, অর্গানাইজেশনাল চার্ট, নেটওয়ার্ক আর্কিটেকচার ডায়াগ্রাম, ফ্লোর প্ল্যান এবং ইঞ্জিনিয়ারিং ডিজাইন তৈরি করার জন্য বিশ্বব্যাপী সর্বাধিক ব্যবহৃত টুল। Tech Solutions BD থেকে আপনি পাচ্ছেন ১০০% জেনুইন অফিসিয়াল লাইসেন্স কি দ্রুত ডিজিটাল ডেলিভারি সহ।</p>\n\n<h3>✨ Available License Options</h3>\n<ul>\n  <li>\n    <strong>🔑 Retail Key:</strong>\n    <ul>\n      <li>Lifetime validation on 1 PC</li>\n      <li>Online / phone activation</li>\n      <li>One-time activation (not linked with Microsoft account)</li>\n      <li>Lifetime validity remains as long as it is not uninstalled</li>\n    </ul>\n  </li>\n  <li>\n    <strong>🔐 Bind Key:</strong>\n    <ul>\n      <li>Lifetime validation (Reusable / transferable)</li>\n      <li>Online activation linked directly with your Microsoft account</li>\n      <li>Redeem here: <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://setup.office.com</a></li>\n      <li>Automatically activates when you log in with the same Microsoft account during installation or after reinstalling/changing PC</li>\n    </ul>\n  </li>\n</ul>\n\n<h3>✅ মূল বৈশিষ্ট্য (Key Features)</h3>\n<ul>\n  <li><strong>পেশাদার ডায়াগ্রামিং টুলস:</strong> উন্নত ফ্লোচার্ট, নেটওয়ার্ক ডায়াগ্রাম, অর্গানোগ্রাম এবং স্পেসিফিকেশন তৈরি করুন।</li>\n  <li><strong>আধুনিক রেডিমেড টেমপ্লেট:</strong> হাজার হাজার কাস্টমাইজযোগ্য আকার, স্টেনসিল এবং আধুনিক টেমপ্লেট।</li>\n  <li><strong>রিয়েল-টাইম ডেটা লিঙ্কিং:</strong> Excel বা SQL ডেটার সাথে ডায়াগ্রাম লিঙ্ক করে স্বয়ংক্রিয়ভাবে আপডেট রাখুন।</li>\n  <li><strong>Microsoft Office ইন্টিগ্রেশন:</strong> Word, PowerPoint এবং Teams এর সাথে মসৃণ সহযোগিতা ও শেয়ারিং।</li>\n  <li><strong>সহজ কোলাবোরেশন:</strong> টিমের অন্যান্য সদস্যদের সাথে একসাথে কাজ এবং মতামত শেয়ার করুন।</li>\n  <li><strong>Windows অপ্টিমাইজেশন:</strong> Windows 10 এবং Windows 11 এর জন্য সম্পূর্ণ অপ্টিমাইজড ও মসৃণ কার্যক্ষমতা।</li>\n</ul>\n\n<h3>💡 কেন কিনবেন? (Benefits)</h3>\n<ul>\n  <li>আপনার ব্যবসায়িক প্রক্রিয়া এবং জটিল ধারণাগুলিকে সহজে উপস্থাপন করুন।</li>\n  <li>প্রজেক্ট ম্যানেজমেন্ট এবং সিস্টেম আর্কিটেকচার পরিকল্পনা আরও নিখুঁত করুন।</li>\n  <li>পেশাদার মানের ডায়াগ্রাম তৈরি করে সময় এবং উৎপাদনশীলতা বহুগুণ বৃদ্ধি করুন।</li>\n  <li>এককালীন ক্রয় – কোনো মাসিক বা বার্ষিক সাবস্ক্রিপশন ফি নেই।</li>\n</ul>\n\n<h3>📋 Delivery & Support Information</h3>\n<ul>\n  <li>You will receive 1x Visio 2021 Professional license key that can activate 1 PC.</li>\n  <li>Activation is valid for a lifetime (Bind key links to your Microsoft account via setup.office.com).</li>\n  <li>This key can be used only on PC / Windows (Not for Mac OS).</li>\n  <li>Friendly and professional 24/7 customer support via WhatsApp and helpline.</li>\n  <li>Experience fast and convenient product delivery through our web store dashboard.</li>\n  <li>Guaranteed 100% Authentic Licenses sourced from authorized Microsoft partners.</li>\n  <li>Ensure you're purchasing the right version/edition/PC count for your needs. We do not accept returns or exchanges for incorrect orders after delivery. If you have any questions, please don't hesitate to contact us.</li>\n</ul>\n\n<h3>💰 Pricing & Plans</h3>\n<ul>\n  <li><strong>Retail Key (1 PC Lifetime):</strong> ৳849</li>\n  <li><strong>Bind Key (Account Linked / Transferable):</strong> ৳3,999</li>\n</ul>\n\n<h3>🏪 কেন আমাদের বেছে নেবেন? (Why Choose Us?)</h3>\n<ul>\n  <li><strong>Trusted Platform:</strong> Tech Solutions BD বাংলাদেশের একটি বিশ্বস্ত ডিজিটাল প্ল্যাটফর্ম।</li>\n  <li><strong>Best Price Guarantee:</strong> আমরা নিশ্চিত করি বাজারের সেরা এবং সবচেয়ে সাশ্রয়ী মূল্য।</li>\n  <li><strong>Fast Delivery:</strong> অর্ডারের পর তাৎক্ষণিক বা দ্রুত ডেলিভারি আপনার ড্যাশবোর্ড ও ইমেইলে।</li>\n  <li><strong>Dedicated Support:</strong> সার্বক্ষণিক টেকনিক্যাল সাপোর্ট ও লাইসেন্স অ্যাক্টিভেশন সহায়তা।</li>\n</ul>\n\n<h3>⚠️ Important Notes</h3>\n<ul>\n  <li>❌ Sold Products Are Not Returnable.</li>\n  <li>🛒 The product will be delivered instantly or within 1 hours (Rare cases: up to 24 hours).</li>\n  <li>❌ Any of our products are requested to be activated within two days maximum. Otherwise the warranty will be void.</li>\n</ul>",
+        "image": "/img_content/visiopro21.png",
+        "icon": "📐",
+        "color": "#0078D4",
+        "gradient": "linear-gradient(135deg, #0284c7 0%, #0078D4 100%)",
+        "options": [
+            {
+                "id": "opt-visio-2021-retail",
+                "name": "Retail Key (1 PC Lifetime)",
+                "type": "RETAIL_KEY",
+                "price": 849,
+                "originalPrice": 2499,
+                "description": "One-time online activation for 1 PC. Lifetime validity as long as Windows/Office is not reinstalled."
+            },
+            {
+                "id": "opt-visio-2021-bind",
+                "name": "Bind Key (Account Linked - Transferable)",
+                "type": "BIND_KEY",
+                "price": 3999,
+                "originalPrice": 9999,
+                "description": "Redeem at setup.office.com and link permanently to your Microsoft account. Reusable & transferable to new PC."
+            }
+        ]
+    },
+    {
+        "id": "visio-professional-2019",
+        "slug": "visio-professional-2019",
+        "name": "Visio Professional 2019",
+        "category": "microsoft-visio",
+        "badge": "",
+        "price": 749,
+        "originalPrice": 9999,
+        "desc": "✨ 100% Original Microsoft Visio 2019 Professional License Key for 1 PC.<br>🔑 Available in Retail Key (1 PC Lifetime) and Bind Key (Microsoft Account Linked / Transferable).<br>⚡ Instant digital delivery to dashboard & email with lifetime activation and dedicated support.",
+        "longDesc": "<h1>Microsoft Visio 2019 Professional Genuine License Key Price in BD</h1>\n\n<h3>📦 পণ্য পরিচিতি (Product Overview)</h3>\n<p>Microsoft Visio 2019 Professional হলো একটি শক্তিশালী ও নির্ভরযোগ্য ডায়াগ্রামিং এবং ভেক্টর গ্রাফিক্স সফটওয়্যার, যা জটিল তথ্য, প্রক্রিয়া এবং সিস্টেমকে সহজে বোধগম্য ভিজ্যুয়াল ফর্মে রূপান্তর করতে সাহায্য করে। এটি ফ্লোচার্ট, অর্গানাইজেশনাল চার্ট, নেটওয়ার্ক আর্কিটেকচার ডায়াগ্রাম, ফ্লোর প্ল্যান এবং ইঞ্জিনিয়ারিং ডিজাইন তৈরি করার জন্য বিশ্বব্যাপী সর্বাধিক ব্যবহৃত টুল। Tech Solutions BD থেকে আপনি পাচ্ছেন ১০০% জেনুইন অফিসিয়াল লাইসেন্স কি দ্রুত ডিজিটাল ডেলিভারি সহ।</p>\n\n<h3>✨ Available License Options</h3>\n<ul>\n  <li>\n    <strong>🔑 Retail Key:</strong>\n    <ul>\n      <li>Lifetime validation on 1 PC</li>\n      <li>Online / phone activation</li>\n      <li>One-time activation (not linked with Microsoft account)</li>\n      <li>Lifetime validity remains as long as it is not uninstalled</li>\n    </ul>\n  </li>\n  <li>\n    <strong>🔐 Bind Key:</strong>\n    <ul>\n      <li>Lifetime validation (Reusable / transferable)</li>\n      <li>Online activation linked directly with your Microsoft account</li>\n      <li>Redeem here: <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://setup.office.com</a></li>\n      <li>Automatically activates when you log in with the same Microsoft account during installation or after reinstalling/changing PC</li>\n    </ul>\n  </li>\n</ul>\n\n<h3>✅ মূল বৈশিষ্ট্য (Key Features)</h3>\n<ul>\n  <li><strong>পেশাদার ডায়াগ্রামিং টুলস:</strong> উন্নত ফ্লোচার্ট, নেটওয়ার্ক ডায়াগ্রাম, অর্গানোগ্রাম এবং স্পেসিফিকেশন তৈরি করুন।</li>\n  <li><strong>আধুনিক রেডিমেড টেমপ্লেট:</strong> হাজার হাজার কাস্টমাইজযোগ্য আকার, স্টেনসিল এবং আধুনিক টেমপ্লেট।</li>\n  <li><strong>রিয়েল-টাইম ডেটা লিঙ্কিং:</strong> Excel বা SQL ডেটার সাথে ডায়াগ্রাম লিঙ্ক করে স্বয়ংক্রিয়ভাবে আপডেট রাখুন।</li>\n  <li><strong>Microsoft Office ইন্টিগ্রেশন:</strong> Word, PowerPoint এবং Teams এর সাথে মসৃণ সহযোগিতা ও শেয়ারিং।</li>\n  <li><strong>সহজ কোলাবোরেশন:</strong> টিমের অন্যান্য সদস্যদের সাথে একসাথে কাজ এবং মতামত শেয়ার করুন।</li>\n  <li><strong>Windows অপ্টিমাইজেশন:</strong> Windows 10 এবং Windows 11 এর জন্য সম্পূর্ণ অপ্টিমাইজড ও মসৃণ কার্যক্ষমতা।</li>\n</ul>\n\n<h3>💡 কেন কিনবেন? (Benefits)</h3>\n<ul>\n  <li>আপনার ব্যবসায়িক প্রক্রিয়া এবং জটিল ধারণাগুলিকে সহজে উপস্থাপন করুন।</li>\n  <li>প্রজেক্ট ম্যানেজমেন্ট এবং সিস্টেম আর্কিটেকচার পরিকল্পনা আরও নিখুঁত করুন।</li>\n  <li>পেশাদার মানের ডায়াগ্রাম তৈরি করে সময় এবং উৎপাদনশীলতা বহুগুণ বৃদ্ধি করুন।</li>\n  <li>এককালীন ক্রয় – কোনো মাসিক বা বার্ষিক সাবস্ক্রিপশন ফি নেই।</li>\n</ul>\n\n<h3>📋 Delivery & Support Information</h3>\n<ul>\n  <li>You will receive 1x Visio 2019 Professional license key that can activate 1 PC.</li>\n  <li>Activation is valid for a lifetime (Bind key links to your Microsoft account via setup.office.com).</li>\n  <li>This key can be used only on PC / Windows (Not for Mac OS).</li>\n  <li>Friendly and professional 24/7 customer support via WhatsApp and helpline.</li>\n  <li>Experience fast and convenient product delivery through our web store dashboard.</li>\n  <li>Guaranteed 100% Authentic Licenses sourced from authorized Microsoft partners.</li>\n  <li>Ensure you're purchasing the right version/edition/PC count for your needs. We do not accept returns or exchanges for incorrect orders after delivery. If you have any questions, please don't hesitate to contact us.</li>\n</ul>\n\n<h3>💰 Pricing & Plans</h3>\n<ul>\n  <li><strong>Retail Key (1 PC Lifetime):</strong> ৳749</li>\n  <li><strong>Bind Key (Account Linked / Transferable):</strong> ৳3,299</li>\n</ul>\n\n<h3>🏪 কেন আমাদের বেছে নেবেন? (Why Choose Us?)</h3>\n<ul>\n  <li><strong>Trusted Platform:</strong> Tech Solutions BD বাংলাদেশের একটি বিশ্বস্ত ডিজিটাল প্ল্যাটফর্ম।</li>\n  <li><strong>Best Price Guarantee:</strong> আমরা নিশ্চিত করি বাজারের সেরা এবং সবচেয়ে সাশ্রয়ী মূল্য।</li>\n  <li><strong>Fast Delivery:</strong> অর্ডারের পর তাৎক্ষণিক বা দ্রুত ডেলিভারি আপনার ড্যাশবোর্ড ও ইমেইলে।</li>\n  <li><strong>Dedicated Support:</strong> সার্বক্ষণিক টেকনিক্যাল সাপোর্ট ও লাইসেন্স অ্যাক্টিভেশন সহায়তা।</li>\n</ul>\n\n<h3>⚠️ Important Notes</h3>\n<ul>\n  <li>❌ Sold Products Are Not Returnable.</li>\n  <li>🛒 The product will be delivered instantly or within 1 hours (Rare cases: up to 24 hours).</li>\n  <li>❌ Any of our products are requested to be activated within two days maximum. Otherwise the warranty will be void.</li>\n</ul>",
+        "image": "/img_content/visiopro19.png",
+        "icon": "📐",
+        "color": "#0078D4",
+        "gradient": "linear-gradient(135deg, #0284c7 0%, #0078D4 100%)",
+        "options": [
+            {
+                "id": "opt-visio-2019-retail",
+                "name": "Retail Key (1 PC Lifetime)",
+                "type": "RETAIL_KEY",
+                "price": 749,
+                "originalPrice": 1999,
+                "description": "One-time online activation for 1 PC. Lifetime validity as long as Windows/Office is not reinstalled."
+            },
+            {
+                "id": "opt-visio-2019-bind",
+                "name": "Bind Key (Account Linked - Transferable)",
+                "type": "BIND_KEY",
+                "price": 3299,
+                "originalPrice": 7999,
+                "description": "Redeem at setup.office.com and link permanently to your Microsoft account. Reusable & transferable to new PC."
+            }
+        ]
+    },
+    {
+        "id": "visio-professional-2016",
+        "slug": "visio-professional-2016",
+        "name": "Visio Professional 2016",
+        "category": "microsoft-visio",
+        "badge": "",
+        "price": 649,
+        "originalPrice": 7999,
+        "desc": "✨ 100% Original Microsoft Visio 2016 Professional License Key for 1 PC.<br>🔑 Available in Retail Key (1 PC Lifetime) and Bind Key (Microsoft Account Linked / Transferable).<br>⚡ Instant digital delivery to dashboard & email with lifetime activation and dedicated support.",
+        "longDesc": "<h1>Microsoft Visio 2016 Professional Genuine License Key Price in BD</h1>\n\n<h3>📦 পণ্য পরিচিতি (Product Overview)</h3>\n<p>Microsoft Visio 2016 Professional হলো একটি শক্তিশালী ও নির্ভরযোগ্য ডায়াগ্রামিং এবং ভেক্টর গ্রাফিক্স সফটওয়্যার, যা জটিল তথ্য, প্রক্রিয়া এবং সিস্টেমকে সহজে বোধগম্য ভিজ্যুয়াল ফর্মে রূপান্তর করতে সাহায্য করে। এটি ফ্লোচার্ট, অর্গানাইজেশনাল চার্ট, নেটওয়ার্ক আর্কিটেকচার ডায়াগ্রাম, ফ্লোর প্ল্যান এবং ইঞ্জিনিয়ারিং ডিজাইন তৈরি করার জন্য বিশ্বব্যাপী সর্বাধিক ব্যবহৃত টুল। Tech Solutions BD থেকে আপনি পাচ্ছেন ১০০% জেনুইন অফিসিয়াল লাইসেন্স কি দ্রুত ডিজিটাল ডেলিভারি সহ।</p>\n\n<h3>✨ Available License Options</h3>\n<ul>\n  <li>\n    <strong>🔑 Retail Key:</strong>\n    <ul>\n      <li>Lifetime validation on 1 PC</li>\n      <li>Online / phone activation</li>\n      <li>One-time activation (not linked with Microsoft account)</li>\n      <li>Lifetime validity remains as long as it is not uninstalled</li>\n    </ul>\n  </li>\n  <li>\n    <strong>🔐 Bind Key:</strong>\n    <ul>\n      <li>Lifetime validation (Reusable / transferable)</li>\n      <li>Online activation linked directly with your Microsoft account</li>\n      <li>Redeem here: <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://setup.office.com</a></li>\n      <li>Automatically activates when you log in with the same Microsoft account during installation or after reinstalling/changing PC</li>\n    </ul>\n  </li>\n</ul>\n\n<h3>✅ মূল বৈশিষ্ট্য (Key Features)</h3>\n<ul>\n  <li><strong>পেশাদার ডায়াগ্রামিং টুলস:</strong> উন্নত ফ্লোচার্ট, নেটওয়ার্ক ডায়াগ্রাম, অর্গানোগ্রাম এবং স্পেসিফিকেশন তৈরি করুন।</li>\n  <li><strong>আধুনিক রেডিমেড টেমপ্লেট:</strong> হাজার হাজার কাস্টমাইজযোগ্য আকার, স্টেনসিল এবং আধুনিক টেমপ্লেট।</li>\n  <li><strong>রিয়েল-টাইম ডেটা লিঙ্কিং:</strong> Excel বা SQL ডেটার সাথে ডায়াগ্রাম লিঙ্ক করে স্বয়ংক্রিয়ভাবে আপডেট রাখুন।</li>\n  <li><strong>Microsoft Office ইন্টিগ্রেশন:</strong> Word, PowerPoint এবং Teams এর সাথে মসৃণ সহযোগিতা ও শেয়ারিং।</li>\n  <li><strong>সহজ কোলাবোরেশন:</strong> টিমের অন্যান্য সদস্যদের সাথে একসাথে কাজ এবং মতামত শেয়ার করুন।</li>\n  <li><strong>Windows অপ্টিমাইজেশন:</strong> Windows 10 এবং Windows 11 এর জন্য সম্পূর্ণ অপ্টিমাইজড ও মসৃণ কার্যক্ষমতা।</li>\n</ul>\n\n<h3>💡 কেন কিনবেন? (Benefits)</h3>\n<ul>\n  <li>আপনার ব্যবসায়িক প্রক্রিয়া এবং জটিল ধারণাগুলিকে সহজে উপস্থাপন করুন।</li>\n  <li>প্রজেক্ট ম্যানেজমেন্ট এবং সিস্টেম আর্কিটেকচার পরিকল্পনা আরও নিখুঁত করুন।</li>\n  <li>পেশাদার মানের ডায়াগ্রাম তৈরি করে সময় এবং উৎপাদনশীলতা বহুগুণ বৃদ্ধি করুন।</li>\n  <li>এককালীন ক্রয় – কোনো মাসিক বা বার্ষিক সাবস্ক্রিপশন ফি নেই।</li>\n</ul>\n\n<h3>📋 Delivery & Support Information</h3>\n<ul>\n  <li>You will receive 1x Visio 2016 Professional license key that can activate 1 PC.</li>\n  <li>Activation is valid for a lifetime (Bind key links to your Microsoft account via setup.office.com).</li>\n  <li>This key can be used only on PC / Windows (Not for Mac OS).</li>\n  <li>Friendly and professional 24/7 customer support via WhatsApp and helpline.</li>\n  <li>Experience fast and convenient product delivery through our web store dashboard.</li>\n  <li>Guaranteed 100% Authentic Licenses sourced from authorized Microsoft partners.</li>\n  <li>Ensure you're purchasing the right version/edition/PC count for your needs. We do not accept returns or exchanges for incorrect orders after delivery. If you have any questions, please don't hesitate to contact us.</li>\n</ul>\n\n<h3>💰 Pricing & Plans</h3>\n<ul>\n  <li><strong>Retail Key (1 PC Lifetime):</strong> ৳649</li>\n  <li><strong>Bind Key (Account Linked / Transferable):</strong> ৳2,999</li>\n</ul>\n\n<h3>🏪 কেন আমাদের বেছে নেবেন? (Why Choose Us?)</h3>\n<ul>\n  <li><strong>Trusted Platform:</strong> Tech Solutions BD বাংলাদেশের একটি বিশ্বস্ত ডিজিটাল প্ল্যাটফর্ম।</li>\n  <li><strong>Best Price Guarantee:</strong> আমরা নিশ্চিত করি বাজারের সেরা এবং সবচেয়ে সাশ্রয়ী মূল্য।</li>\n  <li><strong>Fast Delivery:</strong> অর্ডারের পর তাৎক্ষণিক বা দ্রুত ডেলিভারি আপনার ড্যাশবোর্ড ও ইমেইলে।</li>\n  <li><strong>Dedicated Support:</strong> সার্বক্ষণিক টেকনিক্যাল সাপোর্ট ও লাইসেন্স অ্যাক্টিভেশন সহায়তা।</li>\n</ul>\n\n<h3>⚠️ Important Notes</h3>\n<ul>\n  <li>❌ Sold Products Are Not Returnable.</li>\n  <li>🛒 The product will be delivered instantly or within 1 hours (Rare cases: up to 24 hours).</li>\n  <li>❌ Any of our products are requested to be activated within two days maximum. Otherwise the warranty will be void.</li>\n</ul>",
+        "image": "/img_content/visiopro16.png",
+        "icon": "📐",
+        "color": "#0078D4",
+        "gradient": "linear-gradient(135deg, #0284c7 0%, #0078D4 100%)",
+        "options": [
+            {
+                "id": "opt-visio-2016-retail",
+                "name": "Retail Key (1 PC Lifetime)",
+                "type": "RETAIL_KEY",
+                "price": 649,
+                "originalPrice": 1699,
+                "description": "One-time online activation for 1 PC. Lifetime validity as long as Windows/Office is not reinstalled."
+            },
+            {
+                "id": "opt-visio-2016-bind",
+                "name": "Bind Key (Account Linked - Transferable)",
+                "type": "BIND_KEY",
+                "price": 2999,
+                "originalPrice": 6999,
+                "description": "Redeem at setup.office.com and link permanently to your Microsoft account. Reusable & transferable to new PC."
+            }
+        ]
     }
 ];
 
 export const categorySummaries: StoreCategory[] = [
+  {
+    slug: "microsoft-visio",
+    name: "Microsoft Visio",
+    description: "Visio Professional 2024, 2021, 2019, 2016",
+    count: products.filter((product) => product.category === "microsoft-visio").length,
+    image: "/img_content/visio24.png",
+    accent: "#0078D4",
+  },
   {
     slug: "microsoft-project",
     name: "Microsoft Project",
