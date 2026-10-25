@@ -1022,7 +1022,8 @@ type CachedCatalog = {
 };
 
 const DB_CATALOG_TIMEOUT_MS = 25000;
-const CATALOG_CACHE_TTL_MS = 10 * 60 * 1000;
+const CATALOG_CACHE_TTL_MS =
+  process.env.NODE_ENV === "development" ? 5_000 : 10 * 60 * 1000;
 
 const globalForCatalog = globalThis as unknown as {
   catalogRetryAfter?: number;
