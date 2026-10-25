@@ -608,6 +608,31 @@ export const products: Product[] = [
         ]
     },
     {
+        "id": "project-standard-2024",
+        "slug": "project-standard-2024",
+        "name": "Project Standard 2024",
+        "category": "microsoft-project",
+        "badge": "Standard",
+        "price": 8649,
+        "originalPrice": 18500,
+        "desc": "✨ 100% Original Microsoft Project 2024 Standard License Key for 1 PC.<br>🔐 Bind Key (Permanently Linked to Your Microsoft Account & Transferable to New PC).<br>⚡ Instant digital delivery to dashboard & email with lifetime activation and dedicated support.",
+        "longDesc": "<h1>Microsoft Project 2024 Standard Genuine License Key Price in BD</h1>\n\n<h3>📦 পণ্য পরিচিতি (Product Overview)</h3>\n<p>Microsoft Project 2024 Standard হলো প্রজেক্ট ম্যানেজমেন্টের একটি অন্যতম নির্ভরযোগ্য ও শক্তিশালী টুল, যা একক প্রজেক্ট ম্যানেজার ও প্রফেশনালদের জন্য বিশেষভাবে ডিজাইন করা হয়েছে। এটি জটিল প্রজেক্টের পরিকল্পনা তৈরি, টাস্ক শিডিউলিং, সময়সীমা ও বাজেট নির্ধারণ এবং অগ্রগতি ট্র্যাক করতে সাহায্য করে। Tech Solutions BD থেকে আপনি পাচ্ছেন ১০০% জেনুইন Microsoft Account Bind Key দ্রুত ডিজিটাল ডেলিভারি সহ।</p>\n\n<h3>✨ Available License Option (Only BIND Key)</h3>\n<ul>\n  <li>\n    <strong>🔐 Bind Key (Account Linked / Transferable):</strong>\n    <ul>\n      <li>Lifetime validation on 1 PC</li>\n      <li>Reusable & transferable to a new PC anytime</li>\n      <li>Online activation linked permanently to your personal Microsoft account</li>\n      <li>Redeem here: <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://setup.office.com</a></li>\n      <li>Installation বা Windows reinstall এর পর আপনার Microsoft একাউন্টে লগইন করলেই এটি স্বয়ংক্রিয়ভাবে সক্রিয় হয়ে যায়</li>\n    </ul>\n  </li>\n</ul>\n\n<h3>✅ মূল বৈশিষ্ট্য (Key Features)</h3>\n<ul>\n  <li><strong>প্রজেক্ট শিডিউলিং ও প্ল্যানিং:</strong> প্রি-বিল্ট টেমপ্লেট ও Gantt চার্ট ব্যবহার করে সহজেই সঠিক প্রজেক্ট শিডিউল তৈরি করুন।</li>\n  <li><strong>অটোমেটেড টাইমলাইন ভিউ:</strong> একাধিক টাইমলাইনের মাধ্যমে জটিল শিডিউল সহজেই ভিজ্যুয়ালাইজ ও উপস্থাপন করুন।</li>\n  <li><strong>টাস্ক রিলেশনশিপ ও ডিপেনডেন্সি:</strong> টাস্কগুলোর পারস্পরিক সম্পর্ক চিহ্নিত করে সম্ভাব্য বিলম্ব রোধ করুন।</li>\n  <li><strong>রিসোর্স ম্যানেজমেন্ট:</strong> প্রজেক্টের বিভিন্ন কাজে প্রয়োজনীয় রিসোর্স যুক্ত ও ট্র্যাক করুন।</li>\n  <li><strong>ইন-বিল্ট রিপোর্টিং:</strong> স্টেকহোল্ডারদের সাথে প্রজেক্টের সঠিক অগ্রগতি শেয়ার করার জন্য ভিজ্যুয়াল রিপোর্ট।</li>\n  <li><strong>Windows 11 ও 10 অপ্টিমাইজড:</strong> মসৃণ ও দ্রুত পারফরম্যান্সের সাথে নির্বিঘ্নে কাজ করার সুবিধা।</li>\n</ul>\n\n<h3>💡 কেন কিনবেন? (Benefits)</h3>\n<ul>\n  <li>প্রজেক্টের জটিল কাজগুলোকে সুশৃঙ্খল ও সহজ পদ্ধতিতে সম্পন্ন করুন।</li>\n  <li>স্থায়ী লাইফটাইম লাইসেন্স – কোনো মাসিক বা বার্ষিক সাবস্ক্রিপশন ফি নেই।</li>\n  <li>পিসি পরিবর্তন করলেও সহজে নতুন পিসিতে লাইসেন্স স্থানান্তর করার সম্পূর্ণ সুবিধা।</li>\n  <li>সহজ ইউজার ইন্টারফেস যা দ্রুত আয়ত্ত করে কাজে প্রয়োগ করা যায়।</li>\n</ul>\n\n<h3>📋 Delivery & Support Information</h3>\n<ul>\n  <li>You will receive 1x Project Standard 2024 license key that can activate 1 PC.</li>\n  <li>Activation is valid for a lifetime (Bound directly to your Microsoft account via setup.office.com).</li>\n  <li>Redeem here: <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://setup.office.com</a> for bind key.</li>\n  <li>This key can be used only on PC / Windows (Not for Mac OS).</li>\n  <li>Friendly and professional 24/7 customer support via WhatsApp and helpline.</li>\n  <li>Experience fast and convenient product delivery through our web store dashboard.</li>\n  <li>Guaranteed 100% Authentic Licenses.</li>\n  <li>Ensure you're purchasing the right version/edition/PC count for your needs. We do not accept returns or exchanges for incorrect orders after delivery. If you have any questions, please don't hesitate to contact us.</li>\n</ul>\n\n<h3>💰 Pricing & Plans</h3>\n<ul>\n  <li><strong>Bind Key (Account Linked / Transferable):</strong> ৳8,649 (আসল মূল্য ৳18,500)</li>\n</ul>\n\n<h3>🏪 কেন আমাদের বেছে নেবেন? (Why Choose Us?)</h3>\n<ul>\n  <li><strong>Trusted Platform:</strong> Tech Solutions BD বাংলাদেশের একটি বিশ্বস্ত ও অনুমোদিত ডিজিটাল প্ল্যাটফর্ম।</li>\n  <li><strong>Best Price Guarantee:</strong> আমরা নিশ্চিত করি বাজারের সেরা এবং সাশ্রয়ী মূল্য।</li>\n  <li><strong>Fast Delivery:</strong> অর্ডারের পর তাৎক্ষণিক বা দ্রুত ডেলিভারি আপনার ড্যাশবোর্ড ও ইমেইলে।</li>\n  <li><strong>Dedicated Support:</strong> সার্বক্ষণিক টেকনিক্যাল সাপোর্ট ও লাইসেন্স অ্যাক্টিভেশন সহায়তা।</li>\n</ul>\n\n<h3>⚠️ Important Notes</h3>\n<ul>\n  <li>❌ Sold Products Are Not Returnable.</li>\n  <li>🛒 The product will be delivered instantly or within 1 hours (Rare cases: up to 24 hours).</li>\n  <li>❌ Any of our products are requested to be activated within two days maximum. Otherwise the warranty will be void.</li>\n</ul>",
+        "image": "/img_content/Microsoft Project 2024 standered--Showcase.png",
+        "icon": "📊",
+        "color": "#047857",
+        "gradient": "linear-gradient(135deg, #10b981 0%, #047857 100%)",
+        "options": [
+            {
+                "id": "opt-proj-std-2024-bind",
+                "name": "Bind Key (Account Linked - Transferable)",
+                "type": "BIND_KEY",
+                "price": 8649,
+                "originalPrice": 18500,
+                "description": "1 PC Lifetime activation linked permanently to your Microsoft account. Reusable & transferable to new PC via setup.office.com."
+            }
+        ]
+    },
+    {
         "id": "visio-professional-2024",
         "slug": "visio-professional-2024",
         "name": "Visio Professional 2024",
@@ -738,6 +763,31 @@ export const products: Product[] = [
                 "description": "Redeem at setup.office.com and link permanently to your Microsoft account. Reusable & transferable to new PC."
             }
         ]
+    },
+    {
+        "id": "visio-standard-2024",
+        "slug": "visio-standard-2024",
+        "name": "Visio Standard 2024",
+        "category": "microsoft-visio",
+        "badge": "Standard",
+        "price": 8649,
+        "originalPrice": 18500,
+        "desc": "✨ 100% Original Microsoft Visio 2024 Standard License Key for 1 PC.<br>🔐 Bind Key (Permanently Linked to Your Microsoft Account & Transferable to New PC).<br>⚡ Instant digital delivery to dashboard & email with lifetime activation and dedicated support.",
+        "longDesc": "<h1>Microsoft Visio 2024 Standard Genuine License Key Price in BD</h1>\n\n<h3>📦 পণ্য পরিচিতি (Product Overview)</h3>\n<p>Microsoft Visio 2024 Standard হলো প্রফেশনাল ডায়াগ্রামিংয়ের একটি চমৎকার সফটওয়্যার, যা সহজে বোধগম্য ডায়াগ্রাম, আধুনিক ফ্লোচার্ট, অর্গানাইজেশনাল চার্ট এবং বিজনেস প্রসেস ডিজাইন তৈরি করতে সহায়তা করে। একক ব্যবহারকারী বা টিম যারা জটিল তথ্য সহজে ভিজ্যুয়াল রূপ দিতে চান তাদের জন্য এটি আদর্শ। Tech Solutions BD থেকে আপনি পাচ্ছেন ১০০% জেনুইন Microsoft Account Bind Key দ্রুত ডিজিটাল ডেলিভারি সহ।</p>\n\n<h3>✨ Available License Option (Only BIND Key)</h3>\n<ul>\n  <li>\n    <strong>🔐 Bind Key (Account Linked / Transferable):</strong>\n    <ul>\n      <li>Lifetime validation on 1 PC</li>\n      <li>Reusable & transferable to a new PC anytime</li>\n      <li>Online activation linked permanently to your personal Microsoft account</li>\n      <li>Redeem here: <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://setup.office.com</a></li>\n      <li>Installation বা Windows reinstall এর পর আপনার Microsoft একাউন্টে লগইন করলেই এটি স্বয়ংক্রিয়ভাবে সক্রিয় হয়ে যায়</li>\n    </ul>\n  </li>\n</ul>\n\n<h3>✅ মূল বৈশিষ্ট্য (Key Features)</h3>\n<ul>\n  <li><strong>প্রচুর রেডিমেড টেমপ্লেট:</strong> বিজনেস ডায়াগ্রাম, বেসিক নেটওয়ার্ক আর্কিটেকচার এবং অর্গানোগ্রামের শত শত টেমপ্লেট।</li>\n  <li><strong>সহজ ড্র্যাগ অ্যান্ড ড্রপ:</strong> সাধারণ ড্র্যাগ অ্যান্ড ড্রপ ইন্টারফেসের সাহায্যে দ্রুত নিখুঁত ডায়াগ্রাম আঁকা যায়।</li>\n  <li><strong>আধুনিক শেপ ও স্টাইল:</strong> নতুন কালার প্যালেট, আইকন এবং শেপ দিয়ে ডায়াগ্রামগুলোকে আকর্ষণীয় করে তুলুন।</li>\n  <li><strong>সহজ শেয়ারিং ও এক্সপোর্ট:</strong> PDF বা ইমেজ আকারে সহজে এক্সপোর্ট করে অন্যান্যদের সাথে শেয়ার করুন।</li>\n  <li><strong>Office ইন্টিগ্রেশন:</strong> Word ও PowerPoint ডকুমেন্টে তৈরি করা ডায়াগ্রাম মসৃণভাবে ইনসার্ট করার সুবিধা।</li>\n  <li><strong>Windows 11 ও 10 অপ্টিমাইজড:</strong> মসৃণ, দ্রুত এবং বাগ-মুক্ত কর্মক্ষমতা।</li>\n</ul>\n\n<h3>💡 কেন কিনবেন? (Benefits)</h3>\n<ul>\n  <li>আপনার ব্যবসায়িক প্রক্রিয়া এবং জটিল ধারণাগুলিকে সহজে উপস্থাপন করুন।</li>\n  <li>স্থায়ী লাইফটাইম লাইসেন্স – কোনো মাসিক বা বার্ষিক সাবস্ক্রিপশন ফি নেই।</li>\n  <li>পিসি পরিবর্তন করলেও সহজে নতুন পিসিতে লাইসেন্স স্থানান্তর করার সম্পূর্ণ সুবিধা।</li>\n  <li>ডায়াগ্রামিং কাজের গতি ও গুণমান বহুগুণ বৃদ্ধি করে।</li>\n</ul>\n\n<h3>📋 Delivery & Support Information</h3>\n<ul>\n  <li>You will receive 1x Visio Standard 2024 license key that can activate 1 PC.</li>\n  <li>Activation is valid for a lifetime (Bound directly to your Microsoft account via setup.office.com).</li>\n  <li>Redeem here: <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://setup.office.com</a> for bind key.</li>\n  <li>This key can be used only on PC / Windows (Not for Mac OS).</li>\n  <li>Friendly and professional 24/7 customer support via WhatsApp and helpline.</li>\n  <li>Experience fast and convenient product delivery through our web store dashboard.</li>\n  <li>Guaranteed 100% Authentic Licenses.</li>\n  <li>Ensure you're purchasing the right version/edition/PC count for your needs. We do not accept returns or exchanges for incorrect orders after delivery. If you have any questions, please don't hesitate to contact us.</li>\n</ul>\n\n<h3>💰 Pricing & Plans</h3>\n<ul>\n  <li><strong>Bind Key (Account Linked / Transferable):</strong> ৳8,649 (আসল মূল্য ৳18,500)</li>\n</ul>\n\n<h3>🏪 কেন আমাদের বেছে নেবেন? (Why Choose Us?)</h3>\n<ul>\n  <li><strong>Trusted Platform:</strong> Tech Solutions BD বাংলাদেশের একটি বিশ্বস্ত ও অনুমোদিত ডিজিটাল প্ল্যাটফর্ম।</li>\n  <li><strong>Best Price Guarantee:</strong> আমরা নিশ্চিত করি বাজারের সেরা এবং সাশ্রয়ী মূল্য।</li>\n  <li><strong>Fast Delivery:</strong> অর্ডারের পর তাৎক্ষণিক বা দ্রুত ডেলিভারি আপনার ড্যাশবোর্ড ও ইমেইলে।</li>\n  <li><strong>Dedicated Support:</strong> সার্বক্ষণিক টেকনিক্যাল সাপোর্ট ও লাইসেন্স অ্যাক্টিভেশন সহায়তা।</li>\n</ul>\n\n<h3>⚠️ Important Notes</h3>\n<ul>\n  <li>❌ Sold Products Are Not Returnable.</li>\n  <li>🛒 The product will be delivered instantly or within 1 hours (Rare cases: up to 24 hours).</li>\n  <li>❌ Any of our products are requested to be activated within two days maximum. Otherwise the warranty will be void.</li>\n</ul>",
+        "image": "/img_content/Visio Standard 2024 Product Showcase.png",
+        "icon": "📐",
+        "color": "#0078D4",
+        "gradient": "linear-gradient(135deg, #0284c7 0%, #0078D4 100%)",
+        "options": [
+            {
+                "id": "opt-visio-std-2024-bind",
+                "name": "Bind Key (Account Linked - Transferable)",
+                "type": "BIND_KEY",
+                "price": 8649,
+                "originalPrice": 18500,
+                "description": "1 PC Lifetime activation linked permanently to your Microsoft account. Reusable & transferable to new PC via setup.office.com."
+            }
+        ]
     }
 ];
 
@@ -745,7 +795,7 @@ export const categorySummaries: StoreCategory[] = [
   {
     slug: "microsoft-visio",
     name: "Microsoft Visio",
-    description: "Visio Professional 2024, 2021, 2019, 2016",
+    description: "Visio Standard 2024, Professional 2024, 2021, 2019, 2016",
     count: products.filter((product) => product.category === "microsoft-visio").length,
     image: "/img_content/visio24.png",
     accent: "#0078D4",
@@ -753,7 +803,7 @@ export const categorySummaries: StoreCategory[] = [
   {
     slug: "microsoft-project",
     name: "Microsoft Project",
-    description: "Project Professional 2024, 2021, 2019, 2016",
+    description: "Project Standard 2024, Professional 2024, 2021, 2019, 2016",
     count: products.filter((product) => product.category === "microsoft-project").length,
     image: "/img_content/project24.png",
     accent: "#047857",
