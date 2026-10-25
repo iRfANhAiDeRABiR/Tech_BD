@@ -353,6 +353,16 @@
   font-size: 1.1rem;
 }
 
+.summary .content ul {
+  margin: 8px 0 0;
+  gap: 10px;
+}
+
+.summary .content ul li {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
 .actions {
   display: flex;
   flex-direction: column;
