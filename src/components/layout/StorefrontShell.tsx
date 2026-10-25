@@ -10,6 +10,7 @@ import { AuthModal } from "@/components/layout/AuthModal";
 import { CartProvider } from "@/components/cart/CartProvider";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 import { GlobalToaster } from "@/components/toast/GlobalToaster";
+import { ContentProtection } from "@/components/layout/ContentProtection";
 import type { StoreCategory } from "@/types/product";
 
 interface StorefrontShellProps {
@@ -47,6 +48,7 @@ export function StorefrontShell({ children, categories }: StorefrontShellProps) 
       >
         <CurrencyProvider>
           <CartProvider>
+            <ContentProtection />
             {children}
             <GlobalToaster />
           </CartProvider>
@@ -59,6 +61,7 @@ export function StorefrontShell({ children, categories }: StorefrontShellProps) 
     <div className="app-shell">
       <CurrencyProvider>
         <CartProvider>
+          <ContentProtection />
           <CategorySidebar categories={categories} />
           {!isCheckout && <FirstOrderPromoBanner />}
           <Header />
