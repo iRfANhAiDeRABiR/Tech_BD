@@ -1,5 +1,6 @@
 // Auto-generated list of showcase banners and product images in public/img_content
 export const AVAILABLE_IMG_CONTENT = [
+  "/img_content/Adobe Acrobat Standard Product Showcase.png",
   "/img_content/Adobe Acrobat Tech Solutions Banner.png",
   "/img_content/Adobe Express Showcase.png",
   "/img_content/AdobeSubstance.png",
@@ -58,6 +59,7 @@ export const AVAILABLE_IMG_CONTENT = [
   "/img_content/Surfshark VPN Global Protection.png",
   "/img_content/Tech Solutions Autodesk Subscriptions Poster (1).png",
   "/img_content/Tech Solutions Autodesk Subscriptions Poster.png",
+  "/img_content/Tech Solutions BD Acrobat Pro Showcase.png",
   "/img_content/Tech Solutions BD Adobe Express Showcase.png",
   "/img_content/Tech Solutions BD Prime Video Showcase.png",
   "/img_content/Visio Standard 2024 Product Showcase.png",
