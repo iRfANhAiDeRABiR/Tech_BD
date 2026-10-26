@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import PolicyCopyProtection from "@/components/policies/PolicyCopyProtection";
 import styles from "../policies.module.css";
+import { PAYMENT_NUMBERS } from "@/lib/payment-config";
 
 export const metadata: Metadata = {
   title: "Order & Cancellation Policy | Tech Solutions BD",
@@ -112,7 +113,7 @@ export default function OrderCancellationPage() {
             </div>
             <ul className={styles.list}>
               <li>Always save your payment <strong>Transaction ID (TxnID)</strong> — you will need it to confirm your order.</li>
-              <li>For bKash / Nagad / Rocket / UPAY: send to our business number <strong>+880 9697399879</strong> using &quot;Send Money&quot;.</li>
+              <li>For bKash / Nagad / UPAY: send to our number <strong>{PAYMENT_NUMBERS.bkash}</strong> | Rocket: <strong>{PAYMENT_NUMBERS.rocket}</strong> using &quot;Send Money&quot;.</li>
               <li>After paying, enter the TxnID in the order confirmation step on our website.</li>
               <li>Payment by SMS or verbal confirmation is not accepted.</li>
               <li>If payment is not confirmed within 24 hours, the order may be cancelled automatically.</li>
@@ -124,7 +125,7 @@ export default function OrderCancellationPage() {
             </div>
             <ul className={styles.list}>
               <li>পেমেন্টের <strong>ট্রানজেকশন আইডি (TxnID)</strong> সংরক্ষণ করুন — অর্ডার নিশ্চিত করতে এটি লাগবে।</li>
-              <li>bKash / Nagad / Rocket / UPAY-এর জন্য: আমাদের ব্যবসায়িক নম্বরে <strong>+880 9697399879</strong> &quot;Send Money&quot; করুন।</li>
+              <li>bKash / Nagad / UPAY: <strong>{PAYMENT_NUMBERS.bkash}</strong> | Rocket: <strong>{PAYMENT_NUMBERS.rocket}</strong> নম্বরে &quot;Send Money&quot; করুন।</li>
               <li>পেমেন্টের পর ওয়েবসাইটের অর্ডার কনফার্মেশন ধাপে TxnID প্রবেশ করান।</li>
               <li>SMS বা মৌখিক নিশ্চিতকরণ গ্রহণযোগ্য নয়।</li>
               <li>২৪ ঘণ্টার মধ্যে পেমেন্ট নিশ্চিত না হলে অর্ডারটি স্বয়ংক্রিয়ভাবে বাতিল হতে পারে।</li>

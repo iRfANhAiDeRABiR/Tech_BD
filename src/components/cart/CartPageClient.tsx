@@ -23,6 +23,7 @@ import { createClient } from "@/lib/supabase/client";
 import { notify } from "@/lib/toast";
 import { getUserFriendlyError } from "@/lib/errorSanitizer";
 import { BkashLogo, NagadLogo, RocketLogo } from "@/components/common/PaymentLogos";
+import { PAYMENT_NUMBERS, getPaymentInstructions } from "@/lib/payment-config";
 import { useCurrency } from "@/context/CurrencyContext";
 import type {
   PaymentGatewayOrder,
@@ -88,84 +89,36 @@ const PAYMENT_CONFIGS: Record<PaymentProviderKey, PaymentConfig> = {
     name: "bKash",
     label: "Bkash Send Money",
     type: "Personal Account",
-    number: "01641699879",
+    number: PAYMENT_NUMBERS.bkash,
     ussd: "*247#",
     accent: "#E2136E",
     accentBg: "rgba(226, 19, 110, 0.1)",
     LogoComponent: BkashLogo,
-    instructions: {
-      app: [
-        "Open your bKash App and tap Send Money.",
-        "Enter recipient number: 01641699879",
-        "Enter the exact payable amount.",
-        "Enter your PIN to complete the transfer.",
-        "Copy the Transaction ID (TrxID) and enter it below.",
-      ],
-      ussd: [
-        "Dial *247# on your mobile handset.",
-        "Select Option 1: Send Money.",
-        "Enter receiver number: 01641699879",
-        "Enter the exact payable amount.",
-        "Enter your bKash PIN to confirm payment.",
-        "Enter the TrxID received in SMS below.",
-      ],
-    },
+    instructions: getPaymentInstructions("bkash", PAYMENT_NUMBERS.bkash),
   },
   nagad: {
     id: "nagad",
     name: "Nagad",
     label: "Nagad Send Money",
     type: "Personal Account",
-    number: "01641699879",
+    number: PAYMENT_NUMBERS.nagad,
     ussd: "*167#",
     accent: "#F6821F",
     accentBg: "rgba(246, 130, 31, 0.1)",
     LogoComponent: NagadLogo,
-    instructions: {
-      app: [
-        "Open your Nagad App and tap Send Money.",
-        "Enter recipient number: 01641699879",
-        "Enter the exact payable amount.",
-        "Enter your Nagad PIN to complete the transfer.",
-        "Copy the Transaction ID (TrxID) and enter it below.",
-      ],
-      ussd: [
-        "Dial *167# on your mobile handset.",
-        "Select Option 1: Send Money.",
-        "Enter receiver number: 01641699879",
-        "Enter the exact payable amount.",
-        "Enter your Nagad PIN to confirm payment.",
-        "Enter the TrxID received in SMS below.",
-      ],
-    },
+    instructions: getPaymentInstructions("nagad", PAYMENT_NUMBERS.nagad),
   },
   rocket: {
     id: "rocket",
     name: "Rocket",
     label: "Rocket Send Money",
     type: "Personal Account",
-    number: "015189028225",
+    number: PAYMENT_NUMBERS.rocket,
     ussd: "*322#",
     accent: "#8C3494",
     accentBg: "rgba(140, 52, 148, 0.1)",
     LogoComponent: RocketLogo,
-    instructions: {
-      app: [
-        "Open your Rocket App and select Send Money.",
-        "Enter recipient number: 015189028225",
-        "Enter the exact payable amount.",
-        "Enter your Rocket PIN to complete the transfer.",
-        "Copy the Transaction ID (TrxID) and enter it below.",
-      ],
-      ussd: [
-        "Dial *322# on your mobile handset.",
-        "Select Option 1: Send Money.",
-        "Enter receiver number: 015189028225",
-        "Enter the exact payable amount.",
-        "Enter your Rocket PIN to confirm payment.",
-        "Enter the TrxID received in SMS below.",
-      ],
-    },
+    instructions: getPaymentInstructions("rocket", PAYMENT_NUMBERS.rocket),
   },
 };
 

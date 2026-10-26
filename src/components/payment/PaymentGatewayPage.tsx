@@ -13,6 +13,7 @@ import {
   FileDown,
 } from "lucide-react";
 import { BkashLogo, NagadLogo, RocketLogo } from "@/components/common/PaymentLogos";
+import { PAYMENT_NUMBERS } from "@/lib/payment-config";
 import styles from "./PaymentGatewayPage.module.css";
 
 export interface PaymentGatewayOrderItem {
@@ -71,7 +72,7 @@ const GATEWAYS: Record<"bkash" | "nagad" | "rocket", GatewayConfig> = {
   bkash: {
     id: "bkash",
     name: "bKash",
-    receiverNumber: "01641699879",
+    receiverNumber: PAYMENT_NUMBERS.bkash,
     helpline: "16247",
     ussdCode: "*247#",
     LogoComponent: BkashLogo,
@@ -79,7 +80,7 @@ const GATEWAYS: Record<"bkash" | "nagad" | "rocket", GatewayConfig> = {
   nagad: {
     id: "nagad",
     name: "Nagad",
-    receiverNumber: "01641699879",
+    receiverNumber: PAYMENT_NUMBERS.nagad,
     helpline: "16167",
     ussdCode: "*167#",
     LogoComponent: NagadLogo,
@@ -87,7 +88,7 @@ const GATEWAYS: Record<"bkash" | "nagad" | "rocket", GatewayConfig> = {
   rocket: {
     id: "rocket",
     name: "Rocket",
-    receiverNumber: "015189028225",
+    receiverNumber: PAYMENT_NUMBERS.rocket,
     helpline: "16216",
     ussdCode: "*322#",
     LogoComponent: RocketLogo,
