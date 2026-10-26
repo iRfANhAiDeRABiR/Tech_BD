@@ -43,6 +43,7 @@ export const AVAILABLE_IMG_CONTENT = [
   "/img_content/Outlook 2021 Professional Software Showcase.png",
   "/img_content/Outlook 2019 Professional Email Suite.png",
   "/img_content/Outlook 2016 Professional Office Suite.png",
+  "/img_content/Parallels Desktop 20 for Mac Showcase.png",
   "/img_content/Microsoft Project 2016 Tech Solutions Showcase.png",
   "/img_content/Microsoft Project 2024 standered--Showcase.png",
   "/img_content/Microsoft SQL Server Tech Solutions Banner.png",
