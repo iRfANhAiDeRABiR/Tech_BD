@@ -43,6 +43,18 @@ const floatingCategoryConfig: FloatingCategoryConfig[] = [
       "adobe creative cloud",
     ],
   },
+  {
+    name: "AI Tools",
+    image: "/img_content/ai.png",
+    matches: [
+      "ai-tools",
+      "ai tools",
+      "ai",
+      "artificial intelligence",
+      "productivity/ai tools",
+      "productivity-ai-tools",
+    ],
+  },
 ];
 
 const normalizeCategoryKey = (value: string) =>
