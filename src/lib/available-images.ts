@@ -93,6 +93,7 @@ export const AVAILABLE_IMG_CONTENT = [
   "/img_content/cds.png",
   "/img_content/cursor.svg",
   "/img_content/dropbox.png",
+  "/img_content/Glossy Dropbox Subscription Promo.png",
   "/img_content/figma.png",
   "/img_content/Google One Storage Promo Mockup.png",
   "/img_content/gmeet.png",
