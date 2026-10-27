@@ -17,7 +17,6 @@ import {
   AlertCircle,
   Loader2,
   Lock,
-  FileDown,
   LifeBuoy,
 } from "lucide-react";
 import {
@@ -343,39 +342,13 @@ export function DownloadsPageClient({
 
         {/* ── Verified Access Banner ── */}
         {isVerified && (
-          <div className={styles.verifiedBanner} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <span className={styles.verifiedBadgeDot} />
-              <span>
-                {verifiedOrder && verifiedOrder.startsWith("TSBD-")
-                  ? `অর্ডার যাচাই সম্পন্ন হয়েছে (#${verifiedOrder}) — সকল সফটওয়্যার ডাউনলোড লিঙ্ক সক্রিয়!`
-                  : "অর্ডার যাচাই সম্পন্ন হয়েছে — সকল সফটওয়্যার ডাউনলোড লিঙ্ক সক্রিয়!"}
-              </span>
-            </div>
-            {verifiedOrder && verifiedOrder.startsWith("TSBD-") && (
-              <a
-                href={`/api/orders/${encodeURIComponent(verifiedOrder)}/invoice`}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  padding: "5px 12px",
-                  borderRadius: "6px",
-                  background: "#0f172a",
-                  color: "#38bdf8",
-                  fontSize: "12px",
-                  fontWeight: 600,
-                  textDecoration: "none",
-                  border: "1px solid rgba(56, 189, 248, 0.3)",
-                }}
-                title="Download official PDF invoice for this verified order"
-              >
-                <FileDown size={13} />
-                <span>Invoice (PDF)</span>
-              </a>
-            )}
+          <div className={styles.verifiedBanner}>
+            <span className={styles.verifiedBadgeDot} />
+            <span>
+              {verifiedOrder && verifiedOrder.startsWith("TSBD-")
+                ? `অর্ডার যাচাই সম্পন্ন হয়েছে (#${verifiedOrder}) — সকল সফটওয়্যার ডাউনলোড লিঙ্ক সক্রিয়!`
+                : "অর্ডার যাচাই সম্পন্ন হয়েছে — সকল সফটওয়্যার ডাউনলোড লিঙ্ক সক্রিয়!"}
+            </span>
           </div>
         )}
 
