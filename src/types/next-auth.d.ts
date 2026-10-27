@@ -19,5 +19,4 @@ declare module "@auth/core/jwt" {
     lastActive?: number;
   }
 }
-
 }

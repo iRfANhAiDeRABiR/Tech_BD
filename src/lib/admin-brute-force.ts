@@ -1,6 +1,7 @@
 import { createBan, checkAccessBan } from "@/lib/bans-store";
 import { logAdminEvent } from "@/lib/audit-logs-store";
 import { invalidateProxyBanCache } from "@/proxy";
+import { sendTelegramSecurityAlert } from "@/lib/telegram";
 
 export const MAX_ADMIN_LOGIN_ATTEMPTS = 5;
 export const ADMIN_LOGIN_WINDOW_MS = 15 * 60 * 1000; // 15 minutes window
@@ -31,7 +32,7 @@ function purgeStale(now: number) {
 
 /**
  * Record a failed admin login attempt for a specific IP.
- * If failed attempts reach or exceed MAX_ADMIN_LOGIN_ATTEMPTS, an immediate website-wide IP ban is created.
+ * Sends Telegram alerts on suspicious repeated attempts and automatically bans the IP upon reaching 5 attempts.
  */
 export async function recordFailedAdminLogin(
   ip: string,
@@ -104,6 +105,17 @@ export async function recordFailedAdminLogin(
       console.warn("Failed to write security audit log for auto ban:", auditErr);
     }
 
+    // Send immediate Telegram Bot Security Alert
+    sendTelegramSecurityAlert({
+      type: "BRUTE_FORCE_BAN",
+      ip: cleanIp,
+      targetEmail: email || null,
+      attempts: record.count,
+      banId: ban.id,
+    }).catch((tgErr) => {
+      console.warn("Failed to send telegram security ban alert:", tgErr);
+    });
+
     // Clean up attempts for this IP since it is now permanently banned
     attemptsMap.delete(cleanIp);
 
@@ -113,6 +125,19 @@ export async function recordFailedAdminLogin(
       totalAttempts: record.count,
       banId: ban.id,
     };
+  }
+
+  // If suspicious repeated attempts (e.g. 3 attempts), send a Telegram warning alert
+  if (record.count === 3) {
+    sendTelegramSecurityAlert({
+      type: "SUSPICIOUS_LOGIN_ATTEMPTS",
+      ip: cleanIp,
+      targetEmail: email || null,
+      attempts: record.count,
+      maxAttempts: MAX_ADMIN_LOGIN_ATTEMPTS,
+    }).catch((tgErr) => {
+      console.warn("Failed to send telegram suspicious login alert:", tgErr);
+    });
   }
 
   const attemptsLeft = Math.max(0, MAX_ADMIN_LOGIN_ATTEMPTS - record.count);

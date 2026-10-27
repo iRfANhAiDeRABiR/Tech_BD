@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { normalizeIp, formatDisplayIp } from "@/lib/ip-utils";
+import { sendTelegramSettingsAlert } from "@/lib/telegram";
 
 export type EventCategory =
   | "ORDERS"
@@ -117,6 +118,47 @@ export async function logAdminEvent(input: CreateEventLogInput): Promise<AdminEv
       ipAddress,
       severity
     );
+
+    // Dispatch real-time Telegram alert for critical setting changes, deletions, and security events
+    const CRITICAL_SETTING_ACTIONS = new Set([
+      "DELETE_PRODUCT",
+      "DELETE_CATEGORY",
+      "CLEAR_LOGS",
+      "CREATE_BAN",
+      "REVOKE_BAN",
+      "REACTIVATE_BAN",
+      "DELETE_BAN",
+      "CREATE_COUPON",
+      "UPDATE_COUPON",
+      "DELETE_COUPON",
+      "TOGGLE_COUPON",
+      "TOGGLE_PRODUCT_STATUS",
+      "TOGGLE_CATEGORY_STATUS",
+      "DELETE_DOWNLOAD",
+      "UPDATE_PAYMENT_STATUS",
+    ]);
+
+    const isAlertWorthy =
+      category === "SECURITY" ||
+      severity === "CRITICAL" ||
+      severity === "WARNING" ||
+      CRITICAL_SETTING_ACTIONS.has(action);
+
+    if (isAlertWorthy && action !== "SECURITY_AUTO_BAN") {
+      sendTelegramSettingsAlert({
+        action,
+        category,
+        entityType,
+        entityName,
+        description: `Admin Action: ${action} on ${entityName || entityType || "System"}`,
+        adminEmail,
+        ipAddress,
+        severity,
+        details: input.details,
+      }).catch((tgErr) => {
+        console.warn("Failed to dispatch telegram setting change alert:", tgErr);
+      });
+    }
 
     return {
       id,

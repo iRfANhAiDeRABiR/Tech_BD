@@ -1,6 +1,7 @@
 /**
  * Telegram Bot Integration for Tech Solutions BD
- * Sends real-time order alerts with inline interactive verification buttons (Confirm / Invalid).
+ * Sends real-time order alerts with inline interactive verification buttons (Confirm / Invalid),
+ * support ticket updates, security brute-force defense alerts, and critical admin settings notifications.
  */
 
 export function escapeTelegramHtml(str: unknown): string {
@@ -323,4 +324,170 @@ export async function sendTelegramTicketReplyNotification(payload: {
   }
 }
 
+export interface TelegramSecurityAlertPayload {
+  type: "BRUTE_FORCE_BAN" | "SUSPICIOUS_LOGIN_ATTEMPTS";
+  ip: string;
+  targetEmail?: string | null;
+  attempts: number;
+  maxAttempts?: number;
+  banId?: string | null;
+}
 
+/**
+ * Send real-time security alerts directly to the Telegram Admin Bot
+ * when suspicious login attempts or brute-force lockouts occur.
+ */
+export async function sendTelegramSecurityAlert(
+  payload: TelegramSecurityAlertPayload
+): Promise<{ success: boolean; error?: string }> {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
+
+  if (!token || !chatId) {
+    return { success: false, error: "Telegram credentials not configured" };
+  }
+
+  const timeStr = new Date().toLocaleString("en-GB", { timeZone: "Asia/Dhaka" });
+  const safeIp = escapeTelegramHtml(payload.ip);
+  const safeEmail = escapeTelegramHtml(payload.targetEmail || "Unknown");
+
+  let messageText = "";
+
+  if (payload.type === "BRUTE_FORCE_BAN") {
+    messageText = `
+🚨 <b>CRITICAL SECURITY ALERT: ADMIN BRUTE FORCE DETECTED</b>
+━━━━━━━━━━━━━━━━━━━━━
+⚠️ <b>An attacker tried to brute-force into the Admin Panel!</b>
+
+🌐 <b>Attacker IP:</b> <code>${safeIp}</code>
+📧 <b>Targeted Admin Email:</b> <code>${safeEmail}</code>
+🔢 <b>Failed Attempts:</b> <b>${payload.attempts} consecutive attempts</b>
+🛡️ <b>Action Taken:</b> <b>IP Instantly Banned from Whole Website</b>
+${payload.banId ? `🆔 <b>Ban Ref ID:</b> <code>${escapeTelegramHtml(payload.banId)}</code>\n` : ""}⏰ <b>Time:</b> ${timeStr}
+━━━━━━━━━━━━━━━━━━━━━
+🔒 <i>This IP has been completely and immediately blocked from accessing any page, store, or API endpoint across Tech Solutions BD. You can review or unban in Admin &gt; Bans.</i>
+`.trim();
+  } else {
+    messageText = `
+⚠️ <b>SECURITY WARNING: FAILED ADMIN LOGIN ATTEMPTS</b>
+━━━━━━━━━━━━━━━━━━━━━
+Multiple failed login attempts detected on the Admin Panel.
+
+🌐 <b>Client IP:</b> <code>${safeIp}</code>
+📧 <b>Targeted Admin Email:</b> <code>${safeEmail}</code>
+🔢 <b>Failed Attempts:</b> <b>${payload.attempts} / ${payload.maxAttempts || 5} attempts</b>
+⏰ <b>Time:</b> ${timeStr}
+━━━━━━━━━━━━━━━━━━━━━
+⚠️ <i>If failed attempts reach ${payload.maxAttempts || 5}, this IP will be automatically and permanently banned from the whole website.</i>
+`.trim();
+  }
+
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: messageText,
+        parse_mode: "HTML",
+      }),
+    });
+    const data = await res.json();
+    return { success: data.ok };
+  } catch (err: any) {
+    console.error("Failed to send telegram security alert:", err);
+    return { success: false, error: err?.message };
+  }
+}
+
+export interface TelegramSettingsAlertPayload {
+  action: string;
+  category: string;
+  entityType?: string;
+  entityName?: string | null;
+  description?: string;
+  adminEmail?: string | null;
+  ipAddress?: string | null;
+  severity?: "INFO" | "SUCCESS" | "WARNING" | "CRITICAL";
+  details?: Record<string, any> | string | null;
+}
+
+/**
+ * Send real-time notifications to the Telegram Admin Bot when sudden
+ * administrative settings, coupon changes, access controls, or critical mutations occur.
+ */
+export async function sendTelegramSettingsAlert(
+  payload: TelegramSettingsAlertPayload
+): Promise<{ success: boolean; error?: string }> {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
+
+  if (!token || !chatId) {
+    return { success: false, error: "Telegram credentials not configured" };
+  }
+
+  const timeStr = new Date().toLocaleString("en-GB", { timeZone: "Asia/Dhaka" });
+  const severityEmoji =
+    payload.severity === "CRITICAL"
+      ? "🚨"
+      : payload.severity === "WARNING"
+      ? "⚠️"
+      : payload.severity === "SUCCESS"
+      ? "✅"
+      : "⚙️";
+
+  let detailsSection = "";
+  if (payload.details) {
+    try {
+      const detailsStr =
+        typeof payload.details === "object"
+          ? JSON.stringify(payload.details, null, 2)
+          : String(payload.details);
+      if (detailsStr && detailsStr !== "{}") {
+        detailsSection = `\n📋 <b>Details:</b>\n<pre>${escapeTelegramHtml(
+          detailsStr.slice(0, 500)
+        )}</pre>`;
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  const safeAction = escapeTelegramHtml(payload.action);
+  const safeCategory = escapeTelegramHtml(payload.category);
+  const safeEntity = escapeTelegramHtml(
+    payload.entityName || payload.entityType || "System"
+  );
+  const safeAdmin = escapeTelegramHtml(payload.adminEmail || "Admin");
+  const safeIp = escapeTelegramHtml(payload.ipAddress || "127.0.0.1");
+
+  const messageText = `
+${severityEmoji} <b>ADMIN SETTING / SYSTEM CHANGE ALERT</b>
+━━━━━━━━━━━━━━━━━━━━━
+⚡ <b>Action:</b> <b>${safeAction}</b>
+📂 <b>Category:</b> <code>${safeCategory}</code>
+🎯 <b>Target:</b> <b>${safeEntity}</b>
+${payload.description ? `📝 <b>Summary:</b> ${escapeTelegramHtml(payload.description)}\n` : ""}👤 <b>Triggered By:</b> <code>${safeAdmin}</code>
+🌐 <b>IP Address:</b> <code>${safeIp}</code>
+🚨 <b>Severity:</b> <b>${payload.severity || "INFO"}</b>
+⏰ <b>Time:</b> ${timeStr}
+━━━━━━━━━━━━━━━━━━━━━${detailsSection}
+`.trim();
+
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: messageText,
+        parse_mode: "HTML",
+      }),
+    });
+    const data = await res.json();
+    return { success: data.ok };
+  } catch (err: any) {
+    console.error("Failed to send telegram settings alert:", err);
+    return { success: false, error: err?.message };
+  }
+}
