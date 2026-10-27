@@ -1106,7 +1106,105 @@ export const products: Product[] = [
                         "description": "Official 1 Device 1 Year CCleaner Professional License Key for Windows PC"
                 }
         ]
-}
+},
+    {
+        "id": "grammarly-premium-price-in-bangladesh",
+        "slug": "grammarly-premium-price-in-bangladesh",
+        "name": "Grammarly Premium Price in Bangladesh",
+        "category": "ai-tools",
+        "badge": "💎 Premium",
+        "price": 199,
+        "originalPrice": 499,
+        "desc": "<ul>\n  <li>Tech Solutions BD থেকে কিনুন Grammarly Premium shared account সবচেয়ে কম দামে!</li>\n  <li>The product will be delivered instantly or within 1 hours (Rare cases: up to 24 hours)</li>\n  <li>We will give you Email and Password for login</li>\n  <li>One Device Access</li>\n</ul>",
+        "longDesc": "<h3>📦 পণ্য পরিচিতি (Product Overview)</h3>\n\n<p>Grammarly Premium হলো একটি অত্যাধুনিক AI-powered রাইটিং অ্যাসিস্ট্যান্ট যা আপনার ইংরেজি লেখালেখির ভুলত্রুটি সংশোধন করে এবং লেখার মান উন্নত করে।</p>\n\n<h3>✨ Available Duration Types</h3>\n<ul>\n  <li><strong>1 Month (Shared Account):</strong> ৳199 (আসল দাম: ৳499)</li>\n  <li><strong>3 Months (Shared Account):</strong> ৳399 (আসল দাম: ৳999)</li>\n  <li><strong>6 Months (Shared Account):</strong> ৳749 (আসল দাম: ৳1,999)</li>\n  <li><strong>12 Months (Shared Account):</strong> ৳1,249 (আসল দাম: ৳2,999)</li>\n</ul>\n\n<h3>✅ মূল বৈশিষ্ট্য (Key Features)</h3>\n<ul>\n  <li>Advanced Grammar and Punctuation Corrections.</li>\n  <li>Clarity-focused Sentence Rewrites.</li>\n  <li>Tone Adjustments.</li>\n  <li>Plagiarism Detection.</li>\n  <li>Vocabulary Enhancement Suggestions.</li>\n  <li>Genre-specific Writing Style Checks.</li>\n</ul>\n\n<h3>💡 কেন কিনবেন? (Benefits)</h3>\n<ul>\n  <li>আপনার একাডেমিক, প্রফেশনাল বা ব্যক্তিগত লেখালেখির মান অনেক গুণ বাড়িয়ে তুলুন।</li>\n  <li>ব্যাকরণ, বানান এবং বাক্য গঠনে ভুল হওয়ার সম্ভাবনা কমিয়ে আনুন।</li>\n  <li>সময় বাঁচান এবং দ্রুত নির্ভুল লেখা তৈরি করুন।</li>\n  <li>আত্মবিশ্বাসের সাথে যেকোনো ইংরেজি কন্টেন্ট লিখুন।</li>\n</ul>\n\n<h3>💰 মূল্য ও প্ল্যান (Pricing & Plans)</h3>\n<ul>\n  <li><strong>1 Month:</strong> ৳199</li>\n  <li><strong>3 Months:</strong> ৳399</li>\n  <li><strong>6 Months:</strong> ৳749</li>\n  <li><strong>12 Months:</strong> ৳1,249</li>\n</ul>\n\n<h3>🏪 কেন আমাদের বেছে নেবেন? (Why Choose Us?)</h3>\n<ul>\n  <li>১০০% genuine এবং official license.</li>\n  <li>সবচেয়ে কম দামে সেরা পণ্য.</li>\n  <li>ইনস্ট্যান্ট ডেলিভারি সার্ভিস.</li>\n  <li>নিরাপদ পেমেন্ট অপশন এবং চমৎকার কাস্টমার সাপোর্ট.</li>\n</ul>\n\n<h3>⚠️ Important Notes</h3>\n<ul>\n  <li>❌ Sold Products Are Not Returnable.</li>\n  <li>🛒 The product will be delivered instantly or within 1 hours (Rare cases: up to 24 hours).</li>\n  <li>❌ Any of our products are requested to be activated within two days maximum. Otherwise the warranty will be void.</li>\n</ul>",
+        "image": "/img_content/grammerly.png",
+        "icon": "✍️",
+        "color": "#38bdf8",
+        "gradient": "linear-gradient(135deg, #38bdf8, #6366f1)",
+        "options": [
+            {
+                "id": "cmvqrb0n30000q05a9ev2qcca",
+                "name": "1 Month",
+                "type": "SUBSCRIPTION",
+                "price": 199,
+                "originalPrice": 499,
+                "description": "1 Month (30 Days) premium access with full AI writing assistant features."
+            },
+            {
+                "id": "cmvqrb0w50001q05ahn26p9x0",
+                "name": "3 Months",
+                "type": "SUBSCRIPTION",
+                "price": 399,
+                "originalPrice": 999,
+                "description": "3 Months (90 Days) premium access with full AI writing assistant features."
+            },
+            {
+                "id": "cmvqrb14j0002q05aw83m84f5",
+                "name": "6 Months",
+                "type": "SUBSCRIPTION",
+                "price": 749,
+                "originalPrice": 1999,
+                "description": "6 Months (180 Days) premium access with full AI writing assistant features."
+            },
+            {
+                "id": "cmvqrb1cv0003q05a1d7x6b2w",
+                "name": "12 Months",
+                "type": "SUBSCRIPTION",
+                "price": 1249,
+                "originalPrice": 2999,
+                "description": "12 Months (1 Year) premium access with full AI writing assistant features."
+            }
+        ]
+    },
+    {
+        "id": "quillbot-subscription-price-in-bangladesh",
+        "slug": "quillbot-subscription-price-in-bangladesh",
+        "name": "Quillbot Subscription Price in Bangladesh",
+        "category": "ai-tools",
+        "badge": "Popular",
+        "price": 199,
+        "originalPrice": 499,
+        "desc": "<ul>\n  <li>Tech Solutions BD থেকে সবচেয়ে কম দামে কিনুন Quillbot Premium Shared Subscription!</li>\n  <li>One Device Access</li>\n  <li>Email and Password provided for login</li>\n  <li>Instant Delivery (Rare cases: up to 24 hours)</li>\n</ul>",
+        "longDesc": "<h3>📦 পণ্য পরিচিতি (Product Overview)</h3>\n\n<p>Quillbot হলো একটি শক্তিশালী AI-চালিত প্যারাফ্রেজিং এবং রাইটিং টুল যা আপনার লেখার মান উন্নত করতে সাহায্য করে। এটি বিভিন্ন মোডে বাক্য পুনর্লিখন করতে পারে, ব্যাকরণ পরীক্ষা করতে পারে এবং চুরির বিরুদ্ধে স্ক্যান করতে পারে।</p>\n\n<h3>✨ Available Duration Types</h3>\n<ul>\n  <li><strong>1 Month Shared Subscription:</strong> ৳199 (আসল মূল্য ৳499)</li>\n  <li><strong>3 Months Shared Subscription:</strong> ৳399 (আসল মূল্য ৳999)</li>\n  <li><strong>6 Months Shared Subscription:</strong> ৳749 (আসল মূল্য ৳1,999)</li>\n  <li><strong>12 Months Shared Subscription:</strong> ৳1,249 (আসল মূল্য ৳2,999)</li>\n</ul>\n\n<h3>✅ মূল বৈশিষ্ট্য (Key Features)</h3>\n<ul>\n  <li><strong>Paraphraser:</strong> বিভিন্ন মোডে (Standard, Fluency, Formal, Simple, Creative, Shorten, Expand) টেক্সট রিরাইট করার ক্ষমতা।</li>\n  <li><strong>Grammar Checker:</strong> ব্যাকরণ, বানান এবং বিরামচিহ্নের ভুল দ্রুত সংশোধন করে।</li>\n  <li><strong>Plagiarism Checker:</strong> লেখার মৌলিকতা নিশ্চিত করে।</li>\n  <li><strong>Summarizer:</strong> দীর্ঘ টেক্সটকে সংক্ষেপে রূপান্তর করে।</li>\n  <li><strong>Co-Writer & Citation Generator:</strong> দ্রুত রেফারেন্স এবং কো-রাইটিং সুবিধা।</li>\n</ul>\n\n<h3>💰 মূল্য ও প্ল্যান (Pricing & Plans)</h3>\n<ul>\n  <li><strong>1 Month:</strong> ৳199</li>\n  <li><strong>3 Months:</strong> ৳399</li>\n  <li><strong>6 Months:</strong> ৳749</li>\n  <li><strong>12 Months:</strong> ৳1,249</li>\n</ul>\n\n<h3>🏪 কেন আমাদের বেছে নেবেন? (Why Choose Us?)</h3>\n<ul>\n  <li><strong>১০০% genuine:</strong> আমরা শুধুমাত্র অথেন্টিক লাইসেন্স প্রদান করি।</li>\n  <li><strong>Instant Delivery:</strong> পেমেন্টের পর দ্রুত আপনার সাবস্ক্রিপশন ডেলিভারি।</li>\n  <li><strong>নিরাপদ পেমেন্ট:</strong> আমাদের পেমেন্ট গেটওয়ে সম্পূর্ণ সুরক্ষিত।</li>\n  <li><strong>সেরা গ্রাহক সেবা:</strong> যেকোনো প্রয়োজনে আমাদের সাপোর্ট টিম সর্বদা প্রস্তুত।</li>\n</ul>\n\n<h3>⚠️ Important Notes</h3>\n<ul>\n  <li>❌ Sold Products Are Not Returnable.</li>\n  <li>🛒 The product will be delivered instantly or within 1 hours (Rare cases: up to 24 hours).</li>\n  <li>❌ Any of our products are requested to be activated within two days maximum. Otherwise the warranty will be void.</li>\n</ul>",
+        "image": "/img_content/QuillBot.png",
+        "icon": "🤖",
+        "color": "#10b981",
+        "gradient": "linear-gradient(135deg, #10b981, #059669)",
+        "options": [
+            {
+                "id": "cmvqrb2dq0004q05asy0h5s5c",
+                "name": "1 Month",
+                "type": "SUBSCRIPTION",
+                "price": 199,
+                "originalPrice": 499,
+                "description": "1 Month (30 Days) premium access with full AI writing assistant features."
+            },
+            {
+                "id": "cmvqrb2mr0005q05axhvue7l9",
+                "name": "3 Months",
+                "type": "SUBSCRIPTION",
+                "price": 399,
+                "originalPrice": 999,
+                "description": "3 Months (90 Days) premium access with full AI writing assistant features."
+            },
+            {
+                "id": "cmvqrb2vo0006q05a6g065s2c",
+                "name": "6 Months",
+                "type": "SUBSCRIPTION",
+                "price": 749,
+                "originalPrice": 1999,
+                "description": "6 Months (180 Days) premium access with full AI writing assistant features."
+            },
+            {
+                "id": "cmvqrb34o0007q05al6rio7be",
+                "name": "12 Months",
+                "type": "SUBSCRIPTION",
+                "price": 1249,
+                "originalPrice": 2999,
+                "description": "12 Months (1 Year) premium access with full AI writing assistant features."
+            }
+        ]
+    }
 ];
 
 export const categorySummaries: StoreCategory[] = [
@@ -1167,6 +1265,18 @@ export const categorySummaries: StoreCategory[] = [
     ).length,
     image: "/img_content/adobe.png",
     accent: "#FF0000",
+  },
+  {
+    slug: "ai-tools",
+    name: "Ai Tools",
+    description: "Grammarly, Quillbot, ChatGPT, and other AI subscription tools",
+    count: products.filter(
+      (product) =>
+        product.category === "ai-tools" ||
+        product.category === "Ai Tools"
+    ).length,
+    image: "/img_content/ai.png",
+    accent: "#38bdf8",
   },
 ];
 
