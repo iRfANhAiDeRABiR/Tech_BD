@@ -141,6 +141,106 @@ export const products: Product[] = [
         "gradient": "linear-gradient(135deg, #0052a3, #0078D4)"
     },
     {
+        "id": "windows-11-enterprise-volume-license",
+        "name": "Windows 11 Enterprise",
+        "category": "windows",
+        "badge": "sale",
+        "price": 850,
+        "originalPrice": 18500,
+        "desc": `<ul>
+  <li><strong>Enterprise Volume Licensing:</strong> Advanced Windows Enterprise edition built for businesses, IT pros, and high-performance setups.</li>
+  <li><strong>DirectAccess & AppLocker:</strong> Enterprise security control, centralized device management, and application whitelisting.</li>
+  <li><strong>Lifetime Activation:</strong> One-time digital volume activation with official Microsoft updates and stability.</li>
+  <li><strong>Virtualization Ready:</strong> Full support for Hyper-V, Windows Sandbox, and remote desktop services.</li>
+  <li><strong>Fast Digital Delivery:</strong> Key and enterprise deployment instructions delivered promptly.</li>
+</ul>`,
+        "longDesc": `<h1>Windows 11 Enterprise Genuine License Key Price in BD</h1>
+
+<h3>📦 Product Overview</h3>
+<p>Windows 11 Enterprise হচ্ছে Microsoft-এর সর্বাধুনিক ও সবচেয়ে শক্তিশালী এন্টারপ্রাইজ অপারেটিং সিস্টেম, যা ব্যবসা প্রতিষ্ঠান, আইটি প্রফেশনাল এবং উচ্চ পারফরম্যান্স ব্যবহারকারীদের জন্য বিশেষভাবে তৈরি। Tech Solutions BD আপনাকে সাশ্রয়ী মূল্যে Windows 11 Enterprise-এর জেনুইন ভলিউম লাইসেন্স কি কেনার সুযোগ দিচ্ছে।</p>
+<p>Activate your Windows 11 Enterprise for life with a <strong>100% original and authentic</strong> volume license key. Built for heavy multi-tasking, enterprise-grade protection, and seamless IT management.</p>
+
+<hr>
+
+<h3>✅ Key Features</h3>
+<ul>
+  <li><strong>Enterprise Volume Licensing:</strong> Advanced Windows Enterprise edition built for businesses, IT pros, and high-performance setups.</li>
+  <li><strong>DirectAccess & AppLocker:</strong> Enterprise security control, centralized device management, and application whitelisting.</li>
+  <li><strong>Lifetime Activation:</strong> One-time digital volume activation with official Microsoft updates and stability.</li>
+  <li><strong>Virtualization Ready:</strong> Full support for Hyper-V, Windows Sandbox, and remote desktop services.</li>
+  <li><strong>উন্নত নিরাপত্তা ও এনক্রিপশন:</strong> BitLocker, Windows Defender Credential Guard এবং Device Encryption দ্বারা সর্বোচ্চ ডেটা নিরাপত্তা।</li>
+  <li><strong>ম্যানেজমেন্ট ও ক্লাউড ইন্টিগ্রেশন:</strong> Microsoft Entra ID (Azure AD), Windows Autopilot এবং Group Policy Management সাপোর্ট।</li>
+  <li><strong>Global License:</strong> বিশ্বব্যাপী কার্যকর এবং যেকোনো ভাষায় (Multilingual) ব্যবহারযোগ্য।</li>
+  <li><strong>Fast Digital Delivery:</strong> Key and enterprise deployment instructions delivered promptly to dashboard & email.</li>
+</ul>
+
+<h3>💡 Benefits</h3>
+<ul>
+  <li>আপনার ব্যবসা ও প্রফেশনাল পিসির জন্য সর্বোচ্চ পারফরম্যান্স ও স্থিতিশীলতা।</li>
+  <li>ম্যালওয়্যার ও সাইবার আক্রমণ থেকে প্রতিষ্ঠানের স্পর্শকাতর ডেটা সুরক্ষিত রাখা।</li>
+  <li>Microsoft থেকে সরাসরি অফিসিয়াল সিকিউরিটি প্যাচ ও ফিচার আপডেট গ্রহণ।</li>
+  <li>সহজ ও ঝামেলামুক্ত অ্যাক্টিভেশন প্রক্রিয়া।</li>
+</ul>
+
+<h3>💰 Pricing & Plans</h3>
+<ul>
+  <li><strong>Volume Key - 1PC:</strong> ৳850 (অফার মূল্য | আসল মূল্য: ৳18,500)</li>
+  <li><strong>Volume Key - 20PC:</strong> ৳9,500 (অফার মূল্য | আসল মূল্য: ৳31,500)</li>
+</ul>
+
+<section id="activation-steps">
+  <h3>Activation Steps</h3>
+  <ol>
+    <li>Go to <strong>Settings</strong> &gt; <strong>System</strong> &gt; <strong>Activation</strong></li>
+    <li>Click <strong>Change Product Key</strong></li>
+    <li>Enter the 25-character Enterprise volume license key you received from Tech Solutions BD</li>
+    <li>Click <strong>Next</strong>, then <strong>Activate</strong></li>
+  </ol>
+  <p><em>Your Windows 11 Enterprise is now permanently activated!</em></p>
+</section>
+
+<h3>🏪 কেন আমাদের বেছে নেবেন? (Why Choose Us?)</h3>
+<ul>
+  <li><strong>Trusted Platform:</strong> Tech Solutions BD is a certified Bangladeshi Digital E-commerce Platform.</li>
+  <li><strong>Genuine Products:</strong> We provide only authentic and official license keys.</li>
+  <li><strong>Competitive Pricing:</strong> Get the best deals on digital products in Bangladesh.</li>
+  <li><strong>Excellent Customer Support:</strong> Our team is ready to assist you with any queries.</li>
+  <li><strong>Fast Delivery:</strong> Receive your product key quickly after purchase.</li>
+</ul>
+
+<h3>🚀 এখনই অর্ডার করুন</h3>
+<p>Secure your business operations with Windows 11 Enterprise! Purchase your genuine license key from Tech Solutions BD today!</p>
+
+<h3>⚠️ Important Notes</h3>
+<ul>
+  <li>❌ Sold Products Are Not Returnable.</li>
+  <li>🛒 The product will be delivered instantly or within 1 hours (Rare cases: up to 24 hours)</li>
+  <li>❌ Any of our products are requested to be activated within two days maximum. Otherwise the warranty will be void.</li>
+</ul>`,
+        "image": "/img_content/win11ent.png",
+        "icon": "💻",
+        "color": "#38bdf8",
+        "gradient": "linear-gradient(135deg, #38bdf8, #6366f1)",
+        "options": [
+            {
+                "id": "cms0mbxbx000wvg5adf0v3tdr",
+                "name": "Volume Key - 1PC",
+                "type": "OTHER",
+                "price": 850,
+                "originalPrice": 18500,
+                "description": null
+            },
+            {
+                "id": "cms0mbxbx000xvg5akoc7yr7z",
+                "name": "Volume Key - 20PC",
+                "type": "OTHER",
+                "price": 9500,
+                "originalPrice": 31500,
+                "description": null
+            }
+        ]
+    },
+    {
         "id": "windows-10-pro",
         "name": "Windows 10 Pro",
         "category": "windows",
