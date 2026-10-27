@@ -43,6 +43,10 @@ export default function AccountMobileMenu({ displayName }: AccountMobileMenuProp
   const menuRef = useRef<HTMLDivElement>(null);
 
   const handleSignOut = async () => {
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("techbd_verified_download_order");
+      window.dispatchEvent(new CustomEvent("techbd:auth-logout"));
+    }
     const supabase = createClient();
     await supabase.auth.signOut();
     setIsOpen(false);

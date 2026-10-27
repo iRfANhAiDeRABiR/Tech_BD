@@ -81,6 +81,10 @@ export function AuthButton() {
   }, [isDropdownOpen]);
 
   const handleLogout = async () => {
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("techbd_verified_download_order");
+      window.dispatchEvent(new CustomEvent("techbd:auth-logout"));
+    }
     await supabase.auth.signOut();
     setIsDropdownOpen(false);
     notify.info("Signed out", {
@@ -148,18 +152,18 @@ export function AuthButton() {
             <p className="auth-dropdown-email">{user.email}</p>
           </div>
           <div className="auth-dropdown-divider" />
-<nav className="auth-dropdown-links">
-<button
-  type="button"
-  className="auth-dropdown-link-btn"
-  onClick={() => {
-    setIsDropdownOpen(false);
-    router.push("/account");
-  }}
->
-  Dashboard
-</button>
-</nav>
+          <nav className="auth-dropdown-links">
+            <button
+              type="button"
+              className="auth-dropdown-link-btn"
+              onClick={() => {
+                setIsDropdownOpen(false);
+                router.push("/account");
+              }}
+            >
+              Dashboard
+            </button>
+          </nav>
           <div className="auth-dropdown-divider" />
           <button
             type="button"

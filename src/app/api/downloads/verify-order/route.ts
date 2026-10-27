@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { logAdminEvent } from "@/lib/audit-logs-store";
 import { extractClientIp } from "@/lib/ip-utils";
 import { rateLimit } from "@/lib/rateLimit";
+import { validateDownloadAccessCode } from "@/lib/download-access-code-store";
 
 export const runtime = "nodejs";
 
@@ -43,9 +44,36 @@ export async function POST(request: Request) {
         ? body.phoneOrEmail.trim()
         : "";
 
-    // 1. If an explicit order ID is submitted
+    // 1. If an explicit order ID or access code is submitted
     if (rawOrderId) {
       const cleanId = rawOrderId.replace(/^#+/, "").trim();
+
+      // Check if input is a valid secret download access code set by admin
+      const accessCodeCheck = await validateDownloadAccessCode(cleanId);
+      if (accessCodeCheck.isValid) {
+        void logAdminEvent({
+          action: "DOWNLOAD_DIRECT_ACCESS_CODE_USED",
+          category: "SECURITY",
+          entityType: "SoftwareDownload",
+          entityName: accessCodeCheck.matchedCode?.label || "Direct Access Code",
+          ipAddress: clientIp,
+          details: {
+            codeUsed: accessCodeCheck.matchedCode?.code,
+            usageCount: accessCodeCheck.matchedCode?.usageCount,
+          },
+          severity: "INFO",
+        });
+
+        return NextResponse.json({
+          success: true,
+          valid: true,
+          isDirectCode: true,
+          orderNumber: "VIP Direct Access",
+          customerName: "Authorized Direct Access",
+          status: "CONFIRMED",
+          message: "অ্যাক্সেস কোড সফলভাবে অনুমোদিত হয়েছে! সমস্ত ডাউনলোড অপশন উন্মুক্ত করা হয়েছে।",
+        });
+      }
 
       const order = await prisma.order.findFirst({
         where: {

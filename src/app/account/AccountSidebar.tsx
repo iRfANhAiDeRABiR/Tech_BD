@@ -34,6 +34,10 @@ export default function AccountSidebar() {
   const router = useRouter();
 
   const handleSignOut = async () => {
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("techbd_verified_download_order");
+      window.dispatchEvent(new CustomEvent("techbd:auth-logout"));
+    }
     const supabase = createClient();
     await supabase.auth.signOut();
     router.push("/");

@@ -26,6 +26,8 @@ import {
   type SoftwareDownloadItem,
 } from "@/data/software-downloads";
 import { SoftwareIconTile } from "./SoftwareIconTile";
+import { createClient } from "@/lib/supabase/client";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 import styles from "./Downloads.module.css";
 
 interface DownloadsPageClientProps {
@@ -61,18 +63,108 @@ export function DownloadsPageClient({
   const [isVerifying, setIsVerifying] = useState(false);
   const [verifyError, setVerifyError] = useState<string | null>(null);
 
-  // Check sessionStorage and auto-check logged-in user on mount
+  // 1. Sync state when server props change (e.g. after user logs in or logs out and router.refresh() runs)
   useEffect(() => {
-    if (isVerified) {
-      if (verifiedOrder && typeof window !== "undefined") {
-        sessionStorage.setItem(STORAGE_KEY, verifiedOrder);
+    if (!initialUserLoggedIn && !initialUserVerified) {
+      if (typeof window !== "undefined") {
+        const cached = sessionStorage.getItem(STORAGE_KEY);
+        // Wipe cached order ID if it was tied to an account
+        if (cached && cached !== "VIP Direct Access") {
+          sessionStorage.removeItem(STORAGE_KEY);
+        }
+      }
+      setIsVerified(false);
+      setVerifiedOrder(null);
+      setActiveSoftware(null);
+      setShowOrderModal(false);
+    } else if (initialUserVerified && initialVerifiedOrderNumber) {
+      setIsVerified(true);
+      setVerifiedOrder(initialVerifiedOrderNumber);
+    }
+  }, [initialUserLoggedIn, initialUserVerified, initialVerifiedOrderNumber]);
+
+  // 2. React immediately to logout events (header signout, sidebar signout, session timeout)
+  useEffect(() => {
+    const handleLogout = () => {
+      if (typeof window !== "undefined") {
+        sessionStorage.removeItem(STORAGE_KEY);
+      }
+      setIsVerified(false);
+      setVerifiedOrder(null);
+      setActiveSoftware(null);
+      setShowOrderModal(false);
+    };
+
+    window.addEventListener("techbd:auth-logout", handleLogout);
+
+    let authUnsub: (() => void) | undefined;
+    try {
+      const supabase = createClient();
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange(
+        (event: AuthChangeEvent, session: Session | null) => {
+          if (event === "SIGNED_OUT" || (!session?.user && !initialUserLoggedIn)) {
+            handleLogout();
+          }
+        }
+      );
+      authUnsub = () => subscription.unsubscribe();
+    } catch {
+      // ignore
+    }
+
+    return () => {
+      window.removeEventListener("techbd:auth-logout", handleLogout);
+      if (authUnsub) authUnsub();
+    };
+  }, [initialUserLoggedIn]);
+
+  // 3. Mount effect: inspect URL query ?code=, sessionStorage, and auto-check only if logged in
+  useEffect(() => {
+    if (initialUserVerified && initialVerifiedOrderNumber) {
+      setIsVerified(true);
+      setVerifiedOrder(initialVerifiedOrderNumber);
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem(STORAGE_KEY, initialVerifiedOrderNumber);
       }
       return;
     }
 
     if (typeof window !== "undefined") {
+      // Check if direct access code was provided via URL query parameter
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlCode = urlParams.get("code")?.trim();
+      if (urlCode) {
+        fetch("/api/downloads/verify-order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderId: urlCode }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data?.valid) {
+              setIsVerified(true);
+              const resolved = data.orderNumber || "VIP Direct Access";
+              setVerifiedOrder(resolved);
+              sessionStorage.setItem(STORAGE_KEY, resolved);
+            }
+          })
+          .catch(() => {});
+        return;
+      }
+
       const cached = sessionStorage.getItem(STORAGE_KEY);
       if (cached) {
+        // If user is not logged in and cached order is an account order (starts with TSBD-),
+        // remove it because they have logged out!
+        if (!initialUserLoggedIn && cached.startsWith("TSBD-")) {
+          sessionStorage.removeItem(STORAGE_KEY);
+          setIsVerified(false);
+          setVerifiedOrder(null);
+          return;
+        }
+
         setIsVerified(true);
         setVerifiedOrder(cached);
         return;
@@ -80,23 +172,25 @@ export function DownloadsPageClient({
     }
 
     // Auto-check for logged-in user if not already verified on server
-    fetch("/api/downloads/verify-order", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({}),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data?.valid) {
-          setIsVerified(true);
-          setVerifiedOrder(data.orderNumber || null);
-          if (typeof window !== "undefined" && data.orderNumber) {
-            sessionStorage.setItem(STORAGE_KEY, data.orderNumber);
-          }
-        }
+    if (initialUserLoggedIn) {
+      fetch("/api/downloads/verify-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
       })
-      .catch(() => {});
-  }, [isVerified, verifiedOrder]);
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.valid) {
+            setIsVerified(true);
+            setVerifiedOrder(data.orderNumber || null);
+            if (typeof window !== "undefined" && data.orderNumber) {
+              sessionStorage.setItem(STORAGE_KEY, data.orderNumber);
+            }
+          }
+        })
+        .catch(() => {});
+    }
+  }, [initialUserLoggedIn, initialUserVerified, initialVerifiedOrderNumber]);
 
   const categories = useMemo(() => {
     const unique = Array.from(
@@ -253,10 +347,12 @@ export function DownloadsPageClient({
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <span className={styles.verifiedBadgeDot} />
               <span>
-                অর্ডার যাচাই সম্পন্ন হয়েছে {verifiedOrder ? `(#${verifiedOrder})` : ""} — সকল সফটওয়্যার ডাউনলোড লিঙ্ক সক্রিয়!
+                {verifiedOrder && verifiedOrder.startsWith("TSBD-")
+                  ? `অর্ডার যাচাই সম্পন্ন হয়েছে (#${verifiedOrder}) — সকল সফটওয়্যার ডাউনলোড লিঙ্ক সক্রিয়!`
+                  : "অর্ডার যাচাই সম্পন্ন হয়েছে — সকল সফটওয়্যার ডাউনলোড লিঙ্ক সক্রিয়!"}
               </span>
             </div>
-            {verifiedOrder && (
+            {verifiedOrder && verifiedOrder.startsWith("TSBD-") && (
               <a
                 href={`/api/orders/${encodeURIComponent(verifiedOrder)}/invoice`}
                 target="_blank"

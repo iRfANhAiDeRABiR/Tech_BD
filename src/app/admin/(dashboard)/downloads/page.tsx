@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getSoftwareDownloads } from "@/lib/software-downloads-store";
+import { getActiveDownloadAccessCode } from "@/lib/download-access-code-store";
 import { SoftwareDownloadForm } from "@/components/admin/SoftwareDownloadForm";
+import { SoftwareDownloadAccessCodeCard } from "@/components/admin/SoftwareDownloadAccessCodeCard";
 import { SoftwareIconTile } from "@/components/downloads/SoftwareIconTile";
 import { deleteSoftwareDownloadAction, saveSoftwareDownloadOrderAction } from "@/app/admin/actions";
 import styles from "@/app/admin/admin.module.css";
@@ -13,8 +15,9 @@ export default async function AdminDownloadsPage({
 }: {
   searchParams: Promise<{ saved?: string; deleted?: string; ordered?: string }>;
 }) {
-  const [items, query] = await Promise.all([
+  const [items, activeAccessCode, query] = await Promise.all([
     getSoftwareDownloads(),
+    getActiveDownloadAccessCode(),
     searchParams,
   ]);
 
@@ -24,7 +27,7 @@ export default async function AdminDownloadsPage({
         <div>
           <h1>Software Downloads</h1>
           <p className={styles.muted}>
-            Manage official software download links, multi-version files, custom pictures, and display order on the Software Download Center.
+            Manage official software download links, multi-version files, secret bypass access codes, and display order on the Software Download Center.
           </p>
         </div>
         <div style={{ display: "flex", gap: 10 }}>
@@ -44,6 +47,9 @@ export default async function AdminDownloadsPage({
           Software download center updated successfully.
         </p>
       )}
+
+      {/* Secret Download Access Code Management */}
+      <SoftwareDownloadAccessCodeCard accessCode={activeAccessCode} />
 
       {/* Add New Software Download Form */}
       <div style={{ marginBottom: 32 }}>

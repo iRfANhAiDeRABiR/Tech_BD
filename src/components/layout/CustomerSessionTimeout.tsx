@@ -115,6 +115,11 @@ export function CustomerSessionTimeout() {
         clearInterval(interval);
         clearLastActiveCookie();
 
+        if (typeof window !== "undefined") {
+          sessionStorage.removeItem("techbd_verified_download_order");
+          window.dispatchEvent(new CustomEvent("techbd:auth-logout"));
+        }
+
         try {
           await supabase.auth.signOut();
         } catch {

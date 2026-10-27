@@ -1431,3 +1431,100 @@ export async function deleteCouponAction(couponId: string) {
   revalidatePath("/admin/coupons");
   revalidatePath("/cart");
 }
+
+
+export async function saveDownloadAccessCodeAction(formData: FormData) {
+  const session = await requireRole(["OWNER", "ADMIN"]);
+  const { setDownloadAccessCode } = await import("@/lib/download-access-code-store");
+
+  const rawCode = String(formData.get("code") || "").trim();
+  const rawLabel = String(formData.get("label") || "Master Download Access Code").trim();
+  const isActive = formData.get("isActive") === "true" || formData.get("isActive") === "on";
+
+  if (!rawCode) {
+    throw new Error("Access code cannot be empty.");
+  }
+
+  const updated = await setDownloadAccessCode({
+    code: rawCode,
+    label: rawLabel,
+    isActive,
+  });
+
+  await logAdminEvent({
+    action: "UPDATE_DOWNLOAD_ACCESS_CODE",
+    category: "SECURITY",
+    entityType: "SoftwareDownload",
+    entityId: updated.id,
+    entityName: updated.label,
+    details: {
+      code: updated.code,
+      isActive: updated.isActive,
+    },
+    adminEmail: session?.user?.email || "Admin",
+    severity: "WARNING",
+  });
+
+  try {
+    const { sendTelegramSettingsAlert } = await import("@/lib/telegram");
+    void sendTelegramSettingsAlert({
+      action: "UPDATE_DOWNLOAD_ACCESS_CODE",
+      category: "SECURITY",
+      entityType: "DownloadAccessCode",
+      entityName: updated.label,
+      description: `Software download secret access code was updated (${updated.isActive ? "ACTIVE" : "INACTIVE"})`,
+      adminEmail: session?.user?.email || "Admin",
+      severity: "WARNING",
+      details: {
+        label: updated.label,
+        code: updated.code,
+        isActive: updated.isActive,
+      },
+    });
+  } catch {
+    // ignore
+  }
+
+  revalidatePath("/admin/downloads");
+  revalidatePath("/downloads");
+}
+
+export async function toggleDownloadAccessCodeAction(formData: FormData) {
+  const session = await requireRole(["OWNER", "ADMIN"]);
+  const { toggleDownloadAccessCode } = await import("@/lib/download-access-code-store");
+
+  const id = String(formData.get("id") || "").trim();
+  const isActive = formData.get("isActive") === "true";
+
+  if (!id) throw new Error("Code ID is required.");
+
+  await toggleDownloadAccessCode(id, isActive);
+
+  await logAdminEvent({
+    action: "TOGGLE_DOWNLOAD_ACCESS_CODE",
+    category: "SECURITY",
+    entityType: "SoftwareDownload",
+    entityId: id,
+    details: { isActive },
+    adminEmail: session?.user?.email || "Admin",
+    severity: "WARNING",
+  });
+
+  try {
+    const { sendTelegramSettingsAlert } = await import("@/lib/telegram");
+    void sendTelegramSettingsAlert({
+      action: "TOGGLE_DOWNLOAD_ACCESS_CODE",
+      category: "SECURITY",
+      entityType: "DownloadAccessCode",
+      description: `Software download secret access code was toggled to ${isActive ? "ACTIVE" : "INACTIVE"}`,
+      adminEmail: session?.user?.email || "Admin",
+      severity: "WARNING",
+      details: { id, isActive },
+    });
+  } catch {
+    // ignore
+  }
+
+  revalidatePath("/admin/downloads");
+  revalidatePath("/downloads");
+}
