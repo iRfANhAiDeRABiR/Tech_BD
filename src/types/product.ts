@@ -30,6 +30,7 @@ export interface Product {
   gradient: string;
   outOfStock?: boolean;
   options?: ProductOption[];
+  isFeatured?: boolean;
 }
 
 export type ProductSummary = Omit<Product, "longDesc">;

@@ -11,7 +11,7 @@ export default async function AdminProducts({
 }: {
   searchParams: Promise<{ saved?: string; deleted?: string }>;
 }) {
-  const [rawProducts, rawCategories, query] = await Promise.all([
+  const [rawProducts, rawCategories, featuredCount, query] = await Promise.all([
     prisma.product.findMany({
       include: {
         category: true,
@@ -24,6 +24,9 @@ export default async function AdminProducts({
       include: {
         _count: { select: { products: true } },
       },
+    }),
+    prisma.product.count({
+      where: { isFeatured: true, status: "ACTIVE" },
     }),
     searchParams,
   ]);
@@ -38,6 +41,7 @@ export default async function AdminProducts({
     image: p.image,
     status: p.status,
     outOfStock: p.outOfStock,
+    isFeatured: p.isFeatured,
     sortOrder: p.sortOrder,
     updatedAt: p.updatedAt.toISOString(),
     category: {
@@ -55,7 +59,10 @@ export default async function AdminProducts({
     name: c.name,
     slug: c.slug,
     _count: {
-      products: c._count.products,
+      products:
+        c.id === 17 || c.slug.toLowerCase() === "top-selling"
+          ? Math.max(c._count.products, featuredCount)
+          : c._count.products,
     },
   }));
 

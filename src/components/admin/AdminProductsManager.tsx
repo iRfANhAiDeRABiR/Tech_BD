@@ -42,6 +42,7 @@ export interface AdminProductItem {
   image: string;
   status: string;
   outOfStock: boolean;
+  isFeatured?: boolean;
   sortOrder: number;
   updatedAt?: string | Date;
   category: {
@@ -148,7 +149,14 @@ export function AdminProductsManager({
     // 2. Category Filter
     if (selectedCategory !== "all") {
       const catId = Number(selectedCategory);
-      list = list.filter((p) => p.category.id === catId);
+      const isTopSellingCat =
+        catId === 17 ||
+        categories.find((c) => c.id === catId)?.slug.toLowerCase() === "top-selling";
+      if (isTopSellingCat) {
+        list = list.filter((p) => p.isFeatured || p.category.id === catId);
+      } else {
+        list = list.filter((p) => p.category.id === catId);
+      }
     }
 
     // 3. Status Filter
@@ -582,7 +590,27 @@ export function AdminProductsManager({
 
                       {/* Category */}
                       <td className={styles.productCell}>
-                        <span className={styles.categoryPill}>{product.category.name}</span>
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "4px" }}>
+                          <span className={styles.categoryPill}>{product.category.name}</span>
+                          {product.isFeatured && (
+                            <span
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "3px",
+                                fontSize: "11px",
+                                fontWeight: 700,
+                                padding: "2px 6px",
+                                borderRadius: "4px",
+                                background: "rgba(245, 158, 11, 0.15)",
+                                color: "#f59e0b",
+                                border: "1px solid rgba(245, 158, 11, 0.3)",
+                              }}
+                            >
+                              ⭐ Top Selling
+                            </span>
+                          )}
+                        </div>
                       </td>
 
                       {/* Price */}
@@ -774,8 +802,26 @@ export function AdminProductsManager({
                   </div>
 
                   <div className={styles.cardMeta}>
-                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", alignItems: "center" }}>
                       <span className={styles.categoryPill}>{product.category.name}</span>
+                      {product.isFeatured && (
+                        <span
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "3px",
+                            fontSize: "10px",
+                            fontWeight: 700,
+                            padding: "2px 5px",
+                            borderRadius: "4px",
+                            background: "rgba(245, 158, 11, 0.15)",
+                            color: "#f59e0b",
+                            border: "1px solid rgba(245, 158, 11, 0.3)",
+                          }}
+                        >
+                          ⭐ Top Selling
+                        </span>
+                      )}
                       {product.badge && (
                         <span className={styles.badgePill}>{product.badge}</span>
                       )}

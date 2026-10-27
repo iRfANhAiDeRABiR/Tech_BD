@@ -79,6 +79,7 @@ const toProductSummary = (product: Product): ProductSummary => ({
   gradient: product.gradient,
   outOfStock: product.outOfStock,
   options: product.options,
+  isFeatured: product.isFeatured,
 });
 
 const formatCategoryName = (slug: string) =>
@@ -102,7 +103,11 @@ const createCategoryGroups = (
 
   const groupedCategorySlugs = new Set<string>();
   const orderedGroups = categories.flatMap((category) => {
-    const categoryProducts = productsByCategory.get(category.slug) ?? [];
+    const isTopSelling = category.slug.toLowerCase() === "top-selling";
+    const directProducts = productsByCategory.get(category.slug) ?? [];
+    const categoryProducts = isTopSelling
+      ? (directProducts.length ? directProducts : products.filter((p) => p.isFeatured))
+      : directProducts;
 
     if (!categoryProducts.length) {
       return [];

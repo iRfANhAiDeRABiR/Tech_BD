@@ -49,7 +49,11 @@ const createCategoryGroups = (
 
   const groupedCategorySlugs = new Set<string>();
   const orderedGroups = categories.flatMap((category) => {
-    const categoryProducts = productsByCategory.get(category.slug) ?? [];
+    const isTopSelling = category.slug.toLowerCase() === "top-selling";
+    const directProducts = productsByCategory.get(category.slug) ?? [];
+    const categoryProducts = isTopSelling
+      ? (directProducts.length ? directProducts : products.filter((p) => p.isFeatured))
+      : directProducts;
 
     if (!categoryProducts.length) {
       return [];
@@ -120,7 +124,7 @@ export function HomeCategoryProducts({
 
   if (initialCategory && initialCategory !== "all") {
     const specificGroup = filteredGroups.filter(
-      (g) => g.slug === initialCategory,
+      (g) => g.slug.toLowerCase() === initialCategory.toLowerCase(),
     );
     if (specificGroup.length > 0) {
       filteredGroups = specificGroup;

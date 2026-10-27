@@ -73,6 +73,7 @@ export default async function HomePage({
     gradient: product.gradient,
     outOfStock: product.outOfStock,
     options: product.options,
+    isFeatured: product.isFeatured,
   }));
 
   const initialCategory =

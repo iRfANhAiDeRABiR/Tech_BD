@@ -25,6 +25,8 @@ const categoryLabels: Record<string, string> = {
   google: "Google",
   autodesk: "Autodesk",
   antivirus: "Antivirus",
+  "top-Selling": "Top Selling",
+  "top-selling": "Top Selling",
 };
 
 export function ProductGrid({
@@ -33,9 +35,14 @@ export function ProductGrid({
   initialCategory = "all",
   initialSearch = "",
 }: ProductGridProps) {
+  const hasFeatured = products.some((product) => product.isFeatured);
   const categoriesWithProducts = new Set(
     products.map((product) => product.category),
   );
+  if (hasFeatured) {
+    categoriesWithProducts.add("top-Selling");
+    categoriesWithProducts.add("top-selling");
+  }
   const orderedCategorySlugs = categories
     .map((category) => category.slug)
     .filter((slug) => categoriesWithProducts.has(slug));
@@ -62,12 +69,18 @@ export function ProductGrid({
   const [visibleCount, setVisibleCount] = useState(8);
 
   const filteredProducts = useMemo(() => {
+    const isTopSelling = activeCategory.toLowerCase() === "top-selling";
     const categoryFilteredProducts =
       activeCategory === "all"
         ? products
-        : products.filter(
-            (product) => product.category === activeCategory,
-          );
+        : isTopSelling
+          ? products.filter(
+              (product) =>
+                product.isFeatured || product.category === activeCategory,
+            )
+          : products.filter(
+              (product) => product.category === activeCategory,
+            );
 
     if (!searchTerm.trim()) {
       return categoryFilteredProducts;

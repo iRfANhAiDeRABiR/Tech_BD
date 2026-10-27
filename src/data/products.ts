@@ -1125,11 +1125,21 @@ function buildCategorySummariesFromProducts(
     new Map(),
   );
 
+  const featuredCount = catalogProducts.filter((p) => p.isFeatured).length;
+
   return categories
-    .map((category) => ({
-      ...category,
-      count: productCounts.get(category.slug) ?? 0,
-    }))
+    .map((category) => {
+      const isTopSelling = category.slug.toLowerCase() === "top-selling";
+      const directCount = productCounts.get(category.slug) ?? 0;
+      const count = isTopSelling
+        ? Math.max(directCount, featuredCount)
+        : directCount;
+
+      return {
+        ...category,
+        count,
+      };
+    })
     .filter((category) => category.count > 0);
 }
 
@@ -1168,6 +1178,7 @@ async function loadDatabaseCatalog(): Promise<StoreCatalog | null> {
               color: string | null;
               gradient: string | null;
               outOfStock: boolean;
+              isFeatured: boolean;
               sortOrder: number;
               options: {
                 id: string;
@@ -1199,6 +1210,7 @@ async function loadDatabaseCatalog(): Promise<StoreCatalog | null> {
                   'color', p.color,
                   'gradient', p.gradient,
                   'outOfStock', p."outOfStock",
+                  'isFeatured', p."isFeatured",
                   'sortOrder', p."sortOrder",
                   'options', (
                     SELECT COALESCE(
@@ -1264,6 +1276,7 @@ async function loadDatabaseCatalog(): Promise<StoreCatalog | null> {
           gradient:
             product.gradient ?? "linear-gradient(135deg, #38bdf8, #6366f1)",
           outOfStock: product.outOfStock,
+          isFeatured: Boolean(product.isFeatured),
           options: product.options.map((option) => ({
             id: option.id,
             name: option.name,

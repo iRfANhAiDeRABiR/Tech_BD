@@ -686,9 +686,11 @@ export async function copyProductsToCategoryAction(formData: FormData) {
 
   const category = await prisma.category.findUnique({
     where: { id: categoryId },
-    select: { id: true },
+    select: { id: true, slug: true },
   });
   if (!category) throw new Error("Category not found.");
+
+  const isTopSelling = category.id === 17 || category.slug.toLowerCase() === "top-selling";
 
   const productIds = formData
     .getAll("productIds")
@@ -697,6 +699,15 @@ export async function copyProductsToCategoryAction(formData: FormData) {
 
   if (!productIds.length) {
     redirect(`/admin/categories/${categoryId}/products?added=0`);
+  }
+
+  if (isTopSelling) {
+    await prisma.product.updateMany({
+      where: { id: { in: productIds } },
+      data: { isFeatured: true },
+    });
+    revalidateStoreCatalog();
+    redirect(`/admin/categories/${categoryId}/products?added=1`);
   }
 
   const sourceProducts = await prisma.product.findMany({
@@ -808,9 +819,17 @@ export async function saveCategoryProductOrderAction(formData: FormData) {
 
   if (!updates.length) throw new Error("No valid product order values found.");
 
+  const categoryForOrder = await prisma.category.findUnique({
+    where: { id: categoryId },
+    select: { slug: true },
+  });
+  const isTopSellingOrder = categoryId === 17 || categoryForOrder?.slug.toLowerCase() === "top-selling";
+
   await prisma.$transaction(
     updates.map(({ id, sortOrder }) =>
-      prisma.product.updateMany({ where: { id, categoryId }, data: { sortOrder } }),
+      isTopSellingOrder
+        ? prisma.product.updateMany({ where: { id }, data: { sortOrder } })
+        : prisma.product.updateMany({ where: { id, categoryId }, data: { sortOrder } }),
     ),
     { maxWait: 15000, timeout: 60000 },
   );
@@ -827,8 +846,25 @@ export async function removeProductFromCategoryAction(formData: FormData) {
     throw new Error("Invalid category.");
   }
 
+  const category = await prisma.category.findUnique({
+    where: { id: categoryId },
+    select: { id: true, slug: true },
+  });
+  if (!category) throw new Error("Category not found.");
+
+  const isTopSelling = category.id === 17 || category.slug.toLowerCase() === "top-selling";
+
   const productId = String(formData.get("productId") ?? "").trim();
   if (!productId) throw new Error("Invalid product.");
+
+  if (isTopSelling) {
+    await prisma.product.updateMany({
+      where: { id: productId },
+      data: { isFeatured: false },
+    });
+    revalidateStoreCatalog(productId);
+    redirect(`/admin/categories/${categoryId}/products?removed=1`);
+  }
 
   const product = await prisma.product.findFirst({
     where: { id: productId, categoryId },
