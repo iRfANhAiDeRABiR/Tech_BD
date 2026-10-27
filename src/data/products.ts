@@ -545,60 +545,53 @@ export const products: Product[] = [
         ]
     },
     {
-        "id": "adobe-creative-cloud-subscription",
-        "name": "Adobe Creative Cloud Subscription",
+        "id": "adobe-creative-cloud-all-apps",
+        "slug": "adobe-creative-cloud-all-apps",
+        "name": "Adobe Creative Cloud All Apps",
         "category": "adobe",
-        "badge": "",
-        "price": 2949,
+        "badge": "Hot",
+        "price": 2249,
         "originalPrice": 6500,
-        "desc": "<ul>\n  <li><strong>Activated on Your Own Email:</strong> 100% official Adobe Creative Cloud Enterprise subscription on your own Adobe ID.</li>\n  <li><strong>All 20+ Creative Apps:</strong> Full access to Photoshop, Illustrator, Premiere Pro, After Effects, InDesign, Lightroom, etc.</li>\n  <li><strong>Dual Device Access:</strong> Log in and work across 2 devices simultaneously (Windows PC, Mac, iPad, Mobile).</li>\n  <li><strong>Generative AI & Cloud Storage:</strong> Includes 85 GB Adobe Cloud Storage and 4,000 monthly generative AI credits.</li>\n  <li><strong>No Down Account Guarantee:</strong> 100% stable, legal enterprise activation with replacement guarantee.</li>\n</ul>",
-        "longDesc": "<h1>Adobe Creative Cloud All Apps – Enterprise (30 Days Only)</h1>\n        <p>Get full access to Adobe’s complete creative suite with our Enterprise plan – a premium 30-day subscription that unlocks every Adobe application for your professional and creative needs. This authentic Enterprise access provides you with the same tools used by leading companies worldwide, activated directly on your personal Adobe account.</p>\n    </header>\n\n    <hr>\n\n    <section id=\"whats-included\">\n        <h2>What’s Included</h2>\n        <ul>\n            <li><strong>Complete Adobe Creative Cloud suite:</strong> 20+ desktop and mobile apps</li>\n            <li><strong>Core Creative Tools:</strong> Photoshop, Illustrator, Premiere Pro, After Effects, InDesign</li>\n            <li><strong>Production & Web:</strong> Lightroom, Acrobat Pro DC, Adobe XD, Dreamweaver, Animate</li>\n            <li><strong>Audio & Workflow:</strong> Audition, Character Animator, Media Encoder, and more</li>\n            <li><strong>Stock & Assets:</strong> Adobe Stock access for standard assets</li>\n            <li><strong>Storage:</strong> 85 GB of cloud storage space</li>\n            <li><strong>AI Features:</strong> 4000 monthly generative AI credits (Adobe’s native AI only)</li>\n            <li><strong>Multi-Device:</strong> Access on 2 devices simultaneously (PC, Mac, or Mobile)</li>\n            <li><strong>Validity:</strong> 30-day validity period</li>\n        </ul>\n    </section>\n\n    <section id=\"activation-process\">\n        <h2>Activation Process</h2>\n        <p>Our activation process is straightforward and secure:</p>\n        <ol>\n            <li>Provide your Adobe account email address during checkout.</li>\n            <li>Your email is added to our Enterprise admin panel.</li>\n            <li>Adobe sends an official invitation directly to your email.</li>\n            <li>Accept the invitation to activate your 30-day subscription.</li>\n            <li>Start using all Adobe apps immediately after activation.</li>\n        </ol>\n        <blockquote>\n            This process ensures the subscription is linked directly to your Adobe account, giving you complete control and security over your access.\n        </blockquote>\n    </section>",
-        "image": "/img_content/acc.png",
+        "desc": "<ul>\n  <li><strong>Activated on Your Own Email:</strong> 100% official Adobe Creative Cloud subscription on your own Adobe ID.</li>\n  <li><strong>All 20+ Creative Apps:</strong> Full access to Photoshop, Illustrator, Premiere Pro, After Effects, InDesign, Lightroom, etc.</li>\n  <li><strong>Dual Device Access:</strong> Log in and work across 2 devices simultaneously (Windows PC, Mac, iPad, Mobile).</li>\n  <li><strong>Generative AI & Cloud Storage:</strong> Includes Adobe Cloud Storage and thousands of monthly Firefly AI credits.</li>\n  <li><strong>No Down Account Guarantee:</strong> 100% stable, legal enterprise activation with replacement guarantee.</li>\n</ul>",
+        "longDesc": "<h3>📦 পণ্য পরিচিতি (Product Overview)</h3>\n<p>Adobe Creative Cloud All Apps subscription বাংলাদেশে Adobe-র সেরা ক্রিয়েটিভ টুলসগুলো একসাথে অ্যাক্সেস করার সুযোগ করে দেয়। ফটোগ্রাফি থেকে শুরু করে ভিডিও এডিটিং, গ্রাফিক ডিজাইন এবং ওয়েব ডেভেলপমেন্ট পর্যন্ত আপনার সকল প্রজেক্টের জন্য প্রয়োজনীয় সব সফটওয়্যার এখন আপনার হাতের মুঠোয়। বাংলাদেশে Adobe Creative Cloud All Apps কিনুন এবং আপনার সৃজনশীলতাকে নতুন উচ্চতায় নিয়ে যান।</p>\n\n<h3>✨ Available Duration Types</h3>\n<ul>\n  <li><strong>1 Month (30 Days):</strong> ৳2,249 (Offer Price | Regular: ৳6,500)</li>\n  <li><strong>3 Months (90 Days):</strong> ৳6,249 (Offer Price | Regular: ৳19,500)</li>\n  <li><strong>6 Months (180 Days):</strong> ৳9,499 (Offer Price | Regular: ৳39,000)</li>\n  <li><strong>12 Months (1 Year):</strong> ৳16,499 (Offer Price | Regular: ৳78,000)</li>\n</ul>\n\n<h3>✅ মূল বৈশিষ্ট্য (Key Features)</h3>\n<ul>\n  <li><strong>Twenty+ Creative Apps:</strong> Photoshop, Illustrator, Premiere Pro, After Effects, InDesign, Lightroom, Acrobat Pro, XD, Dreamweaver, Animate, Audition, Character Animator, Fresco, etc.</li>\n  <li><strong>Cloud Storage:</strong> 100 GB of cloud storage for seamless file syncing and collaboration.</li>\n  <li><strong>Adobe Fonts:</strong> Access to a vast library of fonts for your projects.</li>\n  <li><strong>Adobe Portfolio:</strong> Create and showcase your professional website.</li>\n  <li><strong>Regular Updates:</strong> Always get the latest features and security updates.</li>\n  <li><strong>Cross-Device Compatibility:</strong> Work across desktop, web, and mobile devices.</li>\n  <li><strong>Exclusive Features:</strong> Access to new and advanced features as they are released.</li>\n</ul>\n\n<h3>💡 কেন কিনবেন? (Why Buy?)</h3>\n<ul>\n  <li><strong>১০০% Genuine License:</strong> নিশ্চিত ১০০% জেনুইন এবং অফিশিয়াল Adobe Creative Cloud All Apps সাবস্ক্রিপশন।</li>\n  <li><strong>Instant Delivery:</strong> সাবস্ক্রিপশন অ্যাক্টিভেশন কোড বা অ্যাকাউন্ট ডিটেইলস দ্রুততম সময়ে ইনস্ট্যান্ট ডেলিভারি।</li>\n  <li><strong>Best Value for Bangladesh:</strong> বাংলাদেশে Adobe Creative Cloud All Apps-এর সবচেয়ে সাশ্রয়ী মূল্যে সেরা অফার।</li>\n  <li><strong>Official License:</strong> অফিশিয়াল লাইসেন্স সহ সব ফিচার আনলক করার সুবিধা।</li>\n</ul>\n\n<h3>💰 মূল্য ও প্ল্যান (Pricing & Plans)</h3>\n<ul>\n  <li><strong>1 Month:</strong> ৳2,249</li>\n  <li><strong>3 Months:</strong> ৳6,249</li>\n  <li><strong>6 Months:</strong> ৳9,499</li>\n  <li><strong>12 Months:</strong> ৳16,499</li>\n</ul>\n\n<h3>🏪 কেন আমাদের বেছে নেবেন? (Why Choose Us?)</h3>\n<ul>\n  <li><strong>১০০% Genuine Software:</strong> আমরা শুধুমাত্র ১০০% জেনুইন সফটওয়্যার লাইসেন্স সরবরাহ করি।</li>\n  <li><strong>Instant Delivery:</strong> অর্ডার করার সাথে সাথেই আপনার প্রোডাক্ট ডেলিভারি পান।</li>\n  <li><strong>24/7 Customer Support:</strong> যেকোনো প্রয়োজনে আমাদের ডেডিকেটেড সাপোর্ট টিম সবসময় প্রস্তুত।</li>\n  <li><strong>নিরাপদ পেমেন্ট (Secure Payment):</strong> আপনার পেমেন্ট আমাদের প্ল্যাটফর্মে সম্পূর্ণ নিরাপদ।</li>\n</ul>\n\n<h3>🚀 এখনই অর্ডার করুন</h3>\n<p>আপনার সৃজনশীলতাকে মুক্ত করুন! আজই আপনার Adobe Creative Cloud All Apps সাবস্ক্রিপশন কিনুন এবং সকল প্রিমিয়াম টুলস ব্যবহার শুরু করুন।</p>\n\n<h3>⚠️ Important Notes</h3>\n<ul>\n  <li>❌ Sold Products Are Not Returnable.</li>\n  <li>🛒 The product will be delivered instantly or within 1 hours (Rare cases: up to 24 hours).</li>\n  <li>❌ Any of our products are requested to be activated within two days maximum. Otherwise the warranty will be void.</li>\n</ul>",
+        "image": "/img_content/adobe1.png",
         "icon": "📦",
         "color": "#6C63FF",
-        "gradient": "linear-gradient(135deg, #6C63FF, #00D4AA)"
-    },
-    {
-        "id": "adobe-creative-cloud-subscription-90-days",
-        "name": "Adobe Creative Cloud Subscription - 90 Days",
-        "category": "adobe",
-        "badge": "",
-        "price": 5949,
-        "originalPrice": 19500,
-        "desc": "<ul>\n  <li><strong>90-Day Full Access:</strong> 3-Month official Adobe Creative Cloud subscription activated on your personal email.</li>\n  <li><strong>Complete Adobe Ecosystem:</strong> Photoshop, Premiere Pro, Illustrator, After Effects, Audition, and 20+ desktop apps.</li>\n  <li><strong>Cross-Platform & 2 Devices:</strong> Seamless work on Windows and macOS with dual device simultaneous activation.</li>\n  <li><strong>Generative AI Powered:</strong> 85 GB Cloud Storage plus thousands of monthly Firefly generative AI credits.</li>\n  <li><strong>Guaranteed Stability:</strong> 100% authentic enterprise plan with zero downtime and dedicated customer support.</li>\n</ul>",
-        "longDesc": "<h1>Adobe Creative Cloud All Apps – Enterprise (90 Days Only)</h1>\n        <p>Get full access to Adobe’s complete creative suite with our Enterprise plan – a premium 90-day subscription that unlocks every Adobe application for your professional and creative needs. This authentic Enterprise access provides you with the same tools used by leading companies worldwide, activated directly on your personal Adobe account.</p>\n    </header>\n\n    <hr>\n\n    <section id=\"whats-included\">\n        <h2>What’s Included</h2>\n        <ul>\n            <li><strong>Complete Adobe Creative Cloud suite:</strong> 20+ desktop and mobile apps</li>\n            <li><strong>Core Creative Tools:</strong> Photoshop, Illustrator, Premiere Pro, After Effects, InDesign</li>\n            <li><strong>Production & Web:</strong> Lightroom, Acrobat Pro DC, Adobe XD, Dreamweaver, Animate</li>\n            <li><strong>Audio & Workflow:</strong> Audition, Character Animator, Media Encoder, and more</li>\n            <li><strong>Stock & Assets:</strong> Adobe Stock access for standard assets</li>\n            <li><strong>Storage:</strong> 85 GB of cloud storage space</li>\n            <li><strong>AI Features:</strong> 4000 monthly generative AI credits (Adobe’s native AI only)</li>\n            <li><strong>Multi-Device:</strong> Access on 2 devices simultaneously (PC, Mac, or Mobile)</li>\n            <li><strong>Validity:</strong> 90-day validity period</li>\n        </ul>\n    </section>\n\n    <section id=\"activation-process\">\n        <h2>Activation Process</h2>\n        <p>Our activation process is straightforward and secure:</p>\n        <ol>\n            <li>Provide your Adobe account email address during checkout.</li>\n            <li>Your email is added to our Enterprise admin panel.</li>\n            <li>Adobe sends an official invitation directly to your email.</li>\n            <li>Accept the invitation to activate your 90-day subscription.</li>\n            <li>Start using all Adobe apps immediately after activation.</li>\n        </ol>\n        <blockquote>\n            This process ensures the subscription is linked directly to your Adobe account, giving you complete control and security over your access.\n        </blockquote>\n    </section>",
-        "image": "/img_content/acc.png",
-        "icon": "📦",
-        "color": "#6C63FF",
-        "gradient": "linear-gradient(135deg, #6C63FF, #00D4AA)"
-    },
-    {
-        "id": "adobe-creative-cloud-subscription-180-days",
-        "name": "Adobe Creative Cloud Subscription - 180 Days",
-        "category": "adobe",
-        "badge": "hot",
-        "price": 9949,
-        "originalPrice": 39000,
-        "desc": "<ul>\n  <li><strong>180-Day Semi-Annual Plan:</strong> 6-Month uninterrupted Adobe Creative Cloud subscription on your own Adobe ID.</li>\n  <li><strong>All 20+ Creative Desktop & Mobile Apps:</strong> Photoshop, Illustrator, Premiere Pro, InDesign, Acrobat Pro, Lightroom, etc.</li>\n  <li><strong>Multi-Device Support:</strong> Valid on 2 devices simultaneously across PC, Mac, iPad, and tablet devices.</li>\n  <li><strong>Adobe Cloud & Firefly AI:</strong> 85 GB secure Adobe Cloud Storage and 4,000 monthly Generative Fill AI credits.</li>\n  <li><strong>Full Warranty & Support:</strong> Uninterrupted performance with replacement warranty throughout the 180-day period.</li>\n</ul>",
-        "longDesc": "<h1>Adobe Creative Cloud All Apps – Enterprise (180 Days Only)</h1>\n        <p>Get full access to Adobe’s complete creative suite with our Enterprise plan – a premium 180-day subscription that unlocks every Adobe application for your professional and creative needs. This authentic Enterprise access provides you with the same tools used by leading companies worldwide, activated directly on your personal Adobe account.</p>\n    </header>\n\n    <hr>\n\n    <section id=\"whats-included\">\n        <h2>What’s Included</h2>\n        <ul>\n            <li><strong>Complete Adobe Creative Cloud suite:</strong> 20+ desktop and mobile apps</li>\n            <li><strong>Core Creative Tools:</strong> Photoshop, Illustrator, Premiere Pro, After Effects, InDesign</li>\n            <li><strong>Production & Web:</strong> Lightroom, Acrobat Pro DC, Adobe XD, Dreamweaver, Animate</li>\n            <li><strong>Audio & Workflow:</strong> Audition, Character Animator, Media Encoder, and more</li>\n            <li><strong>Stock & Assets:</strong> Adobe Stock access for standard assets</li>\n            <li><strong>Storage:</strong> 85 GB of cloud storage space</li>\n            <li><strong>AI Features:</strong> 4000 monthly generative AI credits (Adobe’s native AI only)</li>\n            <li><strong>Multi-Device:</strong> Access on 2 devices simultaneously (PC, Mac, or Mobile)</li>\n            <li><strong>Validity:</strong> 180-day validity period</li>\n        </ul>\n    </section>\n\n    <section id=\"activation-process\">\n        <h2>Activation Process</h2>\n        <p>Our activation process is straightforward and secure:</p>\n        <ol>\n            <li>Provide your Adobe account email address during checkout.</li>\n            <li>Your email is added to our Enterprise admin panel.</li>\n            <li>Adobe sends an official invitation directly to your email.</li>\n            <li>Accept the invitation to activate your 180-day subscription.</li>\n            <li>Start using all Adobe apps immediately after activation.</li>\n        </ol>\n        <blockquote>\n            This process ensures the subscription is linked directly to your Adobe account, giving you complete control and security over your access.\n        </blockquote>\n    </section>",
-        "image": "/img_content/acc.png",
-        "icon": "📦",
-        "color": "#6C63FF",
-        "gradient": "linear-gradient(135deg, #6C63FF, #00D4AA)"
-    },
-    {
-        "id": "adobe-creative-cloud-subscription-365-days",
-        "name": "Adobe Creative Cloud Subscription - 365 Days",
-        "category": "adobe",
-        "badge": "best",
-        "price": 14499,
-        "originalPrice": 78000,
-        "desc": "<ul>\n  <li><strong>365-Day Annual Subscription:</strong> Full 1-Year official Adobe Creative Cloud plan activated directly on your email.</li>\n  <li><strong>Complete All-Apps Suite:</strong> Unrestricted access to all 20+ creative apps including Photoshop, Premiere Pro, and After Effects.</li>\n  <li><strong>Simultaneous Dual-Device Use:</strong> Install and run seamlessly on 2 devices (PC, Mac, and mobile).</li>\n  <li><strong>Full Cloud & AI Suite:</strong> 85 GB Cloud Storage, Adobe Fonts library, Behance Pro, and monthly Firefly generative credits.</li>\n  <li><strong>Best Value Annual Plan:</strong> 100% stable and verified subscription with round-the-clock priority technical support.</li>\n</ul>",
-        "longDesc": "<h1>Adobe Creative Cloud All Apps – Enterprise (365 Days Only)</h1>\n        <p>Get full access to Adobe’s complete creative suite with our Enterprise plan – a premium 365-day subscription that unlocks every Adobe application for your professional and creative needs. This authentic Enterprise access provides you with the same tools used by leading companies worldwide, activated directly on your personal Adobe account.</p>\n    </header>\n\n    <hr>\n\n    <section id=\"whats-included\">\n        <h2>What’s Included</h2>\n        <ul>\n            <li><strong>Complete Adobe Creative Cloud suite:</strong> 20+ desktop and mobile apps</li>\n            <li><strong>Core Creative Tools:</strong> Photoshop, Illustrator, Premiere Pro, After Effects, InDesign</li>\n            <li><strong>Production & Web:</strong> Lightroom, Acrobat Pro DC, Adobe XD, Dreamweaver, Animate</li>\n            <li><strong>Audio & Workflow:</strong> Audition, Character Animator, Media Encoder, and more</li>\n            <li><strong>Stock & Assets:</strong> Adobe Stock access for standard assets</li>\n            <li><strong>Storage:</strong> 85 GB of cloud storage space</li>\n            <li><strong>AI Features:</strong> 4000 monthly generative AI credits (Adobe’s native AI only)</li>\n            <li><strong>Multi-Device:</strong> Access on 2 devices simultaneously (PC, Mac, or Mobile)</li>\n            <li><strong>Validity:</strong> 365-day validity period</li>\n        </ul>\n    </section>\n\n    <section id=\"activation-process\">\n        <h2>Activation Process</h2>\n        <p>Our activation process is straightforward and secure:</p>\n        <ol>\n            <li>Provide your Adobe account email address during checkout.</li>\n            <li>Your email is added to our Enterprise admin panel.</li>\n            <li>Adobe sends an official invitation directly to your email.</li>\n            <li>Accept the invitation to activate your 365-day subscription.</li>\n            <li>Start using all Adobe apps immediately after activation.</li>\n        </ol>\n        <blockquote>\n            This process ensures the subscription is linked directly to your Adobe account, giving you complete control and security over your access.\n        </blockquote>\n    </section>",
-        "image": "/img_content/acc.png",
-        "icon": "📦",
-        "color": "#6C63FF",
-        "gradient": "linear-gradient(135deg, #6C63FF, #00D4AA)"
+        "gradient": "linear-gradient(135deg, #6C63FF, #00D4AA)",
+        "options": [
+            {
+                "id": "cmvqqxvo20000cc5ag3trjjjx",
+                "name": "1 Month",
+                "type": "SUBSCRIPTION",
+                "price": 2249,
+                "originalPrice": 6500,
+                "description": "30 Days full access to all 20+ Adobe Creative Cloud apps on your personal email."
+            },
+            {
+                "id": "cmvqqxvww0001cc5akqtdoljc",
+                "name": "3 Months",
+                "type": "SUBSCRIPTION",
+                "price": 6249,
+                "originalPrice": 19500,
+                "description": "90 Days full access to all 20+ Adobe Creative Cloud apps on your personal email."
+            },
+            {
+                "id": "cmvqqxw5r0002cc5apqdokjwo",
+                "name": "6 Months",
+                "type": "SUBSCRIPTION",
+                "price": 9499,
+                "originalPrice": 39000,
+                "description": "180 Days full access to all 20+ Adobe Creative Cloud apps on your personal email."
+            },
+            {
+                "id": "cmvqqxwen0003cc5am0xphusp",
+                "name": "12 Months (1 Year)",
+                "type": "SUBSCRIPTION",
+                "price": 16499,
+                "originalPrice": 78000,
+                "description": "365 Days (1 Year) full access to all 20+ Adobe Creative Cloud apps on your personal email."
+            }
+        ]
     },
     {
         "id": "project-professional-2024",
