@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { usePathname } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -11,6 +12,7 @@ import { CartProvider } from "@/components/cart/CartProvider";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 import { GlobalToaster } from "@/components/toast/GlobalToaster";
 import { ContentProtection } from "@/components/layout/ContentProtection";
+import { CustomerSessionTimeout } from "@/components/layout/CustomerSessionTimeout";
 import type { StoreCategory } from "@/types/product";
 
 interface StorefrontShellProps {
@@ -49,6 +51,9 @@ export function StorefrontShell({ children, categories }: StorefrontShellProps) 
         <CurrencyProvider>
           <CartProvider>
             <ContentProtection />
+            <Suspense fallback={null}>
+              <CustomerSessionTimeout />
+            </Suspense>
             {children}
             <GlobalToaster />
           </CartProvider>
@@ -62,6 +67,9 @@ export function StorefrontShell({ children, categories }: StorefrontShellProps) 
       <CurrencyProvider>
         <CartProvider>
           <ContentProtection />
+          <Suspense fallback={null}>
+            <CustomerSessionTimeout />
+          </Suspense>
           <CategorySidebar categories={categories} />
           {!isCheckout && <FirstOrderPromoBanner />}
           <Header />
@@ -77,4 +85,3 @@ export function StorefrontShell({ children, categories }: StorefrontShellProps) 
     </div>
   );
 }
-

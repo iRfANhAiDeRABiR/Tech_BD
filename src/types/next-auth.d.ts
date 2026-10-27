@@ -16,5 +16,8 @@ declare module "next-auth" {
 declare module "@auth/core/jwt" {
   interface JWT {
     role?: "OWNER" | "ADMIN" | "SUPPORT";
+    lastActive?: number;
   }
+}
+
 }

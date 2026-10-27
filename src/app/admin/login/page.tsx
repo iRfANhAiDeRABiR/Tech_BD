@@ -5,9 +5,13 @@ import styles from "../admin.module.css";
 export default async function AdminLogin({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; remaining?: string }>;
 }) {
   const query = await searchParams;
+  const remaining =
+    query.remaining !== undefined && query.remaining !== ""
+      ? parseInt(query.remaining, 10)
+      : null;
 
   return (
     <main className={styles.login}>
@@ -53,11 +57,62 @@ export default async function AdminLogin({
           </p>
         </div>
 
-        {query.error && (
-          <div className="auth-alert auth-alert--error">
-            ইমেইল অথবা পাসওয়ার্ড সঠিক নয়।
+        {query.error === "timeout" && (
+          <div
+            className="auth-alert"
+            style={{
+              backgroundColor: "rgba(245, 158, 11, 0.12)",
+              border: "1px solid rgba(245, 158, 11, 0.35)",
+              color: "#fbbf24",
+              padding: "10px 14px",
+              borderRadius: "8px",
+              marginBottom: "16px",
+              fontSize: "0.88rem",
+              lineHeight: 1.4,
+            }}
+          >
+            ⏱️ নিষ্ক্রিয়তার কারণে আপনার অ্যাডমিন সেশনের সময় শেষ হয়ে গেছে। অনুগ্রহ করে আবার লগইন করুন।
           </div>
         )}
+
+        {query.error === "locked" && (
+          <div className="auth-alert auth-alert--error" style={{ marginBottom: "16px" }}>
+            🔒 নিরাপত্তাজনিত কারণে আপনার আইপি সাময়িকভাবে লক করা হয়েছে।
+          </div>
+        )}
+
+        {query.error === "invalid" && (
+          <div className="auth-alert auth-alert--error" style={{ marginBottom: "16px" }}>
+            <div>ইমেইল অথবা পাসওয়ার্ড সঠিক নয়।</div>
+            {remaining !== null && (
+              <div
+                style={{
+                  marginTop: 6,
+                  fontSize: "0.82rem",
+                  paddingTop: 6,
+                  borderTop: "1px dashed rgba(239, 68, 68, 0.3)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                }}
+              >
+                <span>⚠️</span>
+                <span>
+                  বাকি সুযোগ: <strong style={{ color: "#f87171" }}>{remaining} বার</strong>। অতিরিক্ত ভুল প্রচেষ্টায় আপনার আইপি সমগ্র ওয়েবসাইট থেকে অবিলম্বে স্থায়ীভাবে ব্যান করা হবে।
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {query.error &&
+          query.error !== "timeout" &&
+          query.error !== "invalid" &&
+          query.error !== "locked" && (
+            <div className="auth-alert auth-alert--error" style={{ marginBottom: "16px" }}>
+              লগইন প্রক্রিয়া ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।
+            </div>
+          )}
 
         <div className="auth-modal-body">
           <form action={loginAction} className="auth-form">
@@ -183,7 +238,7 @@ export default async function AdminLogin({
               >
                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
               </svg>
-              <span>দ্রুত লগইন</span>
+              <span>সুরক্ষিত অ্যাডমিন</span>
             </div>
           </div>
         </div>

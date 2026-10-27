@@ -399,6 +399,21 @@ export async function getRegisteredUsersList(): Promise<RegisteredUserSummary[]>
   }
 }
 
+export async function unbanIp(ip: string): Promise<boolean> {
+  await ensureBanTable();
+  try {
+    await prisma.$executeRawUnsafe(
+      `UPDATE "AccessBan" SET "isActive" = false, "updatedAt" = CURRENT_TIMESTAMP WHERE "type" = 'IP' AND "target" = $1`,
+      ip.trim()
+    );
+    invalidateBanCache();
+    return true;
+  } catch (err) {
+    console.error("Error unbanning IP:", err);
+    return false;
+  }
+}
+
 // Simple IPv4 in CIDR helper
 function isIpInCidr(ip: string, cidr: string): boolean {
   try {

@@ -30,10 +30,21 @@ export async function updateSession(request: NextRequest) {
   );
 
   // Refreshing the session ensures the latest user data is available
-  // and keeps the session alive. Do NOT redirect here based on auth state
-  // unless you want to protect all routes globally. Route-specific protection
-  // should happen in the main middleware or route handlers.
-  await supabase.auth.getUser();
+  // and keeps the session alive.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // If logged in, update customer last active timestamp
+  if (user) {
+    const nowStr = String(Date.now());
+    supabaseResponse.cookies.set('techbd_user_last_active', nowStr, {
+      path: '/',
+      maxAge: 7 * 24 * 60 * 60,
+      sameSite: 'lax',
+      httpOnly: false,
+    });
+  }
 
   return supabaseResponse;
 }

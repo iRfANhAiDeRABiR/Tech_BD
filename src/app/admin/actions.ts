@@ -16,6 +16,10 @@ import {
   upsertSoftwareDownload,
 } from "@/lib/software-downloads-store";
 import { logAdminEvent } from "@/lib/audit-logs-store";
+import { headers } from "next/headers";
+import { extractClientIp } from "@/lib/ip-utils";
+import { checkAccessBan } from "@/lib/bans-store";
+import { getAdminLoginAttempts, MAX_ADMIN_LOGIN_ATTEMPTS } from "@/lib/admin-brute-force";
 import type { SoftwareDownloadVariant, SoftwareVersionOption } from "@/data/software-downloads";
 
 function isCloudinaryConfigured() {
@@ -55,17 +59,48 @@ async function requireRole(allowedRoles: ("OWNER" | "ADMIN" | "SUPPORT")[]) {
 }
 
 export async function loginAction(formData: FormData) {
+  const reqHeaders = await headers();
+  const clientIp = extractClientIp(reqHeaders);
+  const email = String(formData.get("email") || "").trim().toLowerCase();
+  const password = String(formData.get("password") || "");
+
+  // 1. Guard against pre-existing ban
+  const banStatus = await checkAccessBan({ ip: clientIp });
+  if (banStatus.isBanned) {
+    redirect(
+      `/banned?reason=${encodeURIComponent(
+        banStatus.ban?.reason || "Security Ban"
+      )}&id=${banStatus.ban?.id || ""}`
+    );
+  }
+
   try {
     const { signIn } = await import("@/auth");
     await signIn("credentials", {
-      email: formData.get("email"),
-      password: formData.get("password"),
+      email,
+      password,
       redirectTo: "/admin",
     });
   } catch (error) {
     const { AuthError } = await import("next-auth");
 
-    if (error instanceof AuthError) redirect("/admin/login?error=invalid");
+    if (error instanceof AuthError) {
+      // Check if this attempt triggered an automatic IP ban
+      const postBanStatus = await checkAccessBan({ ip: clientIp });
+      if (postBanStatus.isBanned) {
+        redirect(
+          `/banned?reason=${encodeURIComponent(
+            postBanStatus.ban?.reason || "Brute force admin login attempt exceeded maximum threshold"
+          )}&id=${postBanStatus.ban?.id || ""}`
+        );
+      }
+
+      // Calculate remaining attempts before permanent ban
+      const attempts = getAdminLoginAttempts(clientIp);
+      const remaining = Math.max(0, MAX_ADMIN_LOGIN_ATTEMPTS - attempts);
+      redirect(`/admin/login?error=invalid&remaining=${remaining}`);
+    }
+
     throw error;
   }
 }

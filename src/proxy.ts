@@ -187,9 +187,9 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 1. Fast bypass for static files, public assets, and Next.js internals (<0.01ms)
+  // NOTE: /api/auth is intentionally NOT bypassed so banned IPs are blocked from auth endpoints too
   if (
     pathname.startsWith("/_next") ||
-    pathname.startsWith("/api/auth") ||
     pathname === "/banned" ||
     pathname.startsWith("/banned/") ||
     pathname.startsWith("/img_content") ||
@@ -218,6 +218,29 @@ export async function proxy(request: NextRequest) {
       secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
       secureCookie: isSecure,
     });
+
+    // Enforce Admin Idle Timeout (30 minutes = 1800 seconds)
+    const ADMIN_IDLE_TIMEOUT_SECONDS = 30 * 60;
+    if (adminToken && typeof adminToken.lastActive === "number") {
+      const nowInSeconds = Math.floor(Date.now() / 1000);
+      if (nowInSeconds - adminToken.lastActive > ADMIN_IDLE_TIMEOUT_SECONDS) {
+        // Idle timeout exceeded for admin
+        adminToken = null;
+        if (isAdminPath) {
+          if (pathname.startsWith("/api/")) {
+            return applySecurityHeaders(
+              NextResponse.json(
+                { error: "Session expired due to inactivity" },
+                { status: 401 }
+              )
+            );
+          }
+          const loginUrl = new URL("/admin/login", request.url);
+          loginUrl.searchParams.set("error", "timeout");
+          return NextResponse.redirect(loginUrl);
+        }
+      }
+    }
 
     if (isAdminPath && !adminToken) {
       if (pathname.startsWith("/api/")) {
@@ -324,6 +347,24 @@ export async function proxy(request: NextRequest) {
   if (isCustomerAuthPath) {
     if (!hasSupabaseSession) {
       return NextResponse.redirect(new URL("/", request.url));
+    }
+
+    // Check customer idle timeout (2 hours = 7,200,000 ms)
+    const CUSTOMER_IDLE_TIMEOUT_MS = 2 * 60 * 60 * 1000;
+    const lastActiveCookie = request.cookies.get("techbd_user_last_active");
+    if (lastActiveCookie?.value) {
+      const lastActiveTime = parseInt(lastActiveCookie.value, 10);
+      if (!isNaN(lastActiveTime) && Date.now() - lastActiveTime > CUSTOMER_IDLE_TIMEOUT_MS) {
+        // Customer session has expired due to inactivity
+        const redirectResponse = NextResponse.redirect(new URL("/?session=timeout", request.url));
+        cookies.forEach((c) => {
+          if (c.name.startsWith("sb-") && c.name.includes("-auth-token")) {
+            redirectResponse.cookies.delete(c.name);
+          }
+        });
+        redirectResponse.cookies.delete("techbd_user_last_active");
+        return applySecurityHeaders(redirectResponse);
+      }
     }
 
     const supabase = createServerClient(

@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { Suspense } from "react";
 import { AdminToastListener } from "@/components/admin/AdminToastListener";
 import { AdminLayoutClient } from "@/components/admin/AdminLayoutClient";
+import { AdminSessionTimeout } from "@/components/admin/AdminSessionTimeout";
 import { AdminLanguageProvider } from "@/context/AdminLanguageContext";
 import { logoutAction } from "../actions";
 
@@ -19,6 +20,7 @@ export default async function AdminLayout({
       <Suspense fallback={null}>
         <AdminToastListener />
       </Suspense>
+      <AdminSessionTimeout logoutAction={logoutAction} />
       <AdminLayoutClient
         userEmail={session.user.email}
         logoutAction={logoutAction}
