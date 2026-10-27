@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { BackgroundParticles } from "@/components/layout/BackgroundParticles";
 import { StorefrontShell } from "@/components/layout/StorefrontShell";
@@ -110,8 +111,24 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        {/* Suppress unhandled non-Error rejections (e.g. browser extension rejections, HMR WebSocket reconnect events) from triggering false-positive Next.js dev overlays */}
         <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(generateOrganizationJsonLd()).replace(/</g, "\\u003c"),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(generateWebSiteJsonLd()).replace(/</g, "\\u003c"),
+          }}
+        />
+      </head>
+      <body suppressHydrationWarning>
+        {/* Suppress unhandled non-Error rejections (e.g. browser extension rejections, HMR WebSocket reconnect events) from triggering false-positive Next.js dev overlays */}
+        <Script
+          id="suppress-unhandled-rejections"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `(function(){
               if(typeof window!=="undefined"){
@@ -130,20 +147,6 @@ export default async function RootLayout({
             })();`,
           }}
         />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(generateOrganizationJsonLd()),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(generateWebSiteJsonLd()),
-          }}
-        />
-      </head>
-      <body suppressHydrationWarning>
         <BackgroundParticles />
         <StorefrontShell categories={categories}>
           {children}
