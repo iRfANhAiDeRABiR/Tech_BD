@@ -35,7 +35,8 @@ const categoryLabels: Record<string, string> = {
   "project-visio": "Project and Visio",
   vpn: "VPN",
   google: "Google",
-  autodesk: "Autodesk",
+  autodesk: "Engineering Tools",
+  "engineering-tools": "Engineering Tools",
   antivirus: "Antivirus",
 };
 

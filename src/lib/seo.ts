@@ -57,8 +57,8 @@ export function detectSoftwareBrand(productName: string): string {
   if (name.includes("adobe")) {
     return "Adobe";
   }
-  if (name.includes("autodesk") || name.includes("autocad")) {
-    return "Autodesk";
+  if (name.includes("autodesk") || name.includes("autocad") || name.includes("sketchup") || name.includes("coreldraw") || name.includes("figma")) {
+    return "Engineering Tools";
   }
   if (name.includes("canva")) {
     return "Canva";

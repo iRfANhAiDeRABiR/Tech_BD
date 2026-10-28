@@ -38,7 +38,7 @@ const ICON_MATCHERS: Array<{ test: RegExp; icon: LucideIcon }> = [
   { test: /vpn/i, icon: Shield },
   { test: /(antivirus|anti-virus|security)/i, icon: ShieldCheck },
   { test: /(cloud|storage|drive)/i, icon: Cloud },
-  { test: /autodesk/i, icon: Box },
+  { test: /(autodesk|engineer|engineering)/i, icon: Box },
   { test: /(adobe|creative)/i, icon: Palette },
 ];
 

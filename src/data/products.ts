@@ -597,7 +597,7 @@ export const products: Product[] = [
         "id": "trimble-sketchup-pro-personal-email-activation",
         "slug": "trimble-sketchup-pro-personal-email-activation",
         "name": "Trimble SketchUp Pro – Personal Email Activation",
-        "category": "adobe",
+        "category": "engineering-tools",
         "badge": "Email Required",
         "price": 16499,
         "originalPrice": 35000,
@@ -630,7 +630,7 @@ export const products: Product[] = [
         "id": "autodesk-commercial-flex-aec-all-apps",
         "slug": "autodesk-commercial-flex-aec-all-apps",
         "name": "Autodesk (Commercial – Flex) AEC-All Apps",
-        "category": "Autodesk",
+        "category": "engineering-tools",
         "badge": "Commercial Flex",
         "price": 14999,
         "originalPrice": 45000,
@@ -648,6 +648,72 @@ export const products: Product[] = [
                 "price": 14999,
                 "originalPrice": 45000,
                 "description": "Full 1 Year Autodesk Commercial Flex license for AEC All-Apps activated on your own personal email."
+            }
+        ]
+    },
+    {
+        "id": "autodesk-subscription-price-in-bangladesh",
+        "slug": "autodesk-subscription-price-in-bangladesh",
+        "name": "AutoDesk Subscription Price in Bangladesh",
+        "category": "engineering-tools",
+        "badge": "🔥 47+ All Apps",
+        "price": 649,
+        "originalPrice": 1499,
+        "desc": "<ul>\n  <li><strong>100% Genuine Personal Email Activation:</strong> অফিসিয়াল ইনভাইটেশনের মাধ্যমে আপনার নিজস্ব অটোডেস্ক অ্যাকাউন্টে অ্যাক্টিভেশন।</li>\n  <li><strong>All 47+ Autodesk Professional Apps Included:</strong> AutoCAD, Revit, Civil 3D, 3ds Max, Maya, Fusion 360, Inventor এবং সকল ৭টি AutoCAD Toolsets সহ সম্পূর্ণ প্যাকেজ।</li>\n  <li><strong>Flexible Duration Options:</strong> ১ বছর (৳৬৪৯), ২ বছর (৳১,১৪৯), এবং ৩ বছর (৳১,৭৪৯)।</li>\n  <li><strong>Windows & macOS Supported:</strong> অফিসিয়াল manage.autodesk.com ড্যাশবোর্ড থেকে ডিরেক্ট ফুল ভার্সন ডাউনলোড ও ইনস্টলেশন।</li>\n  <li><strong>Full 1, 2 & 3 Year Replacement Guarantee:</strong> মেয়াদের পুরো সময়ে ২৪ ঘণ্টার মধ্যে রিপ্লেসমেন্ট ওয়ারেন্টি ও সার্বক্ষণিক টেকনিক্যাল সাপোর্ট।</li>\n</ul>",
+        "longDesc": "<h1>AutoDesk Subscription Price in Bangladesh</h1>\n\n<p>Tech Solutions BD থেকে কিনুন <strong>AutoDesk Subscription</strong> বাংলাদেশে সবচেয়ে সাশ্রয়ী মূল্যে। আপনি কি আর্কিটেক্ট, সিভিল বা মেকানিক্যাল ইঞ্জিনিয়ার, ইন্টেরিয়র ডিজাইনার, 3D ভিজ্যুয়ালাইজার কিংবা সিজিআই অ্যানিমেটর? অটোডেস্কের শক্তিশালী সফটওয়্যার প্যাকেজ আপনার প্রফেশনাল ওয়ার্কফ্লোকে নিয়ে যাবে পরবর্তী ধাপে।</p>\n<p>এই সাবস্ক্রিপশনে আপনি পাচ্ছেন অটোডেস্কের <strong>৪৭টিরও বেশি প্রফেশনাল সফটওয়্যার ও ক্লাউড টুলের সম্পূর্ণ অ্যাক্সেস</strong>, যা সরাসরি আপনার নিজের পার্সোনাল ইমেইলে অ্যাক্টিভেট হবে। কোনো থার্ড পার্টি ক্র্যাক বা মডিফাইড ফাইল নয়—সরাসরি manage.autodesk.com থেকে অফিসিয়াল ইনস্টলার ডাউনলোড করে নিশ্চিন্তে কাজ করুন উইন্ডোজ ও ম্যাক ওএস-এ।</p>\n\n<hr>\n\n<h3>✨ Key Highlights</h3>\n<ul>\n  <li><strong>100% Genuine Activation:</strong> আপনার নিজস্ব পার্সোনাল ইমেইলে সরাসরি অফিসিয়াল লাইসেন্স।</li>\n  <li><strong>47+ All Apps Included:</strong> AutoCAD, Revit, 3ds Max, Maya, Civil 3D, Inventor, Fusion সহ সকল টুলস।</li>\n  <li><strong>Cross-Platform Support:</strong> Windows PC ও macOS উভয় অপারেটিং সিস্টেমে গ্রহণযোগ্য।</li>\n  <li><strong>Full Warranty:</strong> সম্পূর্ণ মেয়াদজুড়ে নিরবচ্ছিন্ন রিপ্লেসমেন্ট গ্যারান্টি।</li>\n</ul>\n\n<h3>💰 Pricing & Plans</h3>\n<ul>\n  <li><strong>1 Year (Annual Plan):</strong> ৳649 (Regular: ৳1,499)</li>\n  <li><strong>2 Years Plan:</strong> ৳1,149 (Regular: ৳2,499)</li>\n  <li><strong>3 Years Plan:</strong> ৳1,749 (Regular: ৳3,999)</li>\n</ul>",
+        "image": "/img_content/Tech Solutions Autodesk Subscriptions Poster.png",
+        "icon": "💻",
+        "color": "#38bdf8",
+        "gradient": "linear-gradient(135deg, #38bdf8, #6366f1)",
+        "options": [
+            {
+                "id": "autodesk-sub-1y",
+                "name": "1 Year",
+                "type": "SUBSCRIPTION",
+                "price": 649,
+                "originalPrice": 1499,
+                "description": "Uninterrupted 1-Year official access to all 47+ Autodesk apps. Includes digital activation & full replacement warranty."
+            },
+            {
+                "id": "autodesk-sub-2y",
+                "name": "2 Years",
+                "type": "SUBSCRIPTION",
+                "price": 1149,
+                "originalPrice": 2499,
+                "description": "Full 2-Year uninterrupted validity with all 47+ apps, regular cloud updates, and priority support. Most popular plan!"
+            },
+            {
+                "id": "autodesk-sub-3y",
+                "name": "3 Years",
+                "type": "SUBSCRIPTION",
+                "price": 1749,
+                "originalPrice": 3999,
+                "description": "Full 3-Year multi-year validity with all 47+ apps, cloud sync, VIP priority support, and rate lock. Maximum savings!"
+            }
+        ]
+    },
+    {
+        "id": "figma-premium-price-in-bangladesh",
+        "slug": "figma-premium-price-in-bangladesh",
+        "name": "Figma Pro Subscription",
+        "category": "engineering-tools",
+        "badge": "Pro Plan",
+        "price": 3499,
+        "originalPrice": 4999,
+        "desc": "<ul>\n  <li><strong>Figma Pro Subscription:</strong> Official collaborative interface design & prototyping platform.</li>\n  <li><strong>Real-Time Collaboration:</strong> Design seamlessly together with unlimited team projects and files.</li>\n  <li><strong>Design Systems & Libraries:</strong> Unlimited shared team component libraries and version history.</li>\n  <li><strong>Advanced Prototyping:</strong> Interactive components, smart animations, and audio/video embeds.</li>\n  <li><strong>1 Year Plan:</strong> Genuine subscription with full plan-time warranty and fast digital delivery.</li>\n</ul>",
+        "longDesc": "<h1>Figma Pro Subscription Price in Bangladesh</h1>\n\n<h3>📦 Product Overview</h3>\n<p>Figma Pro হলো বিশ্বের এক নম্বর ক্লাউড-বেসড UI/UX ডিজাইন ও প্রোটোটাইপিং প্ল্যাটফর্ম। টিম কোলাবরেশন, ডিজাইন সিস্টেম ম্যানেজমেন্ট, এবং অ্যাডভান্সড প্রোটোটাইপিংয়ের জন্য Figma Pro বিশ্বব্যাপী ইন্ডাস্ট্রি স্ট্যান্ডার্ড। Tech Solutions BD থেকে গ্রহণ করুন অফিসিয়াল Figma Pro সাবস্ক্রিপশন সেরা মূল্যে।</p>\n\n<hr>\n\n<h3>✨ Key Features</h3>\n<ul>\n  <li><strong>Real-Time Collaboration:</strong> একাধিক ডিজাইনার একসাথে লাইভ ক্যানভাসে কাজ করার পূর্ণ সুবিধা।</li>\n  <li><strong>Unlimited Projects & Files:</strong> টিম স্পেসে আনলিমিটেড ফাইল ও প্রজেক্ট তৈরি ও সংরক্ষণ।</li>\n  <li><strong>Unlimited Version History:</strong> অতীতের যেকোনো ভার্সন ফিরিয়ে আনার সীমাহীন হিস্ট্রি সুবিধা।</li>\n  <li><strong>Shared Team Libraries:</strong> কম্পোনেন্ট, ভ্যারিয়্যান্ট এবং কালার স্টাইল পুরো টিমে শেয়ার ও সিঙ্ক করার সুবিধা।</li>\n  <li><strong>Advanced Prototyping:</strong> ইন্টারঅ্যাক্টিভ অ্যানিমেশন ও ইউজার টেস্টিং প্রোটোটাইপ তৈরি।</li>\n  <li><strong>Full Warranty:</strong> সম্পূর্ণ সাবস্ক্রিপশন মেয়াদে ১০০% সার্ভিস ওয়ারেন্টি ও সাপোর্ট।</li>\n</ul>\n\n<h3>💰 Pricing & Plans</h3>\n<ul>\n  <li><strong>1 Year Pro Plan:</strong> ৳3,499 (Offer Price | Regular: ৳4,999)</li>\n</ul>",
+        "image": "/img_content/figma.png",
+        "icon": "🎨",
+        "color": "#F24E1E",
+        "gradient": "linear-gradient(135deg, #F24E1E 0%, #A259FF 100%)",
+        "options": [
+            {
+                "id": "figma-pro-1y",
+                "name": "1 Year Pro Plan",
+                "type": "SUBSCRIPTION",
+                "price": 3499,
+                "originalPrice": 4999,
+                "description": "Full access to Figma Professional features with unlimited cloud storage and team libraries for 1 Year."
             }
         ]
     },
@@ -1192,7 +1258,7 @@ export const products: Product[] = [
         "id": "coreldraw-technical-suite-2026",
         "slug": "coreldraw-technical-suite-2026",
         "name": "CorelDRAW Technical Suite 2026 (PC)",
-        "category": "creativity-&-design",
+        "category": "engineering-tools",
         "badge": "Hot",
         "price": 849,
         "originalPrice": 19999,
@@ -1435,11 +1501,12 @@ export const categorySummaries: StoreCategory[] = [
     accent: "#38bdf8",
   },
   {
-    slug: "Autodesk",
-    name: "Autodesk",
-    description: "AutoCAD, Revit, 3ds Max, Maya, Civil 3D, and Flex All-Apps",
+    slug: "engineering-tools",
+    name: "Engineering Tools",
+    description: "AutoCAD, Revit, SketchUp, CorelDRAW, Figma Pro, and 3D Modeling software",
     count: products.filter(
       (product) =>
+        product.category === "engineering-tools" ||
         product.category === "Autodesk" ||
         product.category === "autodesk"
     ).length,
