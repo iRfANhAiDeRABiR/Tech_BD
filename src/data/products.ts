@@ -522,81 +522,132 @@ export const products: Product[] = [
     {
         "id": "office-home-business-2024-price-in-bangladesh",
         "slug": "office-home-business-2024-price-in-bangladesh",
-        "name": "Microsoft Office Home & Business (2024 / 2021 / 2019 / 2016) [PC / Mac]",
+        "name": "Microsoft Office Home & Business 2024 (PC / Mac)",
         "category": "office",
-        "badge": "Account Binding Key",
-        "price": 6999,
-        "originalPrice": 10000,
-        "desc": "<ul>\n  <li><strong>100% Genuine Microsoft Account Binding Key:</strong> Permanent digital license linked directly to your personal Microsoft account at <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">setup.office.com</a>.</li>\n  <li><strong>1 Device Lifetime Activation:</strong> You will receive 1x Office Home & Business key valid for lifetime activation on 1 Windows PC or 1 Mac.</li>\n  <li><strong>Full Classic Desktop Apps:</strong> Includes Word, Excel, PowerPoint, Outlook, and OneNote.</li>\n  <li><strong>Transferable License:</strong> Reinstall or transfer to a new PC/Mac anytime simply by logging into your Microsoft account.</li>\n  <li><strong>Fast Digital Delivery & 24/7 Support:</strong> Instant key delivery via your web store dashboard with full setup assistance.</li>\n</ul>",
-        "longDesc": "<h1>Microsoft Office Home & Business (2024 / 2021 / 2019 / 2016) Binding Key</h1>\n\n<p>Microsoft Office Home & Business হলো পেশাদার এবং ব্যবসায়ীদের জন্য এককালীন ক্রয়ের (Lifetime One-Time Purchase) অফিসিয়াল স্যুট। এতে রয়েছে আপনার ব্যবসা ও দৈনন্দিন প্রোডাক্টিভিটির জন্য প্রয়োজনীয় সব অ্যাপ্লিকেশন—Word, Excel, PowerPoint, Outlook এবং OneNote। Tech Solutions BD থেকে সংগ্রহ করুন ১০০% আসল <strong>Microsoft Account Binding License Key</strong> যা সরাসরি আপনার নিজস্ব মাইক্রোসফট অ্যাকাউন্টে আজীবনের জন্য লিংক হয়ে থাকবে।</p>\n\n<hr>\n\n<h3>🌟 মূল সুবিধাসমূহ (Key Highlights)</h3>\n<ul>\n  <li>✅ <strong>Account Binding Key (অ্যাকাউন্ট লিংকড):</strong> লাইসেন্সটি সরাসরি আপনার নিজস্ব Microsoft অ্যাকাউন্টে (<a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">setup.office.com</a>) যুক্ত হয়। ফলে ভবিষ্যতে ডিভাইস পরিবর্তন বা উইন্ডোজ/ম্যাক রি-ইনস্টল করলেও সহজেই পুনরায় সক্রিয় করা যায়।</li>\n  <li>✅ <strong>1 Device Lifetime Validity:</strong> প্রতিটি লাইসেন্স ১টি উইন্ডোজ পিসি অথবা ১টি ম্যাক ডিভাইসে আজীবনের জন্য সক্রিয় থাকবে (One-time purchase, no subscription fees)।</li>\n  <li>✅ <strong>Redeem Directly at Microsoft:</strong> সরাসরি অফিসিয়াল মাইক্রোসফট পোর্টাল <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://setup.office.com</a> এ গিয়ে রিডিম ও ইনস্টলার ডাউনলোড করুন।</li>\n  <li>✅ <strong>Full Classic Office Apps:</strong> Word, Excel, PowerPoint, Outlook এবং OneNote এর ফুল ফিচার্ড ক্লাসিক ডেস্কটপ সংস্করণ।</li>\n  <li>✅ <strong>Guaranteed 100% Authentic:</strong> অনুমোদিত মাইক্রোসফট পার্টনার চ্যানেল থেকে সরবরাহকৃত জেনুইন রিটেল বাইন্ডিং লাইসেন্স।</li>\n  <li>✅ <strong>Fast & Convenient Delivery:</strong> অর্ডার কনফার্মেশনের সাথে সাথেই আপনার ওয়েব স্টোর ড্যাশবোর্ড ও ইমেইলে লাইসেন্স কি পৌঁছে যাবে।</li>\n</ul>\n\n<hr>\n\n<h3>💰 সংস্করণ ও মূল্য তালিকা (Versions & Pricing)</h3>\n\n<h4>Office Home & Business 2024 (Latest Edition)</h4>\n<ul>\n  <li><strong>Windows (2024):</strong> ৳34,999 (নিয়মিত মূল্য: ৳45,000) — Windows 10/11 এর জন্য সর্বাধুনিক সংস্করণ।</li>\n  <li><strong>Mac (2024):</strong> ৳34,999 (নিয়মিত মূল্য: ৳45,000) — macOS Sequoia, Sonoma, Ventura এর জন্য 최신 সংস্করণ।</li>\n</ul>\n\n<h4>Office Home & Business 2021</h4>\n<ul>\n  <li><strong>Windows (2021):</strong> ৳18,999 (নিয়মিত মূল্য: ৳25,000) — Windows 10/11 সাপোর্টেড।</li>\n  <li><strong>Mac (2021):</strong> ৳17,499 (নিয়মিত মূল্য: ৳24,000) — macOS সাপোর্টেড প্রফেশনাল সংস্করণ।</li>\n</ul>\n\n<h4>Office Home & Business 2019</h4>\n<ul>\n  <li><strong>Windows (2019):</strong> ৳9,499 (নিয়মিত মূল্য: ৳14,000) — Windows 10/11 সাপোর্টেড।</li>\n  <li><strong>Mac (2019):</strong> ৳9,499 (নিয়মিত মূল্য: ৳14,000) — macOS সাপোর্টেড স্ট্যাবল সংস্করণ।</li>\n</ul>\n\n<h4>Office Home & Business 2016</h4>\n<ul>\n  <li><strong>Windows (2016):</strong> ৳6,999 (নিয়মিত মূল্য: ৳10,000) — Windows 7, 8.1, 10, 11 সাপোর্টেড।</li>\n  <li><strong>Mac (2016):</strong> ৳6,999 (নিয়মিত মূল্য: ৳10,000) — macOS এর জন্য সাশ্রয়ী সংস্করণ।</li>\n</ul>\n\n<hr>\n\n<h3>⚙️ সক্রিয়করণ নির্দেশিকা (How to Redeem & Activate)</h3>\n<ol>\n  <li>যেকোনো ব্রাউজারে গিয়ে <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://setup.office.com</a> এ প্রবেশ করুন।</li>\n  <li>আপনার নিজস্ব <strong>Microsoft Account</strong> (Outlook, Hotmail বা Live) দিয়ে সাইন ইন করুন (অথবা নতুন অ্যাকাউন্ট তৈরি করুন)।</li>\n  <li>আমাদের থেকে প্রাপ্ত ২৫-ডিজিটের প্রোডাক্ট কি (Product Key) লিখুন।</li>\n  <li>আপনার দেশ (Bangladesh) এবং ভাষা নির্বাচন করে কনফার্ম করুন।</li>\n  <li>লাইসেন্সটি স্থায়ীভাবে আপনার অ্যাকাউন্টে বাইন্ড হয়ে যাবে। এরপর সরাসরি অফিসিয়াল সেটআপ ফাইল ডাউনলোড করে ইনস্টল করুন।</li>\n</ol>\n\n<hr>\n\n<h3>⚠️ গুরুত্বপূর্ণ নির্দেশাবলী (Important Notes)</h3>\n<ul>\n  <li>🔍 <strong>সঠিক সংস্করণ নির্বাচন করুন:</strong> ক্রয়ের পূর্বে নিশ্চিত হয়ে নিন যে আপনি আপনার অপারেটিং সিস্টেম (Windows নাকি Mac) এবং কাঙ্ক্ষিত বছর/সংস্করণ সঠিকভাবে নির্বাচন করেছেন। ডিজিটাল লাইসেন্স ডেলিভারির পর ভুল অর্ডারের জন্য রিটার্ন বা এক্সচেঞ্জ গ্রহণযোগ্য নয়।</li>\n  <li>❌ <strong>Sold Products Are Not Returnable.</strong></li>\n  <li>🛒 ডেলিভারি সম্পন্ন হওয়ার পর সর্বোচ্চ ২ দিনের মধ্যে রিডিম বা সক্রিয় করার জন্য অনুরোধ করা হচ্ছে।</li>\n  <li>💬 কোনো প্রশ্ন বা সক্রিয়করণে সহায়তার প্রয়োজন হলে আমাদের সার্বক্ষণিক ফ্রেন্ডলি কাস্টমার সাপোর্টে যোগাযোগ করুন।</li>\n</ul>",
-        "image": "/img_content/Microsoft Office Home & Business Showcase.png",
+        "badge": "Latest 2024",
+        "price": 34999,
+        "originalPrice": 45000,
+        "desc": "<ul>\n  <li><strong>100% Genuine Microsoft Account Binding Key:</strong> Permanent digital license linked directly to your personal Microsoft account at <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">setup.office.com</a>.</li>\n  <li><strong>1 Device Lifetime Activation:</strong> You will receive 1x Office Home & Business 2024 key valid for lifetime activation on 1 Windows PC or 1 Mac.</li>\n  <li><strong>Full Classic Desktop Apps:</strong> Includes Word, Excel, PowerPoint, Outlook, and OneNote.</li>\n  <li><strong>Transferable License:</strong> Reinstall or transfer to a new PC/Mac anytime simply by logging into your Microsoft account.</li>\n  <li><strong>Fast Digital Delivery & 24/7 Support:</strong> Instant key delivery via your web store dashboard with full setup assistance.</li>\n</ul>",
+        "longDesc": "<h1>Microsoft Office Home & Business 2024 Binding Key (PC / Mac)</h1>\n\n<p>Microsoft Office Home & Business 2024 হলো পেশাদার এবং ব্যবসায়ীদের জন্য এককালীন ক্রয়ের (Lifetime One-Time Purchase) অফিসিয়াল স্যুট। এতে রয়েছে Word, Excel, PowerPoint, Outlook এবং OneNote এর পূর্ণাঙ্গ ক্লাসিক ডেস্কটপ সংস্করণ। Tech Solutions BD থেকে গ্রহণ করুন ১০০% আসল <strong>Microsoft Account Binding License Key</strong> যা সরাসরি আপনার নিজস্ব মাইক্রোসফট অ্যাকাউন্টে আজীবনের জন্য লিংক হয়ে থাকবে।</p>\n\n<hr>\n\n<h3>🌟 মূল সুবিধাসমূহ (Key Highlights)</h3>\n<ul>\n  <li>✅ <strong>Account Binding Key:</strong> লাইসেন্সটি সরাসরি আপনার নিজস্ব Microsoft অ্যাকাউন্টে (<a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">setup.office.com</a>) লিংক হয়ে যায়। ফলে ভবিষ্যতে পিসি বা ম্যাক পরিবর্তন কিংবা রি-ইনস্টল করলেও কোনো জটিলতা ছাড়াই পুনরায় সক্রিয় করা যায়।</li>\n  <li>✅ <strong>1 Device Lifetime Validity:</strong> প্রতিটি লাইসেন্স ১টি উইন্ডোজ পিসি অথবা ১টি ম্যাক ডিভাইসে আজীবনের জন্য সক্রিয় থাকবে (One-time purchase, no subscription fees)।</li>\n  <li>✅ <strong>Redeem Directly at Microsoft:</strong> সরাসরি অফিসিয়াল মাইক্রোসফট পোর্টাল <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://setup.office.com</a> এ গিয়ে রিডিম ও অফিসিয়াল ইনস্টলার ডাউনলোড করুন।</li>\n  <li>✅ <strong>Full Classic Office Apps:</strong> Word, Excel, PowerPoint, Outlook এবং OneNote এর ফুল ফিচার্ড ক্লাসিক ডেস্কটপ সংস্করণ।</li>\n  <li>✅ <strong>Guaranteed 100% Authentic:</strong> অনুমোদিত মাইক্রোসফট চ্যানেল থেকে সরবরাহকৃত জেনুইন রিটেল বাইন্ডিং লাইসেন্স।</li>\n  <li>✅ <strong>Fast & Convenient Delivery:</strong> অর্ডার কনফার্মেশনের সাথে সাথেই আপনার ওয়েব স্টোর ড্যাশবোর্ড ও ইমেইলে লাইসেন্স কি পৌঁছে যাবে।</li>\n</ul>\n\n<hr>\n\n<h3>💰 সংস্করণ ও মূল্য তালিকা (Pricing & Editions)</h3>\n<ul>\n  <li><strong>Windows (2024):</strong> ৳34,999 (নিয়মিত মূল্য: ৳45,000) — 1 Windows PC Lifetime Binding Key</li>\n  <li><strong>Mac (2024):</strong> ৳34,999 (নিয়মিত মূল্য: ৳45,000) — 1 Mac Lifetime Binding Key</li>\n</ul>\n<p><em>* অপারেটিং সিস্টেম সাপোর্ট: Windows 10 / 11 and recent macOS versions (Sequoia, Sonoma, Ventura).</em></p>\n\n<hr>\n\n<h3>⚙️ সক্রিয়করণ নির্দেশিকা (How to Redeem & Activate)</h3>\n<ol>\n  <li>যেকোনো ব্রাউজারে গিয়ে <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://setup.office.com</a> এ প্রবেশ করুন।</li>\n  <li>আপনার নিজস্ব <strong>Microsoft Account</strong> (Outlook, Hotmail বা Live) দিয়ে সাইন ইন করুন (অথবা নতুন অ্যাকাউন্ট তৈরি করুন)।</li>\n  <li>আমাদের থেকে প্রাপ্ত ২৫-ডিজিটের প্রোডাক্ট কি (Product Key) লিখুন।</li>\n  <li>আপনার দেশ (Bangladesh) এবং ভাষা নির্বাচন করে কনফার্ম করুন।</li>\n  <li>লাইসেন্সটি স্থায়ীভাবে আপনার অ্যাকাউন্টে বাইন্ড হয়ে যাবে। এরপর সরাসরি অফিসিয়াল সেটআপ ফাইল ডাউনলোড করে ইনস্টল করুন।</li>\n</ol>\n\n<hr>\n\n<h3>⚠️ গুরুত্বপূর্ণ নির্দেশাবলী (Important Notes)</h3>\n<ul>\n  <li>🔍 <strong>সঠিক সংস্করণ নির্বাচন করুন:</strong> ক্রয়ের পূর্বে নিশ্চিত হয়ে নিন যে আপনি আপনার অপারেটিং সিস্টেম (Windows নাকি Mac) সঠিকভাবে নির্বাচন করেছেন। ডিজিটাল লাইসেন্স ডেলিভারির পর ভুল অর্ডারের জন্য রিটার্ন বা এক্সচেঞ্জ গ্রহণযোগ্য নয়।</li>\n  <li>❌ <strong>Sold Products Are Not Returnable.</strong></li>\n  <li>🛒 ডেলিভারি সম্পন্ন হওয়ার পর সর্বোচ্চ ২ দিনের মধ্যে রিডিম বা সক্রিয় করার জন্য অনুরোধ করা হচ্ছে।</li>\n  <li>💬 কোনো প্রশ্ন বা সক্রিয়করণে সহায়তার প্রয়োজন হলে আমাদের সার্বক্ষণিক ফ্রেন্ডলি কাস্টমার সাপোর্টে যোগাযোগ করুন।</li>\n</ul>",
+        "image": "/img_content/Microsoft Office 2024 home bus Box Showcase.png",
         "icon": "🏢",
         "color": "#D83B01",
         "gradient": "linear-gradient(135deg, #D83B01 0%, #EA580C 100%)",
         "options": [
             {
                 "id": "office-hb-2024-win",
-                "name": "Office Home & Business 2024 (Windows)",
+                "name": "Windows Binding Key",
                 "type": "RETAIL_KEY",
                 "price": 34999,
                 "originalPrice": 45000,
-                "description": "1 Windows PC Lifetime Account Binding Key. Redeem at setup.office.com."
+                "description": "1 Windows PC Lifetime Account Binding Key for Office Home & Business 2024. Redeem at setup.office.com."
             },
             {
                 "id": "office-hb-2024-mac",
-                "name": "Office Home & Business 2024 (Mac)",
+                "name": "Mac Binding Key",
                 "type": "RETAIL_KEY",
                 "price": 34999,
                 "originalPrice": 45000,
-                "description": "1 Mac Lifetime Account Binding Key. Redeem at setup.office.com."
-            },
+                "description": "1 Mac Lifetime Account Binding Key for Office Home & Business 2024. Redeem at setup.office.com."
+            }
+        ]
+    },
+    {
+        "id": "office-home-business-2021-price-in-bangladesh",
+        "slug": "office-home-business-2021-price-in-bangladesh",
+        "name": "Microsoft Office Home & Business 2021 (PC / Mac)",
+        "category": "office",
+        "badge": "Account Binding",
+        "price": 17499,
+        "originalPrice": 24000,
+        "desc": "<ul>\n  <li><strong>100% Genuine Microsoft Account Binding Key:</strong> Permanent digital license linked directly to your personal Microsoft account at <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">setup.office.com</a>.</li>\n  <li><strong>1 Device Lifetime Activation:</strong> You will receive 1x Office Home & Business 2021 key valid for lifetime activation on 1 Windows PC or 1 Mac.</li>\n  <li><strong>Full Classic Desktop Apps:</strong> Includes Word, Excel, PowerPoint, Outlook, and OneNote.</li>\n  <li><strong>Transferable License:</strong> Reinstall or transfer to a new PC/Mac anytime simply by logging into your Microsoft account.</li>\n  <li><strong>Fast Digital Delivery & 24/7 Support:</strong> Instant key delivery via your web store dashboard with full setup assistance.</li>\n</ul>",
+        "longDesc": "<h1>Microsoft Office Home & Business 2021 Binding Key (PC / Mac)</h1>\n\n<p>Microsoft Office Home & Business 2021 হলো পেশাদার এবং ব্যবসায়ীদের জন্য এককালীন ক্রয়ের (Lifetime One-Time Purchase) অফিসিয়াল স্যুট। এতে রয়েছে Word, Excel, PowerPoint, Outlook এবং OneNote এর পূর্ণাঙ্গ ক্লাসিক ডেস্কটপ সংস্করণ। Tech Solutions BD থেকে গ্রহণ করুন ১০০% আসল <strong>Microsoft Account Binding License Key</strong> যা সরাসরি আপনার নিজস্ব মাইক্রোসফট অ্যাকাউন্টে আজীবনের জন্য লিংক হয়ে থাকবে।</p>\n\n<hr>\n\n<h3>🌟 মূল সুবিধাসমূহ (Key Highlights)</h3>\n<ul>\n  <li>✅ <strong>Account Binding Key:</strong> লাইসেন্সটি সরাসরি আপনার নিজস্ব Microsoft অ্যাকাউন্টে (<a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">setup.office.com</a>) লিংক হয়ে যায়। ফলে ভবিষ্যতে পিসি বা ম্যাক পরিবর্তন কিংবা রি-ইনস্টল করলেও কোনো জটিলতা ছাড়াই পুনরায় সক্রিয় করা যায়।</li>\n  <li>✅ <strong>1 Device Lifetime Validity:</strong> প্রতিটি লাইসেন্স ১টি উইন্ডোজ পিসি অথবা ১টি ম্যাক ডিভাইসে আজীবনের জন্য সক্রিয় থাকবে (One-time purchase, no subscription fees)।</li>\n  <li>✅ <strong>Redeem Directly at Microsoft:</strong> সরাসরি অফিসিয়াল মাইক্রোসফট পোর্টাল <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://setup.office.com</a> এ গিয়ে রিডিম ও অফিসিয়াল ইনস্টলার ডাউনলোড করুন।</li>\n  <li>✅ <strong>Full Classic Office Apps:</strong> Word, Excel, PowerPoint, Outlook এবং OneNote এর ফুল ফিচার্ড ক্লাসিক ডেস্কটপ সংস্করণ।</li>\n  <li>✅ <strong>Guaranteed 100% Authentic:</strong> অনুমোদিত মাইক্রোসফট চ্যানেল থেকে সরবরাহকৃত জেনুইন রিটেল বাইন্ডিং লাইসেন্স।</li>\n  <li>✅ <strong>Fast & Convenient Delivery:</strong> অর্ডার কনফার্মেশনের সাথে সাথেই আপনার ওয়েব স্টোর ড্যাশবোর্ড ও ইমেইলে লাইসেন্স কি পৌঁছে যাবে।</li>\n</ul>\n\n<hr>\n\n<h3>💰 সংস্করণ ও মূল্য তালিকা (Pricing & Editions)</h3>\n<ul>\n  <li><strong>Windows (2021):</strong> ৳18,999 (নিয়মিত মূল্য: ৳25,000) — 1 Windows PC Lifetime Binding Key</li>\n  <li><strong>Mac (2021):</strong> ৳17,499 (নিয়মিত মূল্য: ৳24,000) — 1 Mac Lifetime Binding Key</li>\n</ul>\n<p><em>* অপারেটিং সিস্টেম সাপোর্ট: Windows 10 / 11 and supported macOS versions.</em></p>\n\n<hr>\n\n<h3>⚙️ সক্রিয়করণ নির্দেশিকা (How to Redeem & Activate)</h3>\n<ol>\n  <li>যেকোনো ব্রাউজারে গিয়ে <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://setup.office.com</a> এ প্রবেশ করুন।</li>\n  <li>আপনার নিজস্ব <strong>Microsoft Account</strong> (Outlook, Hotmail বা Live) দিয়ে সাইন ইন করুন (অথবা নতুন অ্যাকাউন্ট তৈরি করুন)।</li>\n  <li>আমাদের থেকে প্রাপ্ত ২৫-ডিজিটের প্রোডাক্ট কি (Product Key) লিখুন।</li>\n  <li>আপনার দেশ (Bangladesh) এবং ভাষা নির্বাচন করে কনফার্ম করুন।</li>\n  <li>লাইসেন্সটি স্থায়ীভাবে আপনার অ্যাকাউন্টে বাইন্ড হয়ে যাবে। এরপর সরাসরি অফিসিয়াল সেটআপ ফাইল ডাউনলোড করে ইনস্টল করুন।</li>\n</ol>\n\n<hr>\n\n<h3>⚠️ গুরুত্বপূর্ণ নির্দেশাবলী (Important Notes)</h3>\n<ul>\n  <li>🔍 <strong>সঠিক সংস্করণ নির্বাচন করুন:</strong> ক্রয়ের পূর্বে নিশ্চিত হয়ে নিন যে আপনি আপনার অপারেটিং সিস্টেম (Windows নাকি Mac) সঠিকভাবে নির্বাচন করেছেন। ডিজিটাল লাইসেন্স ডেলিভারির পর ভুল অর্ডারের জন্য রিটার্ন বা এক্সচেঞ্জ গ্রহণযোগ্য নয়।</li>\n  <li>❌ <strong>Sold Products Are Not Returnable.</strong></li>\n  <li>🛒 ডেলিভারি সম্পন্ন হওয়ার পর সর্বোচ্চ ২ দিনের মধ্যে রিডিম বা সক্রিয় করার জন্য অনুরোধ করা হচ্ছে।</li>\n  <li>💬 কোনো প্রশ্ন বা সক্রিয়করণে সহায়তার প্রয়োজন হলে আমাদের সার্বক্ষণিক ফ্রেন্ডলি কাস্টমার সাপোর্টে যোগাযোগ করুন।</li>\n</ul>",
+        "image": "/img_content/Microsoft Office 2021 Home & Business Promo.png",
+        "icon": "🏢",
+        "color": "#D83B01",
+        "gradient": "linear-gradient(135deg, #D83B01 0%, #EA580C 100%)",
+        "options": [
             {
                 "id": "office-hb-2021-win",
-                "name": "Office Home & Business 2021 (Windows)",
+                "name": "Windows Binding Key",
                 "type": "RETAIL_KEY",
                 "price": 18999,
                 "originalPrice": 25000,
-                "description": "1 Windows PC Lifetime Account Binding Key. Redeem at setup.office.com."
+                "description": "1 Windows PC Lifetime Account Binding Key for Office Home & Business 2021. Redeem at setup.office.com."
             },
             {
                 "id": "office-hb-2021-mac",
-                "name": "Office Home & Business 2021 (Mac)",
+                "name": "Mac Binding Key",
                 "type": "RETAIL_KEY",
                 "price": 17499,
                 "originalPrice": 24000,
-                "description": "1 Mac Lifetime Account Binding Key. Redeem at setup.office.com."
-            },
+                "description": "1 Mac Lifetime Account Binding Key for Office Home & Business 2021. Redeem at setup.office.com."
+            }
+        ]
+    },
+    {
+        "id": "office-home-business-2019-price-in-bangladesh",
+        "slug": "office-home-business-2019-price-in-bangladesh",
+        "name": "Microsoft Office Home & Business 2019 (PC / Mac)",
+        "category": "office",
+        "badge": "Account Binding",
+        "price": 9499,
+        "originalPrice": 14000,
+        "desc": "<ul>\n  <li><strong>100% Genuine Microsoft Account Binding Key:</strong> Permanent digital license linked directly to your personal Microsoft account at <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">setup.office.com</a>.</li>\n  <li><strong>1 Device Lifetime Activation:</strong> You will receive 1x Office Home & Business 2019 key valid for lifetime activation on 1 Windows PC or 1 Mac.</li>\n  <li><strong>Full Classic Desktop Apps:</strong> Includes Word, Excel, PowerPoint, Outlook, and OneNote.</li>\n  <li><strong>Transferable License:</strong> Reinstall or transfer to a new PC/Mac anytime simply by logging into your Microsoft account.</li>\n  <li><strong>Fast Digital Delivery & 24/7 Support:</strong> Instant key delivery via your web store dashboard with full setup assistance.</li>\n</ul>",
+        "longDesc": "<h1>Microsoft Office Home & Business 2019 Binding Key (PC / Mac)</h1>\n\n<p>Microsoft Office Home & Business 2019 হলো পেশাদার এবং ব্যবসায়ীদের জন্য এককালীন ক্রয়ের (Lifetime One-Time Purchase) অফিসিয়াল স্যুট। এতে রয়েছে Word, Excel, PowerPoint, Outlook এবং OneNote এর পূর্ণাঙ্গ ক্লাসিক ডেস্কটপ সংস্করণ। Tech Solutions BD থেকে গ্রহণ করুন ১০০% আসল <strong>Microsoft Account Binding License Key</strong> যা সরাসরি আপনার নিজস্ব মাইক্রোসফট অ্যাকাউন্টে আজীবনের জন্য লিংক হয়ে থাকবে।</p>\n\n<hr>\n\n<h3>🌟 মূল সুবিধাসমূহ (Key Highlights)</h3>\n<ul>\n  <li>✅ <strong>Account Binding Key:</strong> লাইসেন্সটি সরাসরি আপনার নিজস্ব Microsoft অ্যাকাউন্টে (<a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">setup.office.com</a>) লিংক হয়ে যায়। ফলে ভবিষ্যতে পিসি বা ম্যাক পরিবর্তন কিংবা রি-ইনস্টল করলেও কোনো জটিলতা ছাড়াই পুনরায় সক্রিয় করা যায়।</li>\n  <li>✅ <strong>1 Device Lifetime Validity:</strong> প্রতিটি লাইসেন্স ১টি উইন্ডোজ পিসি অথবা ১টি ম্যাক ডিভাইসে আজীবনের জন্য সক্রিয় থাকবে (One-time purchase, no subscription fees)।</li>\n  <li>✅ <strong>Redeem Directly at Microsoft:</strong> সরাসরি অফিসিয়াল মাইক্রোসফট পোর্টাল <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://setup.office.com</a> এ গিয়ে রিডিম ও অফিসিয়াল ইনস্টলার ডাউনলোড করুন।</li>\n  <li>✅ <strong>Full Classic Office Apps:</strong> Word, Excel, PowerPoint, Outlook এবং OneNote এর ফুল ফিচার্ড ক্লাসিক ডেস্কটপ সংস্করণ।</li>\n  <li>✅ <strong>Guaranteed 100% Authentic:</strong> অনুমোদিত মাইক্রোসফট চ্যানেল থেকে সরবরাহকৃত জেনুইন রিটেল বাইন্ডিং লাইসেন্স।</li>\n  <li>✅ <strong>Fast & Convenient Delivery:</strong> অর্ডার কনফার্মেশনের সাথে সাথেই আপনার ওয়েব স্টোর ড্যাশবোর্ড ও ইমেইলে লাইসেন্স কি পৌঁছে যাবে।</li>\n</ul>\n\n<hr>\n\n<h3>💰 সংস্করণ ও মূল্য তালিকা (Pricing & Editions)</h3>\n<ul>\n  <li><strong>Windows (2019):</strong> ৳9,499 (নিয়মিত মূল্য: ৳14,000) — 1 Windows PC Lifetime Binding Key</li>\n  <li><strong>Mac (2019):</strong> ৳9,499 (নিয়মিত মূল্য: ৳14,000) — 1 Mac Lifetime Binding Key</li>\n</ul>\n<p><em>* অপারেটিং সিস্টেম সাপোর্ট: Windows 10 / 11 and supported macOS versions.</em></p>\n\n<hr>\n\n<h3>⚙️ সক্রিয়করণ নির্দেশিকা (How to Redeem & Activate)</h3>\n<ol>\n  <li>যেকোনো ব্রাউজারে গিয়ে <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://setup.office.com</a> এ প্রবেশ করুন।</li>\n  <li>আপনার নিজস্ব <strong>Microsoft Account</strong> (Outlook, Hotmail বা Live) দিয়ে সাইন ইন করুন (অথবা নতুন অ্যাকাউন্ট তৈরি করুন)।</li>\n  <li>আমাদের থেকে প্রাপ্ত ২৫-ডিজিটের প্রোডাক্ট কি (Product Key) লিখুন।</li>\n  <li>আপনার দেশ (Bangladesh) এবং ভাষা নির্বাচন করে কনফার্ম করুন।</li>\n  <li>লাইসেন্সটি স্থায়ীভাবে আপনার অ্যাকাউন্টে বাইন্ড হয়ে যাবে। এরপর সরাসরি অফিসিয়াল সেটআপ ফাইল ডাউনলোড করে ইনস্টল করুন।</li>\n</ol>\n\n<hr>\n\n<h3>⚠️ গুরুত্বপূর্ণ নির্দেশাবলী (Important Notes)</h3>\n<ul>\n  <li>🔍 <strong>সঠিক সংস্করণ নির্বাচন করুন:</strong> ক্রয়ের পূর্বে নিশ্চিত হয়ে নিন যে আপনি আপনার অপারেটিং সিস্টেম (Windows নাকি Mac) সঠিকভাবে নির্বাচন করেছেন। ডিজিটাল লাইসেন্স ডেলিভারির পর ভুল অর্ডারের জন্য রিটার্ন বা এক্সচেঞ্জ গ্রহণযোগ্য নয়।</li>\n  <li>❌ <strong>Sold Products Are Not Returnable.</strong></li>\n  <li>🛒 ডেলিভারি সম্পন্ন হওয়ার পর সর্বোচ্চ ২ দিনের মধ্যে রিডিম বা সক্রিয় করার জন্য অনুরোধ করা হচ্ছে।</li>\n  <li>💬 কোনো প্রশ্ন বা সক্রিয়করণে সহায়তার প্রয়োজন হলে আমাদের সার্বক্ষণিক ফ্রেন্ডলি কাস্টমার সাপোর্টে যোগাযোগ করুন।</li>\n</ul>",
+        "image": "/img_content/Microsoft Office 2019 home Product Showcase (1).png",
+        "icon": "🏢",
+        "color": "#D83B01",
+        "gradient": "linear-gradient(135deg, #D83B01 0%, #EA580C 100%)",
+        "options": [
             {
                 "id": "office-hb-2019-win",
-                "name": "Office Home & Business 2019 (Windows)",
+                "name": "Windows Binding Key",
                 "type": "RETAIL_KEY",
                 "price": 9499,
                 "originalPrice": 14000,
-                "description": "1 Windows PC Lifetime Account Binding Key. Redeem at setup.office.com."
+                "description": "1 Windows PC Lifetime Account Binding Key for Office Home & Business 2019. Redeem at setup.office.com."
             },
             {
                 "id": "office-hb-2019-mac",
-                "name": "Office Home & Business 2019 (Mac)",
+                "name": "Mac Binding Key",
                 "type": "RETAIL_KEY",
                 "price": 9499,
                 "originalPrice": 14000,
-                "description": "1 Mac Lifetime Account Binding Key. Redeem at setup.office.com."
-            },
+                "description": "1 Mac Lifetime Account Binding Key for Office Home & Business 2019. Redeem at setup.office.com."
+            }
+        ]
+    },
+    {
+        "id": "office-home-business-2016-price-in-bangladesh",
+        "slug": "office-home-business-2016-price-in-bangladesh",
+        "name": "Microsoft Office Home & Business 2016 (PC / Mac)",
+        "category": "office",
+        "badge": "Account Binding",
+        "price": 6999,
+        "originalPrice": 10000,
+        "desc": "<ul>\n  <li><strong>100% Genuine Microsoft Account Binding Key:</strong> Permanent digital license linked directly to your personal Microsoft account at <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">setup.office.com</a>.</li>\n  <li><strong>1 Device Lifetime Activation:</strong> You will receive 1x Office Home & Business 2016 key valid for lifetime activation on 1 Windows PC or 1 Mac.</li>\n  <li><strong>Full Classic Desktop Apps:</strong> Includes Word, Excel, PowerPoint, Outlook, and OneNote.</li>\n  <li><strong>Transferable License:</strong> Reinstall or transfer to a new PC/Mac anytime simply by logging into your Microsoft account.</li>\n  <li><strong>Fast Digital Delivery & 24/7 Support:</strong> Instant key delivery via your web store dashboard with full setup assistance.</li>\n</ul>",
+        "longDesc": "<h1>Microsoft Office Home & Business 2016 Binding Key (PC / Mac)</h1>\n\n<p>Microsoft Office Home & Business 2016 হলো পেশাদার এবং ব্যবসায়ীদের জন্য এককালীন ক্রয়ের (Lifetime One-Time Purchase) অফিসিয়াল স্যুট। এতে রয়েছে Word, Excel, PowerPoint, Outlook এবং OneNote এর পূর্ণাঙ্গ ক্লাসিক ডেস্কটপ সংস্করণ। Tech Solutions BD থেকে গ্রহণ করুন ১০০% আসল <strong>Microsoft Account Binding License Key</strong> যা সরাসরি আপনার নিজস্ব মাইক্রোসফট অ্যাকাউন্টে আজীবনের জন্য লিংক হয়ে থাকবে।</p>\n\n<hr>\n\n<h3>🌟 মূল সুবিধাসমূহ (Key Highlights)</h3>\n<ul>\n  <li>✅ <strong>Account Binding Key:</strong> লাইসেন্সটি সরাসরি আপনার নিজস্ব Microsoft অ্যাকাউন্টে (<a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">setup.office.com</a>) লিংক হয়ে যায়। ফলে ভবিষ্যতে পিসি বা ম্যাক পরিবর্তন কিংবা রি-ইনস্টল করলেও কোনো জটিলতা ছাড়াই পুনরায় সক্রিয় করা যায়।</li>\n  <li>✅ <strong>1 Device Lifetime Validity:</strong> প্রতিটি লাইসেন্স ১টি উইন্ডোজ পিসি অথবা ১টি ম্যাক ডিভাইসে আজীবনের জন্য সক্রিয় থাকবে (One-time purchase, no subscription fees)।</li>\n  <li>✅ <strong>Redeem Directly at Microsoft:</strong> সরাসরি অফিসিয়াল মাইক্রোসফট পোর্টাল <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://setup.office.com</a> এ গিয়ে রিডিম ও অফিসিয়াল ইনস্টলার ডাউনলোড করুন।</li>\n  <li>✅ <strong>Full Classic Office Apps:</strong> Word, Excel, PowerPoint, Outlook এবং OneNote এর ফুল ফিচার্ড ক্লাসিক ডেস্কটপ সংস্করণ।</li>\n  <li>✅ <strong>Guaranteed 100% Authentic:</strong> অনুমোদিত মাইক্রোসফট চ্যানেল থেকে সরবরাহকৃত জেনুইন রিটেল বাইন্ডিং লাইসেন্স।</li>\n  <li>✅ <strong>Fast & Convenient Delivery:</strong> অর্ডার কনফার্মেশনের সাথে সাথেই আপনার ওয়েব স্টোর ড্যাশবোর্ড ও ইমেইলে লাইসেন্স কি পৌঁছে যাবে।</li>\n</ul>\n\n<hr>\n\n<h3>💰 সংস্করণ ও মূল্য তালিকা (Pricing & Editions)</h3>\n<ul>\n  <li><strong>Windows (2016):</strong> ৳6,999 (নিয়মিত মূল্য: ৳10,000) — 1 Windows PC Lifetime Binding Key</li>\n  <li><strong>Mac (2016):</strong> ৳6,999 (নিয়মিত মূল্য: ৳10,000) — 1 Mac Lifetime Binding Key</li>\n</ul>\n<p><em>* অপারেটিং সিস্টেম সাপোর্ট: Windows 7, 8.1, 10, 11 and supported macOS versions.</em></p>\n\n<hr>\n\n<h3>⚙️ সক্রিয়করণ নির্দেশিকা (How to Redeem & Activate)</h3>\n<ol>\n  <li>যেকোনো ব্রাউজারে গিয়ে <a href=\"https://setup.office.com\" target=\"_blank\" rel=\"noopener noreferrer\">https://setup.office.com</a> এ প্রবেশ করুন।</li>\n  <li>আপনার নিজস্ব <strong>Microsoft Account</strong> (Outlook, Hotmail বা Live) দিয়ে সাইন ইন করুন (অথবা নতুন অ্যাকাউন্ট তৈরি করুন)।</li>\n  <li>আমাদের থেকে প্রাপ্ত ২৫-ডিজিটের প্রোডাক্ট কি (Product Key) লিখুন।</li>\n  <li>আপনার দেশ (Bangladesh) এবং ভাষা নির্বাচন করে কনফার্ম করুন।</li>\n  <li>লাইসেন্সটি স্থায়ীভাবে আপনার অ্যাকাউন্টে বাইন্ড হয়ে যাবে। এরপর সরাসরি অফিসিয়াল সেটআপ ফাইল ডাউনলোড করে ইনস্টল করুন।</li>\n</ol>\n\n<hr>\n\n<h3>⚠️ গুরুত্বপূর্ণ নির্দেশাবলী (Important Notes)</h3>\n<ul>\n  <li>🔍 <strong>সঠিক সংস্করণ নির্বাচন করুন:</strong> ক্রয়ের পূর্বে নিশ্চিত হয়ে নিন যে আপনি আপনার অপারেটিং সিস্টেম (Windows নাকি Mac) সঠিকভাবে নির্বাচন করেছেন। ডিজিটাল লাইসেন্স ডেলিভারির পর ভুল অর্ডারের জন্য রিটার্ন বা এক্সচেঞ্জ গ্রহণযোগ্য নয়।</li>\n  <li>❌ <strong>Sold Products Are Not Returnable.</strong></li>\n  <li>🛒 ডেলিভারি সম্পন্ন হওয়ার পর সর্বোচ্চ ২ দিনের মধ্যে রিডিম বা সক্রিয় করার জন্য অনুরোধ করা হচ্ছে।</li>\n  <li>💬 কোনো প্রশ্ন বা সক্রিয়করণে সহায়তার প্রয়োজন হলে আমাদের সার্বক্ষণিক ফ্রেন্ডলি কাস্টমার সাপোর্টে যোগাযোগ করুন।</li>\n</ul>",
+        "image": "/img_content/Office 2016 Home & Business Showcase.png",
+        "icon": "🏢",
+        "color": "#D83B01",
+        "gradient": "linear-gradient(135deg, #D83B01 0%, #EA580C 100%)",
+        "options": [
             {
                 "id": "office-hb-2016-win",
-                "name": "Office Home & Business 2016 (Windows)",
+                "name": "Windows Binding Key",
                 "type": "RETAIL_KEY",
                 "price": 6999,
                 "originalPrice": 10000,
-                "description": "1 Windows PC Lifetime Account Binding Key. Redeem at setup.office.com."
+                "description": "1 Windows PC Lifetime Account Binding Key for Office Home & Business 2016. Redeem at setup.office.com."
             },
             {
                 "id": "office-hb-2016-mac",
-                "name": "Office Home & Business 2016 (Mac)",
+                "name": "Mac Binding Key",
                 "type": "RETAIL_KEY",
                 "price": 6999,
                 "originalPrice": 10000,
-                "description": "1 Mac Lifetime Account Binding Key. Redeem at setup.office.com."
+                "description": "1 Mac Lifetime Account Binding Key for Office Home & Business 2016. Redeem at setup.office.com."
             }
         ]
     },
