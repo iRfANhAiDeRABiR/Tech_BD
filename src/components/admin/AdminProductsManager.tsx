@@ -82,7 +82,7 @@ export function AdminProductsManager({
   const [sortBy, setSortBy] = useState<
     "default" | "price-asc" | "price-desc" | "name-asc" | "name-desc" | "options-desc" | "recent"
   >("default");
-  const [viewMode, setViewMode] = useState<"table" | "grid">("table");
+  const [viewMode, setViewMode] = useState<"table" | "grid">("grid");
 
   // Delete confirmation modal state
   const [productToDelete, setProductToDelete] = useState<AdminProductItem | null>(null);
