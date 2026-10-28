@@ -1623,6 +1623,72 @@ export const products: Product[] = [
                 "description": "Activated on your own personal email via official Workspace/Business Invite for 1 Month."
             }
         ]
+    },
+    {
+        "id": "notion-plus-price-in-bangladesh",
+        "slug": "notion-plus-price-in-bangladesh",
+        "name": "Notion Plus Subscription Price in Bangladesh",
+        "category": "educational-tools",
+        "badge": "1 Year Plan",
+        "price": 2799,
+        "originalPrice": 12000,
+        "desc": "<ul>\n  <li><strong>Notion Plus 1 Year Official Plan:</strong> All-in-one workspace for notes, docs, databases, project management, and team collaboration.</li>\n  <li><strong>Unlimited Blocks & Pages:</strong> No limits on content creation, pages, or database records for your team.</li>\n  <li><strong>Unlimited File Uploads:</strong> Upload files up to 5 GB each with 90-day version history and revision tracking.</li>\n  <li><strong>100 Guest Collaborators:</strong> Invite clients, contractors, and partners with granular permission controls.</li>\n  <li><strong>Personal Email Activation:</strong> Activated directly on your personal Notion workspace with 1-Year full replacement warranty.</li>\n</ul>",
+        "longDesc": "<h1>Notion Plus Subscription Price in Bangladesh</h1>\n\n<p>Notion Plus হলো শিক্ষার্থী, ফ্রিল্যান্সার, পেশাদার এবং গ্রোইং টিমগুলোর জন্য বিশ্বের এক নম্বর অল-ইন-ওয়ান প্রোডাক্টিভিটি ওয়ার্কস্পেস। এটি আপনার নোটস, টাস্ক ম্যানেজমেন্ট, প্রজেক্ট ট্র্যাকিং, উইকি এবং রিলেশনাল ডেটাবেজকে একটি মাত্র চমৎকার ইন্টারফেসে নিয়ে আসে। Tech Solutions BD থেকে গ্রহণ করুন ১০০% অফিসিয়াল <strong>Notion Plus 1 Year Subscription</strong> সবচেয়ে সাশ্রয়ী অফার মূল্যে।</p>\n\n<hr>\n\n<h3>✨ Notion Plus মূল বৈশিষ্ট্যসমূহ (Key Highlights)</h3>\n<ul>\n  <li>✅ <strong>Unlimited Blocks for Teams:</strong> কোনো লিমিট ছাড়াই আনলিমিটেড ব্লক, পেজ এবং ডেটাবেজ তৈরি করুন।</li>\n  <li>✅ <strong>Unlimited File Uploads:</strong> প্রতি ফাইলে ৫ জিবি পর্যন্ত বড় সাইজের যেকোনো ফাইল আপলোড ও স্টোর করার সুবিধা।</li>\n  <li>✅ <strong>90-Day Page History:</strong> অতীতের ৯০ দিনের যেকোনো পেজ হিস্ট্রি ও আগের ভার্সন এক ক্লিকে রিস্টোর করুন।</li>\n  <li>✅ <strong>Invite up to 100 Guests:</strong> ক্লায়েন্ট, ফ্রিল্যান্সার বা পার্টনারদের নির্দিষ্ট পেজে গেস্ট হিসেবে ইনভাইট ও পারমিশন কন্ট্রোল।</li>\n  <li>✅ <strong>Custom Web Domain:</strong> আপনার যেকোনো Notion পেজকে নিজস্ব ডোমেইনে পাবলিক ওয়েবসাইট হিসেবে পাবলিশ করার সুবিধা।</li>\n  <li>✅ <strong>Database Automations:</strong> ফর্মুলা ২.০, রোল-আপ এবং অটোমেটেড ওয়ার্কফ্লো দিয়ে দৈনন্দিন কাজ স্বয়ংক্রিয় করুন।</li>\n  <li>✅ <strong>Cross-Device Sync:</strong> Windows PC, Mac, iPad, iPhone, Android এবং Web ব্রাউজারে নিরবচ্ছিন্ন লাইভ সিঙ্ক।</li>\n</ul>\n\n<hr>\n\n<h3>💰 মূল্য ও প্ল্যান (Pricing & Plans)</h3>\n<ul>\n  <li><strong>Notion Plus (1 Year):</strong> ৳2,799 (নিয়মিত মূল্য: ৳12,000 / $120/yr) — Best for Individuals, Students & Small Teams</li>\n  <li><strong>Notion Business (1 Year):</strong> ৳3,699 (নিয়মিত মূল্য: ৳18,000 / $180/yr) — Best for Companies & Professional Agencies</li>\n</ul>\n\n<hr>\n\n<h3>⚙️ ডেলিভারি ও অ্যাক্টিভেশন পদ্ধতি (Activation Steps)</h3>\n<ol>\n  <li>অর্ডার সম্পন্ন করার সময় আপনার Notion একাউন্টের ইমেইল অ্যাড্রেস প্রদান করুন।</li>\n  <li>আমাদের টিম আপনার নিজস্ব ইমেইল / ওয়ার্কস্পেসে সরাসরি অফিসিয়াল ১ বছরের সাবস্ক্রিপশন অ্যাক্টিভেট করে দেবে।</li>\n  <li>অ্যাক্টিভেশন সম্পন্ন হলে কনফার্মেশন পাবেন এবং সাথে সাথেই সব প্লাস ফিচার উপভোগ করতে পারবেন।</li>\n  <li>সম্পূর্ণ ১ বছর মেয়াদের জন্য Tech Solutions BD রিপ্লেসমেন্ট ওয়ারেন্টি প্রদান করছে।</li>\n</ol>\n\n<hr>\n\n<h3>⚠️ গুরুত্বপূর্ণ তথ্য (Important Notes)</h3>\n<ul>\n  <li>🛒 অর্ডার কনফার্ম হওয়ার পর ডেলিভারি সময় সাধারণত ১৫ মিনিট থেকে ৩ ঘণ্টা (সর্বোচ্চ ২৪ ঘণ্টা)।</li>\n  <li>🔐 সাবস্ক্রিপশনটি আপনার নিজস্ব পার্সোনাল ইমেইলে অ্যাক্টিভেট হয়, ফলে আপনার ডেটা সম্পূর্ণ নিরাপদ ও প্রাইভেট থাকে।</li>\n  <li>❌ ডিজিটাল সাবস্ক্রিপশন সফল ডেলিভারির পর রিফান্ড বা এক্সচেঞ্জ গ্রহণযোগ্য নয়।</li>\n  <li>💬 যেকোনো প্রয়োজনে আমাদের সার্বক্ষণিক কাস্টমার কেয়ার ও টেকনিক্যাল সাপোর্ট টিম সহায়তা প্রদান করবে।</li>\n</ul>",
+        "image": "/img_content/Notion Plus Tech Solutions BD.png",
+        "icon": "📝",
+        "color": "#000000",
+        "gradient": "linear-gradient(135deg, #18181b 0%, #27272a 100%)",
+        "options": [
+            {
+                "id": "opt-notion-plus-1y",
+                "name": "Notion Plus (1 Year)",
+                "type": "SUBSCRIPTION",
+                "price": 2799,
+                "originalPrice": 12000,
+                "description": "1 Year official Notion Plus access with unlimited blocks, 5GB uploads, and 90-day page history."
+            },
+            {
+                "id": "opt-notion-plus-to-biz",
+                "name": "Upgrade: Notion Business (1 Year)",
+                "type": "SUBSCRIPTION",
+                "price": 3699,
+                "originalPrice": 18000,
+                "description": "1 Year Notion Business tier with SAML SSO, private teamspaces, and advanced analytics."
+            }
+        ]
+    },
+    {
+        "id": "notion-business-price-in-bangladesh",
+        "slug": "notion-business-price-in-bangladesh",
+        "name": "Notion Business Subscription Price in Bangladesh",
+        "category": "educational-tools",
+        "badge": "Business Plan",
+        "price": 3699,
+        "originalPrice": 18000,
+        "desc": "<ul>\n  <li><strong>Notion Business 1 Year Enterprise Tier:</strong> Advanced workspace built for scaling companies, agencies, and large teams.</li>\n  <li><strong>SAML SSO & Advanced Security:</strong> Enterprise-grade security with Single Sign-On and granular workspace permissions.</li>\n  <li><strong>Private Teamspaces:</strong> Dedicated restricted teamspaces for HR, Finance, Executive leadership, and specific departments.</li>\n  <li><strong>Advanced Page & Workspace Analytics:</strong> Track page views, team engagement, and workspace collaboration metrics.</li>\n  <li><strong>250 Guests & Bulk PDF Export:</strong> Full offline compliance backups, 90-day history, and 1-Year complete warranty.</li>\n</ul>",
+        "longDesc": "<h1>Notion Business Subscription Price in Bangladesh</h1>\n\n<p>Notion Business হলো আধুনিক কোম্পানি, ডিজিটাল এজেন্সি এবং বড় টিমগুলোর জন্য ডিজাইন করা একটি প্রিমিয়াম কোলাবোরেশন ও ওয়ার্কস্পেস প্ল্যাটফর্ম। Notion Plus-এর সকল ফিচারের পাশাপাশি এতে রয়েছে এন্টারপ্রাইজ-গ্রেড সিকিউরিটি, SAML SSO, প্রাইভেট টিমস্পেস, অ্যাডভান্সড অ্যানালিটিক্স এবং বাল্ক এক্সপোর্ট সুবিধা। Tech Solutions BD থেকে সেরা দামে গ্রহণ করুন ১০০% অফিসিয়াল <strong>Notion Business 1 Year Subscription</strong>।</p>\n\n<hr>\n\n<h3>✨ Notion Business বিশেষ সুবিধাসমূহ (Exclusive Highlights)</h3>\n<ul>\n  <li>✅ <strong>Everything in Notion Plus:</strong> আনলিমিটেড ব্লক, আনলিমিটেড ফাইল আপলোড, এবং ডেটাবেজ অটোমেশন।</li>\n  <li>✅ <strong>SAML Single Sign-On (SSO):</strong> Google Workspace, Okta বা Microsoft Azure AD দিয়ে নিরাপদ কেন্দ্রীভূত লগইন।</li>\n  <li>✅ <strong>Private Teamspaces:</strong> এইচআর, ফাইন্যান্স বা ম্যানেজমেন্ট টিমের জন্য সম্পূর্ণ গোপনীয় ও নিয়ন্ত্রিত টিমস্পেস।</li>\n  <li>✅ <strong>Advanced Workspace Analytics:</strong> কোন পেজ বেশি ব্যবহৃত হচ্ছে, টিম মেম্বারদের অ্যাক্টিভিটি ও ডেটা ইনসাইটস মনিটর করুন।</li>\n  <li>✅ <strong>Bulk PDF & Data Export:</strong> আইনি ও অফলাইন ব্যাকআপের জন্য পুরো ওয়ার্কস্পেস এক ক্লিকে পিডিএফে এক্সপোর্ট করার সুবিধা।</li>\n  <li>✅ <strong>Invite up to 250 Guests:</strong> ক্লায়েন্ট এবং এক্সটার্নাল স্টেকহোল্ডারদের সাথে সহজেই কাজ করুন।</li>\n  <li>✅ <strong>90-Day Version History:</strong> ডকুমেন্টের প্রতিটি পরিবর্তনের পূর্ণ অডিট ট্রেল এবং রিস্টোর সুবিধা।</li>\n  <li>✅ <strong>Priority Support:</strong> Notion এবং Tech Solutions BD উভয় প্ল্যাটফর্ম থেকে দ্রুততম প্রায়োরিটি সাপোর্ট।</li>\n</ul>\n\n<hr>\n\n<h3>💰 মূল্য ও প্ল্যান (Pricing & Plans)</h3>\n<ul>\n  <li><strong>Notion Business (1 Year):</strong> ৳3,699 (নিয়মিত মূল্য: ৳18,000 / $180/yr) — Recommended for Businesses & Teams</li>\n  <li><strong>Notion Plus (1 Year):</strong> ৳2,799 (নিয়মিত মূল্য: ৳12,000 / $120/yr) — For Individuals & Small Projects</li>\n</ul>\n\n<hr>\n\n<h3>⚙️ ডেলিভারি ও অ্যাক্টিভেশন পদ্ধতি (Activation Steps)</h3>\n<ol>\n  <li>অর্ডারের সময় আপনার ব্যক্তিগত বা বিজনেস Notion ইমেইল অ্যাড্রেস দিন।</li>\n  <li>আমাদের এক্সিকিউটিভ টিম আপনার ওয়ার্কস্পেসে অফিসিয়াল ১ বছরের Business সাবস্ক্রিপশন প্রসেস করে দেবে।</li>\n  <li>অ্যাক্টিভেশন মেসেজ পাওয়ার সাথে সাথে আপনার টিম মেম্বারদের অ্যাড করে কাজ শুরু করতে পারবেন।</li>\n  <li>১ বছর মেয়াদের জন্য ফুল সার্ভিস রিপ্লেসমেন্ট গ্যারান্টি অন্তর্ভুক্ত।</li>\n</ol>\n\n<hr>\n\n<h3>⚠️ গুরুত্বপূর্ণ তথ্য (Important Notes)</h3>\n<ul>\n  <li>🛒 অর্ডার কনফার্মেশনের পর ১৫ মিনিট থেকে ৩ ঘণ্টার মধ্যে ডেলিভারি সম্পন্ন হয়।</li>\n  <li>🔐 সম্পূর্ণ অফিসিয়াল ও জেনুইন অ্যাক্টিভেশন, আপনার ওয়ার্কস্পেসের ডেটা ১০০% সুরক্ষিত ও প্রাইভেট।</li>\n  <li>❌ সফল অ্যাক্টিভেশন সম্পন্ন হওয়ার পর ডিজিটাল পণ্যের ক্ষেত্রে কোনো রিফান্ড প্রযোজ্য নয়।</li>\n  <li>💬 সার্বক্ষণিক হোয়াটসঅ্যাপ এবং হেল্পলাইন কাস্টমার সাপোর্ট।</li>\n</ul>",
+        "image": "/img_content/Notion Business Tech Solutions BD.png",
+        "icon": "💼",
+        "color": "#000000",
+        "gradient": "linear-gradient(135deg, #18181b 0%, #27272a 100%)",
+        "options": [
+            {
+                "id": "opt-notion-biz-1y",
+                "name": "Notion Business (1 Year)",
+                "type": "SUBSCRIPTION",
+                "price": 3699,
+                "originalPrice": 18000,
+                "description": "1 Year official Notion Business tier with SAML SSO, private teamspaces, and advanced analytics."
+            },
+            {
+                "id": "opt-notion-biz-to-plus",
+                "name": "Notion Plus (1 Year)",
+                "type": "SUBSCRIPTION",
+                "price": 2799,
+                "originalPrice": 12000,
+                "description": "1 Year Notion Plus plan for individuals and small teams."
+            }
+        ]
     }
 ];
 
@@ -1709,6 +1775,18 @@ export const categorySummaries: StoreCategory[] = [
     ).length,
     image: "/img_content/autodesk.png",
     accent: "#0696D7",
+  },
+  {
+    slug: "educational-tools",
+    name: "Educational Tools",
+    description: "Notion, learning platforms, and digital software subscriptions",
+    count: products.filter(
+      (product) =>
+        product.category === "educational-tools" ||
+        product.category === "Educational Tools"
+    ).length,
+    image: "/img_content/Glossy Graduation Cap and Open Book Icon.png",
+    accent: "#6C63FF",
   },
 ];
 

@@ -89,6 +89,7 @@ export const AVAILABLE_IMG_CONTENT = [
   "/img_content/Netflix Premium Tech Solutions BD.png",
   "/img_content/nordvpn.png",
   "/img_content/Notion Business Tech Solutions BD.png",
+  "/img_content/Notion Plus Tech Solutions BD.png",
   "/img_content/o13pp.png",
   "/img_content/o21hb.png",
   "/img_content/o365.png",

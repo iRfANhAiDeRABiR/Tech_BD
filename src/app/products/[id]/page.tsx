@@ -38,6 +38,8 @@ const categoryLabels: Record<string, string> = {
   autodesk: "Engineering Tools",
   "engineering-tools": "Engineering Tools",
   antivirus: "Antivirus",
+  "educational-tools": "Educational Tools",
+  "ai-tools": "Ai Tools",
 };
 
 function decodeRouteId(value: string) {
