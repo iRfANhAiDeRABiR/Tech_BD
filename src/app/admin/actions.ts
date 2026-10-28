@@ -913,6 +913,173 @@ export async function removeProductFromCategoryAction(formData: FormData) {
   redirect(`/admin/categories/${categoryId}/products?removed=1`);
 }
 
+export async function addProductsToCategoryQuickAction(categoryId: number, productIds: string[]) {
+  await requireAdmin();
+  if (!Number.isInteger(categoryId) || categoryId <= 0) {
+    return { success: false, error: "Invalid category." };
+  }
+  if (!Array.isArray(productIds) || !productIds.length) {
+    return { success: false, error: "No products selected." };
+  }
+
+  const category = await prisma.category.findUnique({
+    where: { id: categoryId },
+    select: { id: true, slug: true },
+  });
+  if (!category) return { success: false, error: "Category not found." };
+
+  const isTopSelling = category.id === 17 || category.slug.toLowerCase() === "top-selling";
+
+  if (isTopSelling) {
+    await prisma.product.updateMany({
+      where: { id: { in: productIds } },
+      data: { isFeatured: true },
+    });
+    revalidateStoreCatalog();
+    return { success: true, count: productIds.length };
+  }
+
+  const sourceProducts = await prisma.product.findMany({
+    where: { id: { in: productIds }, categoryId: { not: categoryId } },
+    include: { options: true },
+  });
+
+  if (sourceProducts.length) {
+    const takenIds = await prisma.product.findMany({
+      where: { OR: sourceProducts.map((product) => ({ slug: { startsWith: product.slug } })) },
+      select: { id: true, slug: true },
+    });
+    const takenValues = new Set<string>([
+      ...takenIds.map((item) => item.id),
+      ...takenIds.map((item) => item.slug),
+    ]);
+
+    const sourceSkus = sourceProducts
+      .flatMap((product) => product.options)
+      .map((option) => option.sku)
+      .filter((sku): sku is string => Boolean(sku));
+    const takenSkus = sourceSkus.length
+      ? await prisma.productOption.findMany({
+          where: { sku: { in: sourceSkus } },
+          select: { sku: true },
+        })
+      : [];
+    const takenSkuSet = new Set<string>(
+      takenSkus.map((item) => item.sku).filter((sku): sku is string => Boolean(sku)),
+    );
+
+    for (const source of sourceProducts) {
+      const uniqueId = buildUniqueSuffix(`${source.id}-${category.slug}`, takenValues);
+      const uniqueSlug = buildUniqueSuffix(`${source.slug}-${category.slug}`, takenValues);
+
+      await prisma.product.create({
+        data: {
+          id: uniqueId,
+          slug: uniqueSlug,
+          name: source.name,
+          categoryId,
+          badge: source.badge,
+          price: source.price,
+          originalPrice: source.originalPrice,
+          shortDescription: source.shortDescription,
+          descriptionHtml: source.descriptionHtml,
+          image: source.image,
+          imagePublicId: source.imagePublicId,
+          icon: source.icon,
+          color: source.color,
+          gradient: source.gradient,
+          status: source.status,
+          isFeatured: source.isFeatured,
+          outOfStock: source.outOfStock,
+          sortOrder: source.sortOrder,
+          options: {
+            create: source.options.map((option) => ({
+              name: option.name,
+              type: option.type,
+              sku: option.sku ? buildUniqueSuffix(`${option.sku}-${category.slug}`, takenSkuSet) : null,
+              price: option.price,
+              originalPrice: option.originalPrice,
+              description: option.description,
+              isDefault: option.isDefault,
+              isActive: option.isActive,
+              sortOrder: option.sortOrder,
+            })),
+          },
+        },
+      });
+    }
+  }
+
+  revalidateStoreCatalog();
+  return { success: true, count: productIds.length };
+}
+
+export async function removeProductFromCategoryQuickAction(categoryId: number, productId: string) {
+  await requireAdmin();
+  if (!Number.isInteger(categoryId) || categoryId <= 0) {
+    return { success: false, error: "Invalid category." };
+  }
+  if (!productId) return { success: false, error: "Invalid product." };
+
+  const category = await prisma.category.findUnique({
+    where: { id: categoryId },
+    select: { id: true, slug: true },
+  });
+  if (!category) return { success: false, error: "Category not found." };
+
+  const isTopSelling = category.id === 17 || category.slug.toLowerCase() === "top-selling";
+
+  if (isTopSelling) {
+    await prisma.product.updateMany({
+      where: { id: productId },
+      data: { isFeatured: false },
+    });
+    revalidateStoreCatalog(productId);
+    return { success: true };
+  }
+
+  const product = await prisma.product.findFirst({
+    where: { id: productId, categoryId },
+    select: { id: true },
+  });
+  if (product) {
+    await prisma.product.delete({ where: { id: product.id } });
+    revalidateStoreCatalog(product.id);
+  }
+  return { success: true };
+}
+
+export async function saveCategoryProductOrderQuickAction(
+  categoryId: number,
+  updates: { id: string; sortOrder: number }[]
+) {
+  await requireAdmin();
+  if (!Number.isInteger(categoryId) || categoryId <= 0) {
+    return { success: false, error: "Invalid category." };
+  }
+  if (!Array.isArray(updates) || !updates.length) {
+    return { success: false, error: "No product updates." };
+  }
+
+  const categoryForOrder = await prisma.category.findUnique({
+    where: { id: categoryId },
+    select: { slug: true },
+  });
+  const isTopSellingOrder = categoryId === 17 || categoryForOrder?.slug.toLowerCase() === "top-selling";
+
+  await prisma.$transaction(
+    updates.map(({ id, sortOrder }) =>
+      isTopSellingOrder
+        ? prisma.product.updateMany({ where: { id }, data: { sortOrder } })
+        : prisma.product.updateMany({ where: { id, categoryId }, data: { sortOrder } }),
+    ),
+    { maxWait: 15000, timeout: 60000 },
+  );
+
+  revalidateStoreCatalog();
+  return { success: true };
+}
+
 export async function deleteCategoryAction(formData: FormData) {
   const session = await requireRole(["OWNER", "ADMIN"]);
   const id = Number(formData.get("categoryId"));
