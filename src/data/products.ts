@@ -1426,6 +1426,71 @@ export const products: Product[] = [
                 "description": "12 Months (1 Year) premium access with full AI writing assistant features."
             }
         ]
+    },
+    {
+        "id": "chtgpt-plus-price-in-bangladesh",
+        "slug": "chtgpt-plus-price-in-bangladesh",
+        "name": "ChatGPT Plus Subscription",
+        "category": "ai-tools",
+        "badge": "GPT-4o & Plus",
+        "price": 399,
+        "originalPrice": 499,
+        "desc": "<ul>\n  <li><strong>ChatGPT Plus Official Subscription:</strong> Access GPT-4o, GPT-4, DALL·E 3, Advanced Voice Mode, and Custom GPTs.</li>\n  <li><strong>Shared & Personal Options:</strong> Choose between cost-effective Shared access or 100% private Personal Account / Business Invite.</li>\n  <li><strong>Shared Plans:</strong> 1 Month (৳399), 3 Months (৳1,149), 6 Months (৳2,249), 12 Months (৳4,499).</li>\n  <li><strong>Personal Plans:</strong> Personal Account (৳2,749), Business Invite (৳2,349) activated on your email.</li>\n  <li><strong>Instant Digital Delivery:</strong> Fast delivery with full duration warranty and dedicated customer support.</li>\n</ul>",
+        "longDesc": "<h1>ChatGPT Plus Subscription Price in Bangladesh</h1>\n\n<p>ChatGPT Plus হলো OpenAI-এর ফ্ল্যাগশিপ প্রিমিয়াম সাবস্ক্রিপশন, যা আপনাকে দেয় সর্বাধুনিক AI মডেল GPT-4o, DALL·E 3 ইমেজ জেনারেশন, অ্যাডভান্সড ডেটা অ্যানালাইসিস এবং কাস্টম জিপিটি (Custom GPTs) ব্যবহারের নিরবচ্ছিন্ন সুবিধা। Tech Solutions BD থেকে সবচেয়ে সাশ্রয়ী মূল্যে গ্রহণ করুন ১০০% জেনুইন ChatGPT Plus সাবস্ক্রিপশন।</p>\n\n<hr>\n\n<h3>✨ Available Subscription Types & Pricing</h3>\n\n<h4>👥 Shared Account Plans (সাশ্রয়ী শেয়ার্ড অ্যাক্সেস)</h4>\n<ul>\n  <li><strong>Shared (1 Month):</strong> ৳399 (আসল মূল্য: ৳499)</li>\n  <li><strong>Shared (3 Months):</strong> ৳1,149 (আসল মূল্য: ৳1,499)</li>\n  <li><strong>Shared (6 Months):</strong> ৳2,249 (আসল মূল্য: ৳2,999)</li>\n  <li><strong>Shared (12 Months):</strong> ৳4,499 (আসল মূল্য: ৳5,999)</li>\n</ul>\n\n<h4>🔒 Personal & Dedicated Plans (১০০% প্রাইভেট ও পার্সোনাল)</h4>\n<ul>\n  <li><strong>Personal Account (1 Month):</strong> ৳2,749 (আসল মূল্য: ৳3,499) — সম্পূর্ণ ডেডিকেটেড পার্সোনাল অ্যাকাউন্ট, প্রাইভেট চ্যাট হিস্ট্রি।</li>\n  <li><strong>Business Invite (1 Month):</strong> ৳2,349 (আসল মূল্য: ৳2,999) — আপনার নিজস্ব ব্যক্তিগত ইমেইলে অফিশিয়াল ওয়ার্কস্পেস/বিজনেস ইনভাইটেশন অ্যাক্টিভেশন।</li>\n</ul>\n\n<hr>\n\n<h3>🌟 মূল বৈশিষ্ট্যসমূহ (Key Highlights)</h3>\n<ul>\n  <li>✅ <strong>GPT-4o & Advanced Models:</strong> দ্রুততম রেসপন্স, হাই-ভলিউম ক্যাপাসিটি এবং পিক আওয়ারেও আনলিমিটেড অ্যাক্সেস।</li>\n  <li>✅ <strong>DALL·E 3 Image Generation:</strong> সরাসরি চ্যাটের ভেতরে হাই-রেজোলিউশন ক্রিয়েটিভ ছবি তৈরির সুবিধা।</li>\n  <li>✅ <strong>Advanced Data Analysis:</strong> এক্সেল, সিএসভি, পিডিএফ বা কোড ফাইল আপলোড করে ডেটা অ্যানালাইসিস ও চার্ট তৈরি।</li>\n  <li>✅ <strong>Custom GPTs & Store:</strong> হাজারো স্পেশালাইজড এআই অ্যাসিস্ট্যান্ট তৈরি এবং ব্যবহারের সুযোগ।</li>\n  <li>✅ <strong>Full Plan-Time Warranty:</strong> সম্পূর্ণ মেয়াদজুড়ে নিরবচ্ছিন্ন সার্ভিস ওয়ারেন্টি ও কাস্টমার সাপোর্ট।</li>\n</ul>\n\n<h3>⚙️ ডেলিভারি ও ব্যবহার নির্দেশিকা</h3>\n<ol>\n  <li>অর্ডার সম্পন্ন করার পর দ্রুততম সময়ে আপনার ড্যাশবোর্ড ও ইমেইলে লগইন তথ্য বা ইনভাইটেশন লিংক পাঠানো হবে।</li>\n  <li>শেয়ার্ড প্ল্যানের ক্ষেত্রে প্রদত্ত ইমেইল ও পাসওয়ার্ড দিয়ে সরাসরি লগইন করে ১টি ডিভাইসে ব্যবহার করুন।</li>\n  <li>বিজনেস ইনভাইটের ক্ষেত্রে আপনার পার্সোনাল ইমেইলে ইনভাইটেশন পাঠানো হবে, লিংকে ক্লিক করে আপনার অ্যাকাউন্টেই প্লাস ফিচার সক্রিয় হবে।</li>\n</ol>\n\n<h3>⚠️ Important Notes</h3>\n<ul>\n  <li>❌ Sold Products Are Not Returnable.</li>\n  <li>🛒 The product will be delivered instantly or within 1 hours (Rare cases: up to 24 hours).</li>\n  <li>❌ Any of our products are requested to be activated within two days maximum. Otherwise the warranty will be void.</li>\n</ul>",
+        "image": "/img_content/gpt.png",
+        "icon": "🤖",
+        "color": "#10a37f",
+        "gradient": "linear-gradient(135deg, #10a37f 0%, #1a7f64 100%)",
+        "options": [
+            {
+                "id": "chatgpt-plus-opt-shared-1m",
+                "name": "Shared (1 Month)",
+                "type": "SUBSCRIPTION",
+                "price": 399,
+                "originalPrice": 499,
+                "description": "Shared account access for 1 Month (30 Days) on 1 Device."
+            },
+            {
+                "id": "chatgpt-plus-opt-shared-3m",
+                "name": "Shared (3 Months)",
+                "type": "SUBSCRIPTION",
+                "price": 1149,
+                "originalPrice": 1499,
+                "description": "Shared account access for 3 Months (90 Days) on 1 Device."
+            },
+            {
+                "id": "chatgpt-plus-opt-shared-6m",
+                "name": "Shared (6 Months)",
+                "type": "SUBSCRIPTION",
+                "price": 2249,
+                "originalPrice": 2999,
+                "description": "Shared account access for 6 Months (180 Days) on 1 Device."
+            },
+            {
+                "id": "chatgpt-plus-opt-shared-12m",
+                "name": "Shared (12 Months)",
+                "type": "SUBSCRIPTION",
+                "price": 4499,
+                "originalPrice": 5999,
+                "description": "Shared account access for 12 Months (1 Year) on 1 Device with uninterrupted warranty."
+            },
+            {
+                "id": "chatgpt-plus-opt-personal-account-1m",
+                "name": "Personal Account (1 Month)",
+                "type": "SUBSCRIPTION",
+                "price": 2749,
+                "originalPrice": 3499,
+                "description": "Dedicated 100% private personal account for 1 Month. Full privacy & private chat history."
+            },
+            {
+                "id": "chatgpt-plus-opt-business-invite-1m",
+                "name": "Business Invite (1 Month)",
+                "type": "SUBSCRIPTION",
+                "price": 2349,
+                "originalPrice": 2999,
+                "description": "Activated on your own personal email via official Workspace/Business Invite for 1 Month."
+            }
+        ]
     }
 ];
 
