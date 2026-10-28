@@ -627,6 +627,31 @@ export const products: Product[] = [
         ]
     },
     {
+        "id": "autodesk-commercial-flex-aec-all-apps",
+        "slug": "autodesk-commercial-flex-aec-all-apps",
+        "name": "Autodesk (Commercial – Flex) AEC-All Apps",
+        "category": "Autodesk",
+        "badge": "Commercial Flex",
+        "price": 14999,
+        "originalPrice": 45000,
+        "desc": "<ul>\n  <li><strong>Autodesk Flex Commercial:</strong> 100% authentic commercial program license on your personal email.</li>\n  <li><strong>1 Year Full Subscription:</strong> 12 Months full warranty and uninterrupted professional access.</li>\n  <li><strong>AEC & Media All-Apps:</strong> Full access to AutoCAD, Revit, 3ds Max, Maya, Civil 3D, Navisworks, Inventor, Fusion, and 90+ professional apps.</li>\n  <li><strong>Compatible with Windows & Mac:</strong> Full official support for Windows PC and macOS.</li>\n  <li><strong>Simple Activation:</strong> Just text us your necessary software in Additional Information (example: AutoCAD, Revit, Maya, etc.).</li>\n</ul>",
+        "longDesc": "<h1>Autodesk (Commercial – Flex) AEC-All Apps Subscription</h1>\n\n<p>Autodesk Flex Commercial হলো একটি অফিসিয়াল এবং অথেন্টিক বাণিজ্যিক লাইসেন্স প্রোগ্রাম যা আপনার নিজস্ব পার্সোনাল ইমেইলে সরাসরি সক্রিয় করা হয়। আর্কিটেকচার, ইঞ্জিনিয়ারিং, কনস্ট্রাকশন (AEC), প্রোডাক্ট ডিজাইন এবং মিডিয়া ইন্ডাস্ট্রির সকল প্রিমিয়াম সফটওয়্যার এক ছাতার নিচে উপভোগ করুন।</p>\n\n<hr>\n\n<h3>✨ Subscription Highlights</h3>\n<ul>\n  <li><strong>Commercial Program License:</strong> 100% authentic Autodesk Commercial Flex license.</li>\n  <li><strong>1 Year Validity & Full Warranty:</strong> ৩৬৫ দিনের সার্বক্ষণিক অফিসিয়াল লাইসেন্স এবং টেকনিক্যাল সাপোর্ট।</li>\n  <li><strong>Activated on Your Own Email:</strong> সাবস্ক্রিপশনটি সরাসরি আপনার পার্সোনাল Autodesk আইডিতে ডেলিভারি দেওয়া হবে।</li>\n  <li><strong>Compatible with Windows & Mac:</strong> উইন্ডোজ এবং ম্যাক ওএস উভয় ডিভাইসেই কাজ করে।</li>\n  <li><strong>Customizable Software Selection:</strong> অর্ডারের সময় আপনার প্রয়োজনীয় সফটওয়্যারের নাম (যেমন: AutoCAD, Revit, Maya, 3ds Max ইত্যাদি) Additional Information বক্সে লিখে দিন।</li>\n</ul>\n\n<h3>💰 Pricing & Plans</h3>\n<ul>\n  <li><strong>12 Months (1 Year) Commercial Flex All-Apps:</strong> ৳14,999 (Offer Price | Regular: ৳45,000)</li>\n</ul>\n\n<h3>📦 Included Products & Cloud Entitlements</h3>\n<p>এই প্যাকেজের অধীনে নিচের সকল Autodesk সফটওয়্যার, টুলস ও ক্লাউড সার্ভিস অন্তর্ভুক্ত রয়েছে:</p>\n\n<div style=\"display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; margin: 16px 0;\">\n  <div>✓ AutoCAD</div>\n  <div>✓ AutoCAD Architecture</div>\n  <div>✓ AutoCAD Electrical</div>\n  <div>✓ AutoCAD Map 3D</div>\n  <div>✓ AutoCAD Mechanical</div>\n  <div>✓ AutoCAD MEP</div>\n  <div>✓ AutoCAD Plant 3D</div>\n  <div>✓ AutoCAD Raster Design</div>\n  <div>✓ AutoCAD for Mac</div>\n  <div>✓ Revit</div>\n  <div>✓ Cloud Models for Revit</div>\n  <div>✓ Revit - Generative Design</div>\n  <div>✓ Revit - MEP Content Editor</div>\n  <div>✓ Twinmotion for Revit</div>\n  <div>✓ 3ds Max</div>\n  <div>✓ Maya</div>\n  <div>✓ Maya Creative</div>\n  <div>✓ MotionBuilder</div>\n  <div>✓ Mudbox</div>\n  <div>✓ Civil 3D</div>\n  <div>✓ Civil 3D - Grading Optimization</div>\n  <div>✓ Civil 3D - Project Explorer</div>\n  <div>✓ Navisworks Manage</div>\n  <div>✓ Navisworks Simulate</div>\n  <div>✓ Inventor Professional</div>\n  <div>✓ Inventor CAM - Ultimate</div>\n  <div>✓ Inventor Nastran</div>\n  <div>✓ Inventor Nesting</div>\n  <div>✓ Inventor Tolerance Analysis</div>\n  <div>✓ Fusion</div>\n  <div>✓ Fusion - Team</div>\n  <div>✓ Fusion Design Extension</div>\n  <div>✓ Fusion Generative Design</div>\n  <div>✓ Fusion Manufacturing Extension</div>\n  <div>✓ Fusion Signal Integrity Extension</div>\n  <div>✓ Fusion Simulation Extension</div>\n  <div>✓ Fusion Manage Professional</div>\n  <div>✓ Fusion Manage Enterprise</div>\n  <div>✓ Fusion Manage Participant</div>\n  <div>✓ ReCap Pro</div>\n  <div>✓ ReCap Photo</div>\n  <div>✓ Advance Steel</div>\n  <div>✓ Robot Structural Analysis Pro</div>\n  <div>✓ Structural Bridge Design</div>\n  <div>✓ InfraWorks</div>\n  <div>✓ Profile Optimization for InfraWorks</div>\n  <div>✓ Vehicle Tracking</div>\n  <div>✓ FormIt Pro</div>\n  <div>✓ Insight - Energy Analysis</div>\n  <div>✓ Insight - Green Building Studio</div>\n  <div>✓ Insight - Lighting Analysis</div>\n  <div>✓ CFD - Ultimate</div>\n  <div>✓ CFD - Cloud Service</div>\n  <div>✓ Flame</div>\n  <div>✓ VRED Design</div>\n  <div>✓ VRED Presenter</div>\n  <div>✓ VRED Professional</div>\n  <div>✓ Alias Concept</div>\n  <div>✓ Alias Surface</div>\n  <div>✓ PowerMill - Ultimate</div>\n  <div>✓ PowerMill - Standard</div>\n  <div>✓ PowerShape - Ultimate</div>\n  <div>✓ PowerInspect - Ultimate</div>\n  <div>✓ FeatureCAM - Ultimate</div>\n  <div>✓ PartMaker</div>\n  <div>✓ Netfabb - Premium</div>\n  <div>✓ Netfabb - Ultimate</div>\n  <div>✓ Netfabb Local Simulation</div>\n  <div>✓ Moldflow Adviser Ultimate</div>\n  <div>✓ Moldflow Insight Ultimate</div>\n  <div>✓ Moldflow Synergy</div>\n  <div>✓ Moldflow - Compute Service</div>\n  <div>✓ InfoWorks ICM - Ultimate</div>\n  <div>✓ InfoWorks ICM Flood</div>\n  <div>✓ InfoWorks ICM Sewer</div>\n  <div>✓ InfoWorks WS Pro</div>\n  <div>✓ InfoWater Pro</div>\n  <div>✓ InfoDrainage</div>\n  <div>✓ Info360 - Cloud Model Service</div>\n  <div>✓ Upchain Professional</div>\n  <div>✓ Upchain Participant</div>\n  <div>✓ Vault Professional Client</div>\n  <div>✓ Vault Professional</div>\n  <div>✓ Vault Office</div>\n  <div>✓ Vault File Server</div>\n  <div>✓ Vault Mobile</div>\n  <div>✓ Desktop Connector</div>\n  <div>✓ Flow Wedging</div>\n  <div>✓ Scan-to-Mesh</div>\n  <div>✓ Helius PFA</div>\n  <div>✓ Fabrication CADmep</div>\n  <div>✓ Factory Design Utilities</div>\n  <div>✓ HSMWorks - Ultimate</div>\n  <div>✓ Autodesk Platform Services</div>\n</div>\n\n<h3>⚙️ How to Order & Activate</h3>\n<ol>\n  <li>ওয়েবসাইটে অর্ডার করার সময় আপনার ব্যক্তিগত ইমেইল অ্যাড্রেস প্রদান করুন।</li>\n  <li>অর্ডারের <strong>Additional Information</strong> ঘরে আপনার কাঙ্ক্ষিত প্রধান সফটওয়্যারগুলোর নাম লিখে দিন (যেমন: AutoCAD, Revit, 3ds Max, Maya ইত্যাদি)।</li>\n  <li>আমাদের টিম দ্রুততম সময়ে আপনার ইমেইলে অফিশিয়াল কমার্শিয়াল অ্যাক্টিভেশন আমন্ত্রণ পাঠিয়ে দেবে।</li>\n  <li>আপনার পার্সোনাল Autodesk অ্যাকাউন্টে সাইন ইন করে যেকোনো সফটওয়্যার ডাউনলোড করে ব্যবহার শুরু করুন।</li>\n</ol>\n\n<h3>⚠️ Important Notes</h3>\n<ul>\n  <li>❌ Sold Products Are Not Returnable.</li>\n  <li>🛒 The product will be delivered within standard processing hours (Rare cases: up to 24-48 hours).</li>\n  <li>❌ Any of our products are requested to be activated within two days maximum. Otherwise the warranty will be void.</li>\n</ul>",
+        "image": "/img_content/Autodesk Flex Licensing Tech Poster.png",
+        "icon": "🏢",
+        "color": "#0696D7",
+        "gradient": "linear-gradient(135deg, #0696D7 0%, #003366 100%)",
+        "options": [
+            {
+                "id": "autodesk-commercial-flex-aec-all-apps-12m",
+                "name": "12 Months (1 Year)",
+                "type": "SUBSCRIPTION",
+                "price": 14999,
+                "originalPrice": 45000,
+                "description": "Full 1 Year Autodesk Commercial Flex license for AEC All-Apps activated on your own personal email."
+            }
+        ]
+    },
+    {
         "id": "project-professional-2024",
         "slug": "project-professional-2024",
         "name": "Project Professional 2024",
@@ -1310,6 +1335,18 @@ export const categorySummaries: StoreCategory[] = [
     ).length,
     image: "/img_content/ai.png",
     accent: "#38bdf8",
+  },
+  {
+    slug: "Autodesk",
+    name: "Autodesk",
+    description: "AutoCAD, Revit, 3ds Max, Maya, Civil 3D, and Flex All-Apps",
+    count: products.filter(
+      (product) =>
+        product.category === "Autodesk" ||
+        product.category === "autodesk"
+    ).length,
+    image: "/img_content/autodesk.png",
+    accent: "#0696D7",
   },
 ];
 
