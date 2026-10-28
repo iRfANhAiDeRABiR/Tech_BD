@@ -594,6 +594,39 @@ export const products: Product[] = [
         ]
     },
     {
+        "id": "trimble-sketchup-pro-personal-email-activation",
+        "slug": "trimble-sketchup-pro-personal-email-activation",
+        "name": "Trimble SketchUp Pro – Personal Email Activation",
+        "category": "adobe",
+        "badge": "Email Required",
+        "price": 16499,
+        "originalPrice": 35000,
+        "desc": "<ul>\n  <li><strong>Trimble SketchUp Pro OR Studio:</strong> Choose between Pro or advanced Studio edition for 12 months.</li>\n  <li><strong>Activation on Your Personal Email ID:</strong> 100% official activation tied directly to your Trimble account.</li>\n  <li><strong>Professional 3D Modeling Software:</strong> Industry-standard architectural, interior, and landscape 3D modeling.</li>\n  <li><strong>LayOut & Style Builder Included:</strong> Generate 2D construction documentation and custom render styles.</li>\n  <li><strong>Point Cloud & Reality Capture Tools:</strong> Advanced workflows and performance analysis (Studio edition).</li>\n  <li><strong>Windows & macOS Supported:</strong> Seamless cross-platform desktop and web compatibility.</li>\n  <li><strong>Same Core Software Features as Commercial Version:</strong> Authentic, unrestricted tools.</li>\n  <li><strong>Delivery Time:</strong> 6 hours to 48 hours (manually processed as soon as possible).</li>\n</ul>",
+        "longDesc": "<h1>Trimble SketchUp Pro & Studio – Personal Email Activation</h1>\n\n<p>Get Trimble SketchUp Pro OR Studio activated on your personal email ID and access professional 3D modeling, visualization, documentation, and collaboration tools for architecture, engineering, construction, and interior design.</p>\n\n<p>SketchUp Studio includes all SketchUp Pro features along with advanced tools for point cloud processing, reality capture workflows, and building performance analysis.</p>\n\n<hr>\n\n<h3>📦 What’s Included</h3>\n<ul>\n  <li>✓ Trimble SketchUp Pro OR Trimble SketchUp Studio</li>\n  <li>✓ Activation on Your Personal Email ID</li>\n  <li>✓ Professional 3D Modeling Tools</li>\n  <li>✓ Layout for 2D Documentation</li>\n  <li>✓ Style Builder</li>\n  <li>✓ Access to SketchUp Warehouse</li>\n  <li>✓ Same Core Software Features as Commercial Version</li>\n  <li>✓ Windows & macOS Supported</li>\n</ul>\n\n<h3>✨ Key Features</h3>\n<ul>\n  <li>✓ <strong>Professional 3D Modeling:</strong> Intuitive and fast modeling for any architectural or interior idea.</li>\n  <li>✓ <strong>Architectural Design:</strong> Concept development, spatial planning, and massing studies.</li>\n  <li>✓ <strong>Interior Design:</strong> Detailed furniture modeling, material application, and lighting setups.</li>\n  <li>✓ <strong>Landscape Design:</strong> Terrain generation, grading, and outdoor site modeling.</li>\n  <li>✓ <strong>Construction Documentation:</strong> Generate permit and client drawing sets easily.</li>\n  <li>✓ <strong>LayOut for Professional Drawings:</strong> High-precision 2D vector drawings synced with 3D models.</li>\n  <li>✓ <strong>Extension Warehouse Access:</strong> Thousands of community plugins and rendering add-ons.</li>\n  <li>✓ <strong>Advanced Reality Capture Workflows (Studio):</strong> Import and manipulate scan data seamlessly.</li>\n  <li>✓ <strong>Point Cloud Support (Studio):</strong> Native point cloud viewing and modeling capabilities.</li>\n  <li>✓ <strong>Energy & Building Performance Analysis (Studio):</strong> Sefaira integration for daylight and thermal modeling.</li>\n  <li>✓ <strong>Same Core Software Features as Commercial Version:</strong> 100% genuine functionality.</li>\n</ul>\n\n<h3>💰 Pricing & Plans</h3>\n<ul>\n  <li><strong>Trimble SketchUp Pro (12 Months / 1 Year):</strong> ৳16,499 (Offer Price | Regular: ৳35,000)</li>\n  <li><strong>Trimble SketchUp Studio (12 Months / 1 Year):</strong> ৳24,999 (Offer Price | Regular: ৳55,000)</li>\n</ul>\n\n<h3>📋 Delivery Information</h3>\n<ul>\n  <li>• This is a digital product.</li>\n  <li>• Activation will be processed on your personal email ID.</li>\n  <li>• You may be required to provide your personal email address for activation.</li>\n  <li>• Your order will be manually processed by our team.</li>\n  <li>• You will receive an update once the activation process is completed.</li>\n  <li>• Standard delivery time is between 6 hours to 48 hours, but as soon as possible.</li>\n</ul>\n\n<h3>⚙️ Activation Process</h3>\n<ol>\n  <li>Place your order on our website.</li>\n  <li>Provide your personal email ID for activation.</li>\n  <li>Our team will activate SketchUp Pro & Studio.</li>\n  <li>Once completed, you will receive activation confirmation.</li>\n  <li>Sign in using your activated Trimble account and start using SketchUp.</li>\n</ol>\n\n<h3>❓ Frequently Asked Questions (FAQ)</h3>\n<ul>\n  <li><strong>Q. Is activation completed on my personal email ID?</strong><br>A. Yes. Activation is completed on your personal email ID.</li>\n  <li><strong>Q. Does this include both SketchUp Pro and SketchUp Studio?</strong><br>A. No. You can select one edition (Pro or Studio) on the checkout page.</li>\n  <li><strong>Q. Is this a digital product?</strong><br>A. Yes. This is a digitally processed activation service.</li>\n  <li><strong>Q. How is the product delivered?</strong><br>A. Your order is manually processed, and activation is completed on your personal email ID.</li>\n  <li><strong>Q. Which operating systems are supported?</strong><br>A. SketchUp supports both Windows and macOS.</li>\n  <li><strong>Q. How long will it take to deliver?</strong><br>A. Standard delivery time is between 6 hours to 48 hours, but as soon as possible.</li>\n</ul>\n\n<h3>⚠️ Important Notes</h3>\n<ul>\n  <li>❌ Sold Products Are Not Returnable.</li>\n  <li>🛒 Standard delivery time: 6 hours to 48 hours (processed as soon as possible).</li>\n  <li>❌ Any of our products are requested to be activated within two days maximum. Otherwise the warranty will be void.</li>\n</ul>",
+        "image": "/img_content/Trimble SketchUp Pro Product Showcase.png",
+        "icon": "📐",
+        "color": "#005F9E",
+        "gradient": "linear-gradient(135deg, #005F9E 0%, #00B4D8 100%)",
+        "options": [
+            {
+                "id": "trimble-sketchup-pro-12m",
+                "name": "Trimble SketchUp Pro (12 Months)",
+                "type": "SUBSCRIPTION",
+                "price": 16499,
+                "originalPrice": 35000,
+                "description": "1 Year official Trimble SketchUp Pro subscription activated on your personal email ID."
+            },
+            {
+                "id": "trimble-sketchup-studio-12m",
+                "name": "Trimble SketchUp Studio (12 Months)",
+                "type": "SUBSCRIPTION",
+                "price": 24999,
+                "originalPrice": 55000,
+                "description": "1 Year official Trimble SketchUp Studio subscription with Point Cloud & V-Ray/Revit workflows activated on your personal email ID."
+            }
+        ]
+    },
+    {
         "id": "project-professional-2024",
         "slug": "project-professional-2024",
         "name": "Project Professional 2024",
