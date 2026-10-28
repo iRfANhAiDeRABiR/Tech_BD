@@ -652,6 +652,104 @@ export const products: Product[] = [
         ]
     },
     {
+        "id": "freepik-premium-price-in-bangladesh",
+        "slug": "freepik-premium-price-in-bangladesh",
+        "name": "Freepik Premium Subscription",
+        "category": "adobe",
+        "badge": "30 DL/Day",
+        "price": 549,
+        "originalPrice": 1200,
+        "desc": "<ul>\n  <li><strong>30 Downloads/Day Limit:</strong> Download up to 30 premium assets daily with no interruptions.</li>\n  <li><strong>Use Web Panel:</strong> High-speed direct web panel for instant 1-click downloads.</li>\n  <li><strong>Unlimited Premium Vectors & PSDs:</strong> Exclusive access to Freepik's full collection of vectors, photos, and mockups.</li>\n  <li><strong>Commercial License Included:</strong> Use assets in commercial projects without attribution.</li>\n  <li><strong>Multi-Duration Plans:</strong> Choose between 1, 3, 6, or 12 months access.</li>\n</ul>",
+        "longDesc": "<h1>Freepik Premium Subscription in Bangladesh</h1>\n\n<p>Freepik Premium হলো গ্রাফিক ডিজাইনার, মার্কেটার এবং ক্রিয়েটিভ প্রফেশনালদের জন্য একটি অপরিহার্য প্ল্যাটফর্ম। এটি লক্ষ লক্ষ উচ্চ-মানের ভেক্টর, স্টক ফটো, PSD মকআপ এবং আইকনে প্রিমিয়াম অ্যাক্সেস প্রদান করে। Tech Solutions BD থেকে গ্রহণ করুন Freepik Premium সাবস্ক্রিপশন এবং আপনার ডিজাইন ওয়ার্কফ্লোকে করুন আরও দ্রুত ও প্রফেশনাল।</p>\n\n<hr>\n\n<h3>✨ মূল বৈশিষ্ট্যসমূহ (Key Highlights)</h3>\n<ul>\n  <li>✅ <strong>30 Downloads/Day Limit:</strong> প্রতিদিন ৩০টি পর্যন্ত প্রিমিয়াম ভেক্টর, ফটো ও পিএসডি ফাইল ডাউনলোডের সুবিধা।</li>\n  <li>✅ <strong>Use Web Panel:</strong> সরাসরি ডেডিকেটেড ওয়েব প্যানেল ব্যবহার করে হাই-স্পিড ডাউনলোড লিংক জেনারেশন।</li>\n  <li>✅ <strong>Commercial License:</strong> কোনো অ্যাট্রিবিউশন ছাড়াই কমার্শিয়াল প্রজেক্টে ব্যবহারের সুবিধা।</li>\n  <li>✅ <strong>Millions of Exclusive Assets:</strong> শুধুমাত্র প্রিমিয়াম ব্যবহারকারীদের জন্য সংরক্ষিত ইউনিক ডিজাইন ও মকআপ।</li>\n  <li>✅ <strong>Full Support:</strong> সম্পূর্ণ সাবস্ক্রিপশন মেয়াদে সার্বক্ষণিক কাস্টমার সাপোর্ট।</li>\n</ul>\n\n<h3>💰 মূল্য ও প্ল্যান (Pricing & Plans)</h3>\n<ul>\n  <li><strong>1 Month Subscription:</strong> ৳549 (আসল মূল্য: ৳1,200)</li>\n  <li><strong>3 Months Subscription:</strong> ৳999 (আসল মূল্য: ৳2,999)</li>\n  <li><strong>6 Months Subscription:</strong> ৳1,499 (আসল মূল্য: ৳4,999)</li>\n  <li><strong>12 Months Subscription:</strong> ৳2,999 (আসল মূল্য: ৳8,999)</li>\n</ul>\n\n<h3>⚙️ ডেলিভারি ও ব্যবহার নির্দেশিকা</h3>\n<ol>\n  <li>অর্ডার সম্পন্ন করার পর ড্যাশবোর্ড ও ইমেইলে আপনার ডেডিকেটেড ওয়েব প্যানেল অ্যাক্সেস ডিটেইলস পেয়ে যাবেন।</li>\n  <li>প্যানেলে লগইন করে যেকোনো Freepik প্রিমিয়াম অ্যাসেটের লিংক দিন এবং সাথে সাথে অরিজিনাল ফাইল ডাউনলোড করুন।</li>\n  <li>প্রতিদিন ৩০টি পর্যন্ত ফাইল ডাউনলোড করতে পারবেন।</li>\n</ol>\n\n<h3>⚠️ Important Notes</h3>\n<ul>\n  <li>❌ Sold Products Are Not Returnable.</li>\n  <li>🛒 The product will be delivered instantly or within 1 hours (Rare cases: up to 24 hours).</li>\n  <li>❌ Any of our products are requested to be activated within two days maximum. Otherwise the warranty will be void.</li>\n</ul>",
+        "image": "/img_content/Freepik Premium Tech Solutions BD.png",
+        "icon": "🖼️",
+        "color": "#1273EB",
+        "gradient": "linear-gradient(135deg, #1273EB 0%, #00C6FF 100%)",
+        "options": [
+            {
+                "id": "freepik-premium-1m",
+                "name": "1 Month",
+                "type": "SUBSCRIPTION",
+                "price": 549,
+                "originalPrice": 1200,
+                "description": "1 Month premium access via Web Panel."
+            },
+            {
+                "id": "freepik-premium-3m",
+                "name": "3 Months",
+                "type": "SUBSCRIPTION",
+                "price": 999,
+                "originalPrice": 2999,
+                "description": "3 Months premium access via Web Panel."
+            },
+            {
+                "id": "freepik-premium-6m",
+                "name": "6 Months",
+                "type": "SUBSCRIPTION",
+                "price": 1499,
+                "originalPrice": 4999,
+                "description": "6 Months premium access via Web Panel."
+            },
+            {
+                "id": "freepik-premium-12m",
+                "name": "12 Months",
+                "type": "SUBSCRIPTION",
+                "price": 2999,
+                "originalPrice": 8999,
+                "description": "12 Months (1 Year) premium access via Web Panel."
+            }
+        ]
+    },
+    {
+        "id": "envato-elements-subscription",
+        "slug": "envato-elements-subscription",
+        "name": "Envato Elements Subscription",
+        "category": "adobe",
+        "badge": "300 DL/Day",
+        "price": 549,
+        "originalPrice": 1200,
+        "desc": "<ul>\n  <li><strong>300 Downloads/Day Limit:</strong> High-volume daily download limit for all your creative projects.</li>\n  <li><strong>Use Web Panel:</strong> Easy and seamless web panel access with 1-click download generator.</li>\n  <li><strong>Unlimited Creative Assets:</strong> Graphic templates, stock video, music tracks, sound effects, fonts, and CMS templates.</li>\n  <li><strong>Commercial License:</strong> Clear commercial licensing for client and personal projects.</li>\n  <li><strong>Multi-Duration Plans:</strong> Choose between 1, 3, 6, or 12 months subscription.</li>\n</ul>",
+        "longDesc": "<h1>Envato Elements Premium Subscription in Bangladesh</h1>\n\n<p>Envato Elements হলো ডিজাইনার, ভিডিও এডিটর, ওয়েব ডেভেলপার এবং কনটেন্ট ক্রিয়েটরদের জন্য বিশ্বের সবচেয়ে জনপ্রিয় এবং সমৃদ্ধ ক্রিয়েটিভ অ্যাসেট প্ল্যাটফর্ম। লাখ লাখ প্রিমিয়াম গ্রাফিক্স টেমপ্লেট, স্টক ভিডিও, রয়্যালটি-ফ্রি মিউজিক, সাউন্ড এফেক্টস, প্রেজেন্টেশন টেমপ্লেট, থিম এবং ফন্ট এখন হাতের মুঠোয়। Tech Solutions BD থেকে সবচেয়ে সাশ্রয়ী মূল্যে সংগ্রহ করুন Envato Elements প্রিমিয়াম সাবস্ক্রিপশন।</p>\n\n<hr>\n\n<h3>✨ মূল বৈশিষ্ট্যসমূহ (Key Highlights)</h3>\n<ul>\n  <li>✅ <strong>300 Downloads/Day Limit:</strong> প্রতিদিন ৩০০টি পর্যন্ত প্রিমিয়াম অ্যাসেট ডাউনলোড করার সুবিধা।</li>\n  <li>✅ <strong>Use Web Panel:</strong> ঝামেলামুক্ত প্রিমিয়াম ওয়েব প্যানেলের মাধ্যমে সরাসরি দ্রুত ও সহজ ডাউনলোড।</li>\n  <li>✅ <strong>Millions of Assets:</strong> গ্রাফিক্স, ভিডিও টেমপ্লেট, ফন্ট, থ্রিডি অবজেক্ট, এবং ওয়েব টেমপ্লেটের বিশাল লাইব্রেরি।</li>\n  <li>✅ <strong>Commercial Use:</strong> সকল প্রজেক্ট এবং ক্লায়েন্ট ওয়ার্কের জন্য কমার্শিয়াল লাইসেন্স।</li>\n  <li>✅ <strong>Fast Delivery & Full Warranty:</strong> পেমেন্টের পর দ্রুততম সময়ে অ্যাক্সেস প্রদান এবং সার্বক্ষণিক সাপোর্ট।</li>\n</ul>\n\n<h3>💰 মূল্য ও প্ল্যান (Pricing & Plans)</h3>\n<ul>\n  <li><strong>1 Month Subscription:</strong> ৳549 (আসল মূল্য: ৳1,200)</li>\n  <li><strong>3 Months Subscription:</strong> ৳999 (আসল মূল্য: ৳2,999)</li>\n  <li><strong>6 Months Subscription:</strong> ৳1,499 (আসল মূল্য: ৳4,999)</li>\n  <li><strong>12 Months Subscription:</strong> ৳2,999 (আসল মূল্য: ৳8,999)</li>\n</ul>\n\n<h3>📦 কী কী ডাউনলোড করা যাবে?</h3>\n<ul>\n  <li><strong>Video Templates:</strong> After Effects, Premiere Pro, Final Cut Pro, DaVinci Resolve টেমপ্লেট।</li>\n  <li><strong>Stock Video & Audio:</strong> 4K/HD স্টক ফুটেজ, রয়্যালটি-ফ্রি ব্যাকগ্রাউন্ড মিউজিক এবং সাউন্ড ইফেক্টস।</li>\n  <li><strong>Graphic Templates:</strong> প্রিন্ট টেমপ্লেট, সোশ্যাল মিডিয়া ব্যানার, ইউআই/ইউএক্স কিট, লোগো ডিজাইন।</li>\n  <li><strong>Fonts & Add-ons:</strong> হাজারো প্রিমিয়াম ফন্ট, ফটোশপ অ্যাকশন, ব্রাশ এবং লেয়ার স্টাইল।</li>\n  <li><strong>CMS & Web Templates:</strong> WordPress থিম ও প্লাগইন, HTML5 টেমপ্লেট এবং ল্যান্ডিং পেজ।</li>\n</ul>\n\n<h3>⚙️ ডেলিভারি ও ব্যবহার নির্দেশিকা</h3>\n<ol>\n  <li>অর্ডার সম্পন্ন করার পর আপনার ড্যাশবোর্ড ও ইমেইলে ওয়েব প্যানেল অ্যাক্সেস ডিটেইলস পাঠানো হবে।</li>\n  <li>প্রদত্ত প্যানেলে লগইন করে Envato Elements-এর যেকোনো প্রিমিয়াম অ্যাসেটের লিংক পেস্ট করলেই সাথে সাথে ডাউনলোড লিংক তৈরি হয়ে যাবে।</li>\n  <li>প্রতিদিন সর্বোচ্চ ৩০০টি পর্যন্ত ফাইল যেকোনো সময় ডাউনলোড করতে পারবেন।</li>\n</ol>\n\n<h3>⚠️ Important Notes</h3>\n<ul>\n  <li>❌ Sold Products Are Not Returnable.</li>\n  <li>🛒 The product will be delivered instantly or within 1 hours (Rare cases: up to 24 hours).</li>\n  <li>❌ Any of our products are requested to be activated within two days maximum. Otherwise the warranty will be void.</li>\n</ul>",
+        "image": "/img_content/Envato Elements Pro Creative Studio Ad.png",
+        "icon": "🎨",
+        "color": "#82B440",
+        "gradient": "linear-gradient(135deg, #82B440 0%, #00D4AA 100%)",
+        "options": [
+            {
+                "id": "envato-elements-1m",
+                "name": "1 Month",
+                "type": "SUBSCRIPTION",
+                "price": 549,
+                "originalPrice": 1200,
+                "description": "1 Month premium access via Web Panel."
+            },
+            {
+                "id": "envato-elements-3m",
+                "name": "3 Months",
+                "type": "SUBSCRIPTION",
+                "price": 999,
+                "originalPrice": 2999,
+                "description": "3 Months premium access via Web Panel."
+            },
+            {
+                "id": "envato-elements-6m",
+                "name": "6 Months",
+                "type": "SUBSCRIPTION",
+                "price": 1499,
+                "originalPrice": 4999,
+                "description": "6 Months premium access via Web Panel."
+            },
+            {
+                "id": "envato-elements-12m",
+                "name": "12 Months",
+                "type": "SUBSCRIPTION",
+                "price": 2999,
+                "originalPrice": 8999,
+                "description": "12 Months (1 Year) premium access via Web Panel."
+            }
+        ]
+    },
+    {
         "id": "project-professional-2024",
         "slug": "project-professional-2024",
         "name": "Project Professional 2024",
