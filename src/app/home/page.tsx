@@ -74,6 +74,7 @@ export default async function HomePage({
     outOfStock: product.outOfStock,
     options: product.options,
     isFeatured: product.isFeatured,
+    sortOrder: product.sortOrder,
   }));
 
   const initialCategory =

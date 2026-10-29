@@ -80,6 +80,7 @@ const toProductSummary = (product: Product): ProductSummary => ({
   outOfStock: product.outOfStock,
   options: product.options,
   isFeatured: product.isFeatured,
+  sortOrder: product.sortOrder,
 });
 
 const formatCategoryName = (slug: string) =>
@@ -105,13 +106,17 @@ const createCategoryGroups = (
   const orderedGroups = categories.flatMap((category) => {
     const isTopSelling = category.slug.toLowerCase() === "top-selling";
     const directProducts = productsByCategory.get(category.slug) ?? [];
-    const categoryProducts = isTopSelling
+    const rawCategoryProducts = isTopSelling
       ? (directProducts.length ? directProducts : products.filter((p) => p.isFeatured))
       : directProducts;
 
-    if (!categoryProducts.length) {
+    if (!rawCategoryProducts.length) {
       return [];
     }
+
+    const categoryProducts = [...rawCategoryProducts].sort(
+      (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)
+    );
 
     groupedCategorySlugs.add(category.slug);
 

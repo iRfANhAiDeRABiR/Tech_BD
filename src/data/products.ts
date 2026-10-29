@@ -1963,6 +1963,10 @@ export const productSummaries: ProductSummary[] = products.map((product) => ({
   icon: product.icon,
   color: product.color,
   gradient: product.gradient,
+  outOfStock: product.outOfStock,
+  options: product.options,
+  isFeatured: product.isFeatured,
+  sortOrder: product.sortOrder,
 }));
 
 type CachedCatalog = {
@@ -2176,6 +2180,7 @@ async function loadDatabaseCatalog(): Promise<StoreCatalog | null> {
             product.gradient ?? "linear-gradient(135deg, #38bdf8, #6366f1)",
           outOfStock: product.outOfStock,
           isFeatured: Boolean(product.isFeatured),
+          sortOrder: typeof product.sortOrder === "number" ? product.sortOrder : 0,
           options: product.options.map((option) => ({
             id: option.id,
             name: option.name,
@@ -2231,15 +2236,7 @@ async function loadDatabaseCatalog(): Promise<StoreCatalog | null> {
 }
 
 export function invalidateStoreCatalogCache() {
-  if (globalForCatalog.cachedCatalog) {
-    // Keep serving existing catalog instantly while triggering fresh background revalidation
-    globalForCatalog.cachedCatalog.timestamp = 0;
-  } else {
-    globalForCatalog.cachedCatalog = {
-      data: staticCatalog,
-      timestamp: 0,
-    };
-  }
+  globalForCatalog.cachedCatalog = undefined;
   globalForCatalog.catalogPromise = undefined;
 }
 
@@ -2272,6 +2269,22 @@ export async function getStoreCatalog(): Promise<StoreCatalog> {
     }
 
     return globalForCatalog.cachedCatalog.data;
+  }
+
+  // If cache is empty or invalidated, load fresh database catalog immediately
+  if (process.env.DATABASE_URL && now >= getCatalogRetryAfter()) {
+    try {
+      const fresh = await loadDatabaseCatalog();
+      if (fresh) {
+        globalForCatalog.cachedCatalog = {
+          data: fresh,
+          timestamp: Date.now(),
+        };
+        return fresh;
+      }
+    } catch {
+      // Fallback below
+    }
   }
 
   return staticCatalog;

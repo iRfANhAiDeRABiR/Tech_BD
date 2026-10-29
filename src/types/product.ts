@@ -31,6 +31,7 @@ export interface Product {
   outOfStock?: boolean;
   options?: ProductOption[];
   isFeatured?: boolean;
+  sortOrder?: number;
 }
 
 export type ProductSummary = Omit<Product, "longDesc">;
