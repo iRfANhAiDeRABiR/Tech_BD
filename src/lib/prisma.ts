@@ -32,9 +32,8 @@ function createPrismaClient(): PrismaClient {
     console.warn("Prisma pool client connection warning:", err.message);
   });
 
-  if (process.env.NODE_ENV !== "production") {
-    globalForPrisma.pool = pool;
-  }
+  // In serverless environments (like Vercel), caching pool & client on globalThis prevents connection leaks across warm lambdas
+  globalForPrisma.pool = pool;
 
   const adapter = new PrismaPg(pool);
 
@@ -46,9 +45,7 @@ function createPrismaClient(): PrismaClient {
 const prisma =
   globalForPrisma.prisma ?? createPrismaClient();
 
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
-}
+globalForPrisma.prisma = prisma;
 
 export { prisma };
 export default prisma;
