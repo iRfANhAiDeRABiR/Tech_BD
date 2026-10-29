@@ -1711,7 +1711,7 @@ export const categorySummaries: StoreCategory[] = [
     name: "Microsoft Visio",
     description: "Visio Standard 2024, Professional 2024, 2021, 2019, 2016",
     count: products.filter((product) => product.category === "microsoft-visio").length,
-    image: "/img_content/visio24.png",
+    image: "/img_content/visio.png",
     accent: "#0078D4",
   },
   {
@@ -1719,8 +1719,20 @@ export const categorySummaries: StoreCategory[] = [
     name: "Microsoft Project",
     description: "Project Standard 2024, Professional 2024, 2021, 2019, 2016",
     count: products.filter((product) => product.category === "microsoft-project").length,
-    image: "/img_content/project24.png",
+    image: "/img_content/project.png",
     accent: "#047857",
+  },
+  {
+    slug: "windows-sql-server",
+    name: "Windows & SQL Server",
+    description: "Windows Server & SQL Server Genuine Lifetime Licenses",
+    count: products.filter(
+      (product) =>
+        product.category === "windows-sql-server" ||
+        product.category === "Windows & SQL Server"
+    ).length,
+    image: "/img_content/serverlogo.png",
+    accent: "#0078D4",
   },
   {
     slug: "office",

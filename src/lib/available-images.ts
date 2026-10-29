@@ -122,6 +122,7 @@ export const AVAILABLE_IMG_CONTENT = [
   "/img_content/QuillBot.png",
   "/img_content/Replit Core Tech Solutions BD.png",
   "/img_content/rocket.png",
+  "/img_content/serverlogo.png",
   "/img_content/Spotify Premium Tech Solutions BD.png",
   "/img_content/SQL Server 2016 Tech Showcase.png",
   "/img_content/SQL Server 2019 Standard Product Showcase.png",
