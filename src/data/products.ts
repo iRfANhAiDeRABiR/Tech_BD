@@ -1689,6 +1689,105 @@ export const products: Product[] = [
                 "description": "1 Year Notion Plus plan for individuals and small teams."
             }
         ]
+    },
+    {
+        "id": "visual-studio-2026",
+        "slug": "visual-studio-2026",
+        "name": "Visual Studio 2026",
+        "category": "engineering-tools",
+        "badge": "New",
+        "price": 1499,
+        "originalPrice": 45000,
+        "desc": "<ul>\n  <li><strong>100% Authentic Microsoft License:</strong> Genuine Visual Studio 2026 license key for developers and engineering teams.</li>\n  <li><strong>Enterprise & Professional (5 PCs):</strong> Choose between Enterprise lifetime edition or Professional 5 PCs multi-device key.</li>\n  <li><strong>Reactivation on Same PCs:</strong> Keys can be used on the same PCs to reactivate after Windows reinstallation.</li>\n  <li><strong>Windows PC Compatible:</strong> Designed for Windows 11 / Windows 10 (Not for Mac).</li>\n  <li><strong>Lifetime Activation:</strong> One-time activation with permanent lifetime validity and official updates.</li>\n</ul>",
+        "longDesc": "<h1>Visual Studio 2026 Genuine License Key Price in BD</h1>\n\n<h3>📦 Product Overview</h3>\n<p>Microsoft Visual Studio 2026 is the next-generation integrated development environment (IDE) crafted for enterprise architects, software engineers, and full-stack development teams. Tech Solutions BD থেকে গ্রহণ করুন ১০০% জেনুইন এবং অফিশিয়াল Visual Studio 2026 লাইফটাইম লাইসেন্স কি সাশ্রয়ী মূল্যে।</p>\n\n<hr>\n\n<h3>✨ Available Editions & Pricing</h3>\n<ul>\n  <li><strong>Visual Studio 2026 Professional (5 PCs):</strong> ৳4,999 (Regular Price: ৳65,000)<br><em>You will receive 1x Visual Studio 2026 Professional key that can activate 5 PCs. Reusable on the same PCs after reinstallation.</em></li>\n  <li><strong>Visual Studio 2026 Enterprise (1 PC):</strong> ৳1,499 (Regular Price: ৳45,000)<br><em>Full enterprise suite with advanced architecture validation, live code analysis, and high-end testing diagnostics.</em></li>\n</ul>\n\n<hr>\n\n<h3>🛡️ What You Receive & Key Terms</h3>\n<ul>\n  <li><strong>Multi-PC Support (Professional):</strong> You will receive 1x Visual Studio 2026 Professional key that can activate 5 PCs.</li>\n  <li><strong>Reinstallation Friendly:</strong> These keys can be used on the same PCs to reactivate after reinstallation.</li>\n  <li><strong>Platform:</strong> This key can be used only on PC (Not for Mac).</li>\n  <li><strong>Lifetime Activation:</strong> One-time activation, lifetime validity with official Microsoft updates.</li>\n  <li><strong>Support:</strong> Friendly and professional customer support 24/7.</li>\n  <li><strong>Fast Delivery:</strong> Experience fast and convenient product delivery through our web store dashboard & email.</li>\n  <li><strong>Guaranteed Authentic:</strong> Guaranteed 100% Authentic Licenses sourced from authorized Microsoft distribution.</li>\n</ul>\n\n<div style=\"background: rgba(220, 38, 38, 0.08); border-left: 4px solid #dc2626; padding: 14px 18px; margin: 20px 0; border-radius: 6px;\">\n  <h4 style=\"margin-top: 0; color: #b91c1c;\">⚠️ Order Policy Note</h4>\n  <p style=\"margin-bottom: 0;\">Ensure you're purchasing the right version/edition/PC count for your needs. We do not accept returns or exchanges for incorrect orders after delivery. If you have any questions, please don't hesitate to contact us.</p>\n</div>",
+        "image": "/img_content/Visual Studio 2026 Enterprise Banner.png",
+        "icon": "Code",
+        "color": "#5C2D91",
+        "gradient": "linear-gradient(135deg, #5C2D91, #9E47DD)",
+        "options": [
+            {
+                "id": "opt-vs-2026-enterprise",
+                "name": "Enterprise (1 PC) - Lifetime Key",
+                "type": "RETAIL_KEY",
+                "price": 1499,
+                "originalPrice": 45000,
+                "description": "1x Visual Studio 2026 Enterprise lifetime key for 1 PC with complete testing and architecture tools."
+            },
+            {
+                "id": "opt-vs-2026-pro-5pc",
+                "name": "Professional (5 PCs) - Lifetime Key",
+                "type": "RETAIL_KEY",
+                "price": 4999,
+                "originalPrice": 65000,
+                "description": "You will receive 1x Visual Studio 2026 Professional key that can activate 5 PCs. Can be used on the same PCs to reactivate after reinstallation."
+            }
+        ]
+    },
+    {
+        "id": "visual-studio-2022",
+        "slug": "visual-studio-2022",
+        "name": "Visual Studio 2022",
+        "category": "engineering-tools",
+        "badge": "Popular",
+        "price": 799,
+        "originalPrice": 38000,
+        "desc": "<ul>\n  <li><strong>100% Authentic Microsoft License:</strong> Genuine Visual Studio 2022 license key for modern development workflows.</li>\n  <li><strong>Enterprise & Professional (5 PCs):</strong> Choose between Enterprise edition or Professional 5 PCs multi-device key.</li>\n  <li><strong>Reactivation on Same PCs:</strong> Keys can be used on the same PCs to reactivate after Windows reinstallation.</li>\n  <li><strong>Windows PC Compatible:</strong> Designed for Windows 11 / Windows 10 (Not for Mac).</li>\n  <li><strong>Lifetime Activation:</strong> One-time activation with permanent lifetime validity and official updates.</li>\n</ul>",
+        "longDesc": "<h1>Visual Studio 2022 Genuine License Key Price in BD</h1>\n\n<h3>📦 Product Overview</h3>\n<p>Microsoft Visual Studio 2022 is a blazing-fast 64-bit IDE designed for complex solutions, cloud apps, and multi-language development (C#, C++, Python, .NET 8/9). Tech Solutions BD থেকে গ্রহণ করুন ১০০% জেনুইন এবং অফিশিয়াল Visual Studio 2022 লাইফটাইম লাইসেন্স কি।</p>\n\n<hr>\n\n<h3>✨ Available Editions & Pricing</h3>\n<ul>\n  <li><strong>Visual Studio 2022 Professional (5 PCs):</strong> ৳1,499 (Regular Price: ৳50,000)<br><em>You will receive 1x Visual Studio 2022 Professional key that can activate 5 PCs. Reusable on the same PCs after reinstallation.</em></li>\n  <li><strong>Visual Studio 2022 Enterprise (1 PC):</strong> ৳799 (Regular Price: ৳38,000)<br><em>Full enterprise suite with advanced architecture validation, live code analysis, and high-end testing diagnostics.</em></li>\n</ul>\n\n<hr>\n\n<h3>🛡️ What You Receive & Key Terms</h3>\n<ul>\n  <li><strong>Multi-PC Support (Professional):</strong> You will receive 1x Visual Studio 2022 Professional key that can activate 5 PCs.</li>\n  <li><strong>Reinstallation Friendly:</strong> These keys can be used on the same PCs to reactivate after reinstallation.</li>\n  <li><strong>Platform:</strong> This key can be used only on PC (Not for Mac).</li>\n  <li><strong>Lifetime Activation:</strong> One-time activation, lifetime validity with official Microsoft updates.</li>\n  <li><strong>Support:</strong> Friendly and professional customer support 24/7.</li>\n  <li><strong>Fast Delivery:</strong> Experience fast and convenient product delivery through our web store dashboard & email.</li>\n  <li><strong>Guaranteed Authentic:</strong> Guaranteed 100% Authentic Licenses sourced from authorized Microsoft distribution.</li>\n</ul>\n\n<div style=\"background: rgba(220, 38, 38, 0.08); border-left: 4px solid #dc2626; padding: 14px 18px; margin: 20px 0; border-radius: 6px;\">\n  <h4 style=\"margin-top: 0; color: #b91c1c;\">⚠️ Order Policy Note</h4>\n  <p style=\"margin-bottom: 0;\">Ensure you're purchasing the right version/edition/PC count for your needs. We do not accept returns or exchanges for incorrect orders after delivery. If you have any questions, please don't hesitate to contact us.</p>\n</div>",
+        "image": "/img_content/Visual Studio 2022 Tech Showcase.png",
+        "icon": "Code",
+        "color": "#5C2D91",
+        "gradient": "linear-gradient(135deg, #5C2D91, #9E47DD)",
+        "options": [
+            {
+                "id": "opt-vs-2022-enterprise",
+                "name": "Enterprise (1 PC) - Lifetime Key",
+                "type": "RETAIL_KEY",
+                "price": 799,
+                "originalPrice": 38000,
+                "description": "1x Visual Studio 2022 Enterprise lifetime key for 1 PC with complete testing and architecture tools."
+            },
+            {
+                "id": "opt-vs-2022-pro-5pc",
+                "name": "Professional (5 PCs) - Lifetime Key",
+                "type": "RETAIL_KEY",
+                "price": 1499,
+                "originalPrice": 50000,
+                "description": "You will receive 1x Visual Studio 2022 Professional key that can activate 5 PCs. Can be used on the same PCs to reactivate after reinstallation."
+            }
+        ]
+    },
+    {
+        "id": "visual-studio-2019",
+        "slug": "visual-studio-2019",
+        "name": "Visual Studio 2019",
+        "category": "engineering-tools",
+        "badge": "Best Value",
+        "price": 699,
+        "originalPrice": 32000,
+        "desc": "<ul>\n  <li><strong>100% Authentic Microsoft License:</strong> Genuine Visual Studio 2019 license key for robust, stable development.</li>\n  <li><strong>Enterprise & Professional (5 PCs):</strong> Choose between Enterprise edition or Professional 5 PCs multi-device key.</li>\n  <li><strong>Reactivation on Same PCs:</strong> Keys can be used on the same PCs to reactivate after Windows reinstallation.</li>\n  <li><strong>Windows PC Compatible:</strong> Designed for Windows 10 / Windows 11 (Not for Mac).</li>\n  <li><strong>Lifetime Activation:</strong> One-time activation with permanent lifetime validity and official updates.</li>\n</ul>",
+        "longDesc": "<h1>Visual Studio 2019 Genuine License Key Price in BD</h1>\n\n<h3>📦 Product Overview</h3>\n<p>Microsoft Visual Studio 2019 provides developers with powerful tools for desktop, web, cloud, and mobile application development with renowned stability and performance. Tech Solutions BD থেকে গ্রহণ করুন ১০০% জেনুইন এবং অফিশিয়াল Visual Studio 2019 লাইফটাইম লাইসেন্স কি।</p>\n\n<hr>\n\n<h3>✨ Available Editions & Pricing</h3>\n<ul>\n  <li><strong>Visual Studio 2019 Professional (5 PCs):</strong> ৳999 (Regular Price: ৳42,000)<br><em>You will receive 1x Visual Studio 2019 Professional key that can activate 5 PCs. Reusable on the same PCs after reinstallation.</em></li>\n  <li><strong>Visual Studio 2019 Enterprise (1 PC):</strong> ৳699 (Regular Price: ৳32,000)<br><em>Full enterprise suite with advanced architecture validation, live code analysis, and high-end testing diagnostics.</em></li>\n</ul>\n\n<hr>\n\n<h3>🛡️ What You Receive & Key Terms</h3>\n<ul>\n  <li><strong>Multi-PC Support (Professional):</strong> You will receive 1x Visual Studio 2019 Professional key that can activate 5 PCs.</li>\n  <li><strong>Reinstallation Friendly:</strong> These keys can be used on the same PCs to reactivate after reinstallation.</li>\n  <li><strong>Platform:</strong> This key can be used only on PC (Not for Mac).</li>\n  <li><strong>Lifetime Activation:</strong> One-time activation, lifetime validity with official Microsoft updates.</li>\n  <li><strong>Support:</strong> Friendly and professional customer support 24/7.</li>\n  <li><strong>Fast Delivery:</strong> Experience fast and convenient product delivery through our web store dashboard & email.</li>\n  <li><strong>Guaranteed Authentic:</strong> Guaranteed 100% Authentic Licenses sourced from authorized Microsoft distribution.</li>\n</ul>\n\n<div style=\"background: rgba(220, 38, 38, 0.08); border-left: 4px solid #dc2626; padding: 14px 18px; margin: 20px 0; border-radius: 6px;\">\n  <h4 style=\"margin-top: 0; color: #b91c1c;\">⚠️ Order Policy Note</h4>\n  <p style=\"margin-bottom: 0;\">Ensure you're purchasing the right version/edition/PC count for your needs. We do not accept returns or exchanges for incorrect orders after delivery. If you have any questions, please don't hesitate to contact us.</p>\n</div>",
+        "image": "/img_content/Visual Studio 2019 Developer Tools Banner.png",
+        "icon": "Code",
+        "color": "#5C2D91",
+        "gradient": "linear-gradient(135deg, #5C2D91, #9E47DD)",
+        "options": [
+            {
+                "id": "opt-vs-2019-enterprise",
+                "name": "Enterprise (1 PC) - Lifetime Key",
+                "type": "RETAIL_KEY",
+                "price": 699,
+                "originalPrice": 32000,
+                "description": "1x Visual Studio 2019 Enterprise lifetime key for 1 PC with complete testing and architecture tools."
+            },
+            {
+                "id": "opt-vs-2019-pro-5pc",
+                "name": "Professional (5 PCs) - Lifetime Key",
+                "type": "RETAIL_KEY",
+                "price": 999,
+                "originalPrice": 42000,
+                "description": "You will receive 1x Visual Studio 2019 Professional key that can activate 5 PCs. Can be used on the same PCs to reactivate after reinstallation."
+            }
+        ]
     }
 ];
 
