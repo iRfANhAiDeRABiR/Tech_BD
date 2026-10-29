@@ -45,3 +45,9 @@ next-env.d.ts
 *.traineddata
 
 /src/generated/prisma
+
+# price lists and spreadsheets
+*.csv
+*.xls
+*.xlsx
+*price-list*
