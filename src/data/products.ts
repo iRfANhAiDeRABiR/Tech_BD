@@ -1731,7 +1731,7 @@ export const categorySummaries: StoreCategory[] = [
         product.category === "windows-sql-server" ||
         product.category === "Windows & SQL Server"
     ).length,
-    image: "/img_content/serverlogo.png",
+    image: "/img_content/Microsoft SQL Server Logo on White.png",
     accent: "#0078D4",
   },
   {
