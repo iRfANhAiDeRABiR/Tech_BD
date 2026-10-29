@@ -1788,6 +1788,56 @@ export const products: Product[] = [
                 "description": "You will receive 1x Visual Studio 2019 Professional key that can activate 5 PCs. Can be used on the same PCs to reactivate after reinstallation."
             }
         ]
+    },
+    {
+        "id": "n8n-starter-1-year",
+        "slug": "n8n-starter-1-year",
+        "name": "n8n Starter 1 Year Subscription",
+        "category": "ai-tools",
+        "badge": "Automation",
+        "price": 3499,
+        "originalPrice": 28000,
+        "desc": "<ul>\n  <li><strong>Official n8n Starter Plan (1 Year):</strong> Advanced workflow automation connecting 400+ apps, AI agents, and custom APIs.</li>\n  <li><strong>New Personal Email Activation:</strong> Activated directly on your fresh personal email address.</li>\n  <li><strong>No Previous Subscriptions Required:</strong> Applicable exclusively for fresh accounts without prior paid subscriptions.</li>\n  <li><strong>Unlimited Workflows & AI Nodes:</strong> Build complex multi-step automations, LangChain agents, and webhook triggers.</li>\n  <li><strong>Full 1 Year Warranty:</strong> 100% genuine official subscription with dedicated support and replacement warranty.</li>\n</ul>",
+        "longDesc": "<h1>n8n Starter 1 Year Subscription Price in Bangladesh</h1>\n\n<p><strong>n8n</strong> হলো বর্তমান বিশ্বের সবচেয়ে শক্তিশালী ওপেন ও ফ্লেক্সিবল AI-পাওয়ার্ড ওয়ার্কফ্লো অটোমেশন প্ল্যাটফর্ম। Zapier বা Make-এর মতো লিমিটেড সার্ভিসের তুলনায় n8n আপনাকে দেয় শতভাগ ডেটা কন্ট্রোল, ৪০০+ অ্যাপ ইন্টিগ্রেশন এবং এডভান্সড AI Agent তৈরি করার দুর্দান্ত সুযোগ। Tech Solutions BD থেকে গ্রহণ করুন ১০০% অফিশিয়াল <strong>n8n Starter 1 Year Subscription</strong> সেরা অফার মূল্যে।</p>\n\n<hr>\n\n<h3>⚡ n8n Starter মূল সুবিধাসমূহ (Key Features)</h3>\n<ul>\n  <li>✅ <strong>400+ Native Integrations:</strong> Google Sheets, Telegram, WhatsApp, Slack, OpenAI, Discord, Webhooks, CRM এবং ডেটাবেজের সাথে সরাসরি কানেক্ট করুন।</li>\n  <li>✅ <strong>AI Agents & LangChain Nodes:</strong> যেকোনো LLM (ChatGPT, Claude, Gemini) যুক্ত করে স্মার্ট অটোনোমাস AI এজেন্ট ও কাস্টমার সাপোর্ট বট তৈরি করুন।</li>\n  <li>✅ <strong>Multi-Step Visual Workflows:</strong> ড্র্যাগ-অ্যান্ড-ড্রপ নো-কোড/লো-কোড ক্যানভাসে জটিল বিজনেস লজিক ও অটোমেশন বিল্ড করুন।</li>\n  <li>✅ <strong>Automated Triggers:</strong> শিডিউল ক্রন, ইভেন্ট-বেসড ওয়েবহুক ও রিয়েলটাইম নোটিফিকেশন সিস্টেম।</li>\n  <li>✅ <strong>Cloud Execution & Reliability:</strong> উচ্চগতির ক্লাউড ইনফ্রাস্ট্রাকচারে নিরবচ্ছিন্ন অটোমেশন রান করার সুবিধা।</li>\n</ul>\n\n<hr>\n\n<h3>💰 প্ল্যান ও প্রাইসিং (Pricing & Details)</h3>\n<ul>\n  <li><strong>n8n Starter (1 Year Plan):</strong> ৳3,499 (অফিশিয়াল রেগুলার প্রাইস: ৳28,000 / $240+ per year)</li>\n  <li><strong>মেয়াদ:</strong> পুরো ১ বছর (১২ মাস)।</li>\n  <li><strong>ওয়ারেন্টি:</strong> Tech Solutions BD থেকে ১ বছরের ফুল রিপ্লেসমেন্ট গ্যারান্টি।</li>\n</ul>\n\n<hr>\n\n<h3>⚠️ অ্যাক্টিভেশন নিয়ম ও শর্তাবলী (Activation Requirements)</h3>\n<ul>\n  <li>📧 <strong>New Personal Email Activations Only:</strong> সাবস্ক্রিপশনটি শুধুমাত্র নতুন/ফ্রেশ পার্সোনাল ইমেইল অ্যাকাউন্টে অ্যাক্টিভেট করা যাবে।</li>\n  <li>🚫 <strong>No Previous Subscriptions:</strong> উক্ত ইমেইলে অতীতে কোনো পেইড n8n সাবস্ক্রিপশন থাকা যাবে না।</li>\n  <li>🔐 <strong>100% Private & Secure:</strong> আপনার নিজস্ব ইমেইলে অ্যাক্টিভেট হওয়ায় আপনার ওয়ার্কফ্লো, ক্রেডেনশিয়াল এবং ডেটা সম্পূর্ণ আপনার কাছেই নিরাপদ থাকে।</li>\n  <li>⏱️ <strong>Fast Delivery:</strong> অর্ডার সম্পন্ন হওয়ার পর ১৫ মিনিট থেকে ৩ ঘণ্টার মধ্যে ডেলিভারি প্রদান করা হয়।</li>\n  <li>💬 <strong>Customer Support:</strong> যেকোনো টেকনিক্যাল ও সেটআপ সহায়তায় আমাদের এক্সপার্ট টিম পাশে থাকবে।</li>\n</ul>\n\n<div style=\"background: rgba(234, 88, 12, 0.08); border-left: 4px solid #ea580c; padding: 14px 18px; margin: 20px 0; border-radius: 6px;\">\n  <h4 style=\"margin-top: 0; color: #c2410c;\">ℹ️ অর্ডার সংক্রান্ত জরুরি নোট</h4>\n  <p style=\"margin-bottom: 0;\">অর্ডারের সময় আপনার ফ্রেশ পার্সোনাল ইমেইল অ্যাড্রেস প্রদান করুন যাতে পূর্বে কোনো n8n সাবস্ক্রিপশন চালু ছিল না। ডিজিটাল সাবস্ক্রিপশন ডেলিভারির পর রিফান্ড বা এক্সচেঞ্জ প্রযোজ্য নয়।</p>\n</div>",
+        "image": "/img_content/n8n Starter Automation Banner.png",
+        "icon": "Zap",
+        "color": "#ea580c",
+        "gradient": "linear-gradient(135deg, #ea580c, #f97316)",
+        "options": [
+            {
+                "id": "opt-n8n-starter-1y",
+                "name": "n8n Starter (1 Year)",
+                "type": "SUBSCRIPTION",
+                "price": 3499,
+                "originalPrice": 28000,
+                "description": "1 Year official n8n Starter plan on new personal email with workflow executions, AI nodes, and 1-year warranty."
+            }
+        ]
+    },
+    {
+        "id": "lovable-lite-1-year",
+        "slug": "lovable-lite-1-year",
+        "name": "Lovable Lite 1 Year Subscription",
+        "category": "ai-tools",
+        "badge": "AI Builder",
+        "price": 2999,
+        "originalPrice": 24000,
+        "desc": "<ul>\n  <li><strong>Official Lovable Lite AI Plan (1 Year):</strong> The leading AI software engineer that builds full-stack web apps from natural language prompts.</li>\n  <li><strong>New Personal Email Activation:</strong> Activated directly on your fresh personal email account.</li>\n  <li><strong>No Previous Subscriptions Required:</strong> Applicable exclusively for fresh accounts without prior paid subscriptions.</li>\n  <li><strong>Full-Stack Code Generation:</strong> Creates React, Vite, Tailwind CSS, Supabase backend integration, and instant GitHub sync.</li>\n  <li><strong>Full 1 Year Warranty:</strong> 100% genuine official subscription with dedicated support and replacement warranty.</li>\n</ul>",
+        "longDesc": "<h1>Lovable Lite 1 Year Subscription Price in Bangladesh</h1>\n\n<p><strong>Lovable (lovable.dev)</strong> হলো বিশ্বের সর্বাধুনিক AI ফুল-স্ট্যাক সফটওয়্যার ইঞ্জিনিয়ার। সাধারণ ইংরেজি প্রম্পট লিখে আপনি মুহূর্তেই তৈরি করে ফেলতে পারেন প্রোডাকশন-রেডি ওয়েব অ্যাপ, ড্যাশবোর্ড, ল্যান্ডিং পেজ কিংবা SaaS অ্যাপ্লিকেশন। Tech Solutions BD থেকে গ্রহণ করুন ১০০% অফিশিয়াল <strong>Lovable Lite 1 Year Subscription</strong> আকর্ষণীয় ডিসকাউন্ট মূল্যে।</p>\n\n<hr>\n\n<h3>✨ Lovable Lite মূল বৈশিষ্ট্যসমূহ (Key Highlights)</h3>\n<ul>\n  <li>✅ <strong>Natural Language to Full-Stack App:</strong> আপনার আইডিয়া বর্ণনা করলেই Lovable স্বয়ংক্রিয়ভাবে ক্লায়েন্ট ও ব্যাকএন্ড কোড লিখে দেয়।</li>\n  <li>✅ <strong>React, Vite & Tailwind CSS:</strong> সম্পূর্ণ আধুনিক টেক স্ট্যাকে ক্লিন ও স্ট্যান্ডার্ড কোড জেনারেশন।</li>\n  <li>✅ <strong>Supabase Integration:</strong> ডেটাবেজ, ইউজার অথেনটিকেশন এবং ক্লাউড স্টোরেজ এক ক্লিকে ইন্টিগ্রেট করার সুবিধা।</li>\n  <li>✅ <strong>GitHub Two-Way Sync:</strong> আপনার নিজস্ব গিটহাব রিপোজিটরির সাথে কোড সিঙ্ক করে লোকাল মেশিনেও ডেভেলপমেন্ট চালাতে পারবেন।</li>\n  <li>✅ <strong>Instant Deployment:</strong> কাস্টম ডোমেইন কিংবা Lovable সাব-ডোমেইনে মাত্র এক ক্লিকে লাইভ ডিপ্লয়মেন্ট।</li>\n</ul>\n\n<hr>\n\n<h3>💰 প্ল্যান ও প্রাইসিং (Pricing & Details)</h3>\n<ul>\n  <li><strong>Lovable Lite (1 Year Plan):</strong> ৳2,999 (অফিশিয়াল রেগুলার প্রাইস: ৳24,000 / $240 per year)</li>\n  <li><strong>মেয়াদ:</strong> পুরো ১ বছর (১২ মাস)।</li>\n  <li><strong>ওয়ারেন্টি:</strong> Tech Solutions BD থেকে ১ বছরের ফুল রিপ্লেসমেন্ট গ্যারান্টি।</li>\n</ul>\n\n<hr>\n\n<h3>⚠️ অ্যাক্টিভেশন নিয়ম ও শর্তাবলী (Activation Requirements)</h3>\n<ul>\n  <li>📧 <strong>New Personal Email Activations Only:</strong> সাবস্ক্রিপশনটি শুধুমাত্র নতুন/ফ্রেশ পার্সোনাল ইমেইল অ্যাকাউন্টে অ্যাক্টিভেট করা যাবে।</li>\n  <li>🚫 <strong>No Previous Subscriptions:</strong> উক্ত ইমেইলে অতীতে কোনো পেইড Lovable সাবস্ক্রিপশন থাকা যাবে না।</li>\n  <li>🔐 <strong>100% Private Workspace:</strong> আপনার প্রজেক্ট ও সোর্স কোড সম্পূর্ণ আপনার ব্যক্তিগত অ্যাকাউন্টে সুরক্ষিত থাকে।</li>\n  <li>⏱️ <strong>Fast Delivery:</strong> অর্ডার কনফার্মেশনের পর ১৫ মিনিট থেকে ৩ ঘণ্টার মধ্যে ডেলিভারি প্রদান করা হয়।</li>\n  <li>💬 <strong>Customer Support:</strong> যেকোনো সহায়তায় আমাদের ডেডিকেটেড সাপোর্ট টিম সার্বক্ষণিক প্রস্তুত।</li>\n</ul>\n\n<div style=\"background: rgba(236, 72, 153, 0.08); border-left: 4px solid #ec4899; padding: 14px 18px; margin: 20px 0; border-radius: 6px;\">\n  <h4 style=\"margin-top: 0; color: #be185d;\">ℹ️ অর্ডার সংক্রান্ত জরুরি নোট</h4>\n  <p style=\"margin-bottom: 0;\">অর্ডারের সময় আপনার ফ্রেশ পার্সোনাল ইমেইল অ্যাড্রেস প্রদান করুন যাতে পূর্বে কোনো Lovable সাবস্ক্রিপশন চালু ছিল না। ডিজিটাল সাবস্ক্রিপশন সফল ডেলিভারির পর রিফান্ড বা এক্সচেঞ্জ প্রযোজ্য নয়।</p>\n</div>",
+        "image": "/img_content/Lovable Lite_ Build Without Code.png",
+        "icon": "Sparkles",
+        "color": "#ec4899",
+        "gradient": "linear-gradient(135deg, #ec4899, #8b5cf6)",
+        "options": [
+            {
+                "id": "opt-lovable-lite-1y",
+                "name": "Lovable Lite (1 Year)",
+                "type": "SUBSCRIPTION",
+                "price": 2999,
+                "originalPrice": 24000,
+                "description": "1 Year official Lovable Lite AI plan on new personal email for AI-powered full-stack web app development."
+            }
+        ]
     }
 ];
 
